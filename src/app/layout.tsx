@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${ibmPlexArabic.variable} antialiased font-sans`}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
