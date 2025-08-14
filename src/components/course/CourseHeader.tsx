@@ -93,10 +93,10 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
               {/* Rating */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center">
-                  {renderStars(course.rating)}
+                  {renderStars(course.rating.average)}
                 </div>
-                <span className="text-sm font-medium">{course.rating}</span>
-                <span className="text-sm text-blue-200">({course.studentsCount} طالب)</span>
+                <span className="text-sm font-medium">{course.rating.average}</span>
+                <span className="text-sm text-blue-200">({course.rating.count} طالب)</span>
               </div>
 
               {/* Level */}
