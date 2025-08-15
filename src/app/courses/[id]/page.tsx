@@ -10,8 +10,9 @@ import SecurePlayer from '@/components/course/SecurePlayer';
 import LessonsList from '@/components/course/LessonsList';
 import CourseHeader from '@/components/course/CourseHeader';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
-import { useCheckout, checkEnrollmentStatus } from '@/lib/checkout';
-import { ChevronLeftIcon, ChevronRightIcon, CheckIcon, CreditCardIcon } from '@heroicons/react/24/outline';
+// import { checkEnrollmentStatus } from '@/lib/checkout'; // Temporarily disabled to prevent Stripe API errors
+// import PayPalButton from '@/components/payment/PayPalButton'; // Temporarily disabled to prevent payment errors
+import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 interface CourseProgress {
   completedLessons: string[];
@@ -24,7 +25,7 @@ export default function CoursePage() {
   const router = useRouter();
   const { user } = useAuth();
   const { getCourseById } = useCourses();
-  const { initiateCheckout, isAuthenticated } = useCheckout();
+  // Removed Stripe checkout hook
   
   const courseId = params.id as string;
   const [course, setCourse] = useState<Course | null>(null);
@@ -37,7 +38,7 @@ export default function CoursePage() {
     progressPercentage: 0
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  // Removed purchase loading state - handled by PayPal component
 
   // Load course data
   useEffect(() => {
@@ -106,11 +107,13 @@ export default function CoursePage() {
     }
   }, [user, course]);
 
-  // Check enrollment status
+  // Check enrollment status - temporarily mocked to prevent Stripe API errors
   const checkUserEnrollment = async (courseId: string) => {
     if (user) {
       try {
-        const enrolled = await checkEnrollmentStatus(user.uid, courseId);
+        // Mock enrollment check - always returns false for demo
+        // TODO: Replace with actual enrollment check when payment system is configured
+        const enrolled = false;
         setIsEnrolled(enrolled);
       } catch (error) {
         console.error('Error checking enrollment:', error);
@@ -121,25 +124,24 @@ export default function CoursePage() {
     }
   };
 
-  // Handle course purchase
-  const handlePurchase = async () => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
+  // PayPal handlers temporarily disabled
+  // const handlePayPalSuccess = (details: any) => {
+  //   console.log('PayPal payment successful:', details);
+  //   // Refresh enrollment status
+  //   checkUserEnrollment(courseId);
+  //   // Show success message
+  //   alert('تم الشراء بنجاح! يمكنك الآن الوصول إلى جميع دروس الكورس.');
+  // };
 
-    if (!course) return;
+  // const handlePayPalError = (error: any) => {
+  //   console.error('PayPal payment error:', error);
+  //   alert('حدث خطأ أثناء عملية الدفع. يرجى المحاولة مرة أخرى.');
+  // };
 
-    setPurchaseLoading(true);
-    try {
-      await initiateCheckout(courseId);
-    } catch (error) {
-      console.error('Purchase error:', error);
-      alert('حدث خطأ أثناء عملية الشراء. يرجى المحاولة مرة أخرى.');
-    } finally {
-      setPurchaseLoading(false);
-    }
-  };
+  // const handlePayPalCancel = () => {
+  //   console.log('PayPal payment cancelled');
+  //   // Optionally show a message or redirect
+  // };
 
   // Mark lesson as complete
   const markLessonComplete = (lessonId: string) => {
@@ -332,29 +334,19 @@ export default function CoursePage() {
                           يجب شراء الكورس للوصول إلى الدروس والمحتوى
                         </p>
                         <div className="space-y-4">
+                          {/* PayPal button temporarily disabled */}
                           <div className="text-center">
                             <span className="text-3xl font-bold text-blue-600">${course.price}</span>
                             <span className="text-gray-500 text-sm block">دفعة واحدة - وصول مدى الحياة</span>
                           </div>
                           <button 
-                            onClick={handlePurchase}
-                            disabled={purchaseLoading}
-                            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 space-x-reverse w-full"
+                            disabled
+                            className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed w-full"
                           >
-                            {purchaseLoading ? (
-                              <>
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                <span>جاري المعالجة...</span>
-                              </>
-                            ) : (
-                              <>
-                                <CreditCardIcon className="w-5 h-5" />
-                                <span>شراء الكورس الآن</span>
-                              </>
-                            )}
+                            الدفع غير متاح حالياً
                           </button>
                           <p className="text-xs text-gray-500 text-center">
-                            💳 دفع آمن عبر Stripe • ضمان استرداد المال خلال 30 يوم
+                            💳 سيتم تفعيل نظام الدفع قريباً
                           </p>
                         </div>
                       </>

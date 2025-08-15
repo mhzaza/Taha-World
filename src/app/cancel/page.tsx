@@ -12,7 +12,8 @@ export default function CancelPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const courseIdParam = searchParams.get('course_id');
+    // Check for both Stripe (course_id) and PayPal (courseId) parameters
+    const courseIdParam = searchParams.get('course_id') || searchParams.get('courseId');
     setCourseId(courseIdParam);
     setLoading(false);
   }, [searchParams]);
@@ -41,6 +42,11 @@ export default function CancelPage() {
         <p className="text-gray-600 mb-6 leading-relaxed">
           لم تكتمل عملية الشراء. لا تقلق، لم يتم خصم أي مبلغ من حسابك.
         </p>
+
+        {/* Payment Method Info */}
+        <div className="text-sm text-gray-500 mb-4">
+          <p>يمكنك استخدام PayPal أو بطاقة ائتمان للدفع</p>
+        </div>
 
         {/* Reassurance */}
         <div className="bg-blue-50 rounded-lg p-4 mb-6">
