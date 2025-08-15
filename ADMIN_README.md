@@ -61,7 +61,7 @@ Add the following environment variables to your `.env.local` file:
 
 ```bash
 # Admin Configuration
-ADMIN_EMAILS=admin@example.com,manager@example.com,supervisor@example.com
+ADMIN_EMAILS=mhmdza34@gmail.com,manager@example.com,supervisor@example.com
 
 # NextAuth Configuration (required for admin authentication)
 NEXTAUTH_URL=http://localhost:3000

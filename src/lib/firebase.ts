@@ -16,11 +16,11 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-// Initialize Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+// Initialize Firebase services conditionally for client-side only
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+export const auth = typeof window !== 'undefined' ? getAuth(app) : null;
+export const db = typeof window !== 'undefined' ? getFirestore(app) : null;
+export const storage = typeof window !== 'undefined' ? getStorage(app) : null;
 
 export default app;

@@ -10,7 +10,8 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -58,8 +59,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (email: string, password: string, displayName: string): Promise<void> => {
     try {
+      // الخطوة 1: إنشاء المستخدم في خدمة المصادقة
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // الخطوة 2: تحديث اسم العرض في ملفه الشخصي
       await updateProfile(user, { displayName });
+
+      // الخطوة 3 (مضافة): إنشاء مستند للمستخدم في قاعدة بيانات Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        displayName,
+        email,
+        createdAt: new Date(),
+        // يمكنك إضافة أي بيانات أخرى هنا
+      });
+
     } catch (error: any) {
       throw new Error(getErrorMessage(error.code));
     }
