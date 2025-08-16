@@ -9,7 +9,8 @@ import {
   TrashIcon,
   EyeIcon,
   EyeSlashIcon,
-  FunnelIcon
+  FunnelIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/outline';
 import { Course } from '@/types';
 
@@ -44,63 +45,23 @@ export default function CoursesPage() {
 
   const fetchCourses = async () => {
     try {
-      // Mock data - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/admin/courses');
+      if (!response.ok) {
+        throw new Error('Failed to fetch courses');
+      }
       
-      const mockCourses: CourseWithStats[] = [
-        {
-          id: 'course-1',
-          title: 'كورس تدريب كمال الأجسام المتقدم',
-          description: 'كورس شامل لتدريب كمال الأجسام للمستوى المتقدم',
-          price: 199,
-          level: 'متقدم',
-          duration: '8 أسابيع',
-          instructor: 'طه صباغ',
-          thumbnail: '/images/bodybuilding-course.jpg',
-          published: true,
-          lessons: [
-            { id: '1', title: 'مقدمة في كمال الأجسام', duration: '15 دقيقة', videoUrl: '' },
-            { id: '2', title: 'تمارين الصدر', duration: '25 دقيقة', videoUrl: '' }
-          ],
-          enrollments: 45,
-          revenue: 8955,
-          lastUpdated: new Date('2024-01-15')
-        },
-        {
-          id: 'course-2',
-          title: 'كورس التغذية الرياضية',
-          description: 'دليل شامل للتغذية الصحية للرياضيين',
-          price: 149,
-          level: 'مبتدئ',
-          duration: '6 أسابيع',
-          instructor: 'طه صباغ',
-          thumbnail: '/images/nutrition-course.jpg',
-          published: true,
-          lessons: [
-            { id: '1', title: 'أساسيات التغذية', duration: '20 دقيقة', videoUrl: '' }
-          ],
-          enrollments: 30,
-          revenue: 4470,
-          lastUpdated: new Date('2024-01-10')
-        },
-        {
-          id: 'course-3',
-          title: 'كورس اللياقة البدنية للمبتدئين',
-          description: 'برنامج تدريبي مناسب للمبتدئين في اللياقة البدنية',
-          price: 99,
-          level: 'مبتدئ',
-          duration: '4 أسابيع',
-          instructor: 'طه صباغ',
-          thumbnail: '/images/fitness-course.jpg',
-          published: false,
-          lessons: [],
-          enrollments: 0,
-          revenue: 0,
-          lastUpdated: new Date('2024-01-05')
-        }
-      ];
+      const data = await response.json();
       
-      setCourses(mockCourses);
+      // Transform API data to match CourseWithStats interface
+      const coursesWithStats: CourseWithStats[] = data.courses.map((course: any) => ({
+        ...course,
+        enrollments: course.enrollmentCount || 0,
+        revenue: (course.enrollmentCount || 0) * course.price,
+        lastUpdated: new Date(course.updatedAt),
+        published: course.isPublished
+      }));
+      
+      setCourses(coursesWithStats);
     } catch (error) {
       console.error('Error fetching courses:', error);
     } finally {
@@ -167,14 +128,32 @@ export default function CoursesPage() {
 
   const toggleCourseStatus = async (courseId: string) => {
     try {
-      // Mock API call - replace with real implementation
-      setCourses(prev => prev.map(course => 
-        course.id === courseId 
-          ? { ...course, published: !course.published }
-          : course
+      const course = courses.find(c => c.id === courseId);
+      if (!course) return;
+
+      const response = await fetch(`/api/admin/courses/${courseId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...course,
+          published: !course.published
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update course status');
+      }
+
+      setCourses(prev => prev.map(c => 
+        c.id === courseId 
+          ? { ...c, published: !c.published }
+          : c
       ));
     } catch (error) {
       console.error('Error toggling course status:', error);
+      alert('حدث خطأ أثناء تحديث حالة الكورس');
     }
   };
 
@@ -184,10 +163,18 @@ export default function CoursesPage() {
     }
 
     try {
-      // Mock API call - replace with real implementation
+      const response = await fetch(`/api/admin/courses/${courseId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete course');
+      }
+
       setCourses(prev => prev.filter(course => course.id !== courseId));
     } catch (error) {
       console.error('Error deleting course:', error);
+      alert('حدث خطأ أثناء حذف الكورس');
     }
   };
 
@@ -416,7 +403,7 @@ export default function CoursesPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <Link
-                        href={`/admin/courses/${course.id}/edit`}
+                        href={`/admin/courses/edit/${course.id}`}
                         className="text-blue-600 hover:text-blue-900"
                       >
                         <PencilIcon className="h-4 w-4" />
