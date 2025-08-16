@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { isServerAdmin, logAdminAction } from '@/lib/admin';
+import { getClientIP } from '@/lib/utils';
 
 // Mock data - replace with actual database calls
 const mockCourses = [
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_courses_list',
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_courses_create',
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       

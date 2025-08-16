@@ -135,14 +135,14 @@ export async function hasAdminPermission(
  */
 export interface AuditLogEntry {
   id?: string;
-  userId: string;
-  userEmail: string;
+  adminEmail: string;
   action: string;
   target: string;
   targetId?: string;
   details?: Record<string, any>;
   timestamp: Date;
-  ipAddress?: string;
+  ip?: string;
+  userAgent?: string;
 }
 
 /**

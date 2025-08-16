@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { isServerAdmin, logAdminAction } from '@/lib/admin';
+import { getClientIP } from '@/lib/utils';
 
 // Mock audit log data - replace with actual database calls
 const mockAuditLogs = [
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_audit_logs',
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       
@@ -250,7 +251,7 @@ export async function POST(request: NextRequest) {
       target,
       details: details || {},
       timestamp: timestamp || new Date().toISOString(),
-      ip: request.ip || 'unknown',
+      ip: getClientIP(request),
       userAgent: request.headers.get('user-agent') || 'unknown'
     };
 

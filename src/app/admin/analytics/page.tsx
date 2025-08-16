@@ -22,8 +22,8 @@ import {
   CurrencyDollarIcon,
   UserGroupIcon,
   AcademicCapIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
 
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
               <p className="text-sm font-medium text-gray-500">إجمالي الإيرادات</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.totalRevenue)}</p>
               <div className="flex items-center mt-1">
-                <TrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
                 <span className="text-sm text-green-600">+{metrics.revenueGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
@@ -208,7 +208,7 @@ export default function AnalyticsPage() {
               <p className="text-sm font-medium text-gray-500">إجمالي الطلاب</p>
               <p className="text-2xl font-bold text-gray-900">{metrics.totalStudents.toLocaleString()}</p>
               <div className="flex items-center mt-1">
-                <TrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
                 <span className="text-sm text-green-600">+{metrics.studentGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
@@ -225,7 +225,7 @@ export default function AnalyticsPage() {
               <p className="text-sm font-medium text-gray-500">عدد الكورسات</p>
               <p className="text-2xl font-bold text-gray-900">{metrics.totalCourses}</p>
               <div className="flex items-center mt-1">
-                <TrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
+                <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
                 <span className="text-sm text-green-600">+{metrics.courseGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
@@ -242,7 +242,7 @@ export default function AnalyticsPage() {
               <p className="text-sm font-medium text-gray-500">متوسط الإيراد لكل طالب</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.avgRevenuePerStudent)}</p>
               <div className="flex items-center mt-1">
-                <TrendingDownIcon className="h-4 w-4 text-red-500 ml-1" />
+                <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 ml-1" />
                 <span className="text-sm text-red-600">-2.1%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
@@ -323,7 +323,7 @@ export default function AnalyticsPage() {
                 />
                 <Bar 
                   dataKey="revenue" 
-                  fill={(entry: any) => entry.color || '#3B82F6'}
+                  fill="#3B82F6"
                   radius={[0, 4, 4, 0]}
                 >
                   {topCoursesByRevenue.map((entry, index) => (

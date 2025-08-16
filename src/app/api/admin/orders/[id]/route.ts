@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { isServerAdmin, logAdminAction } from '@/lib/admin';
+import { getClientIP } from '@/lib/utils';
 
 // Mock data - replace with actual database calls
 const mockOrders = [
@@ -66,7 +67,7 @@ export async function GET(
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: `admin_order_${params.id}`,
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       
@@ -132,7 +133,7 @@ export async function PUT(
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: `admin_order_update_${params.id}`,
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       
@@ -242,7 +243,7 @@ export async function DELETE(
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: `admin_order_delete_${params.id}`,
-        details: { ip: request.ip, userAgent: request.headers.get('user-agent') },
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
       
