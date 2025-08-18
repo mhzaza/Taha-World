@@ -17,17 +17,18 @@ const CoursesPage = () => {
     searchCourses,
     updateFilters,
     clearFilters,
-    getStats,
+    stats,
   } = useCourses();
-
-  const stats = getStats();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     searchCourses({ query: searchQuery, page: 1 });
   };
 
-  const handleFilterChange = (filterKey: keyof CourseFilters, value: any) => {
+  const handleFilterChange = <K extends keyof CourseFilters>(
+    filterKey: K,
+    value: CourseFilters[K]
+  ) => {
     updateFilters({ [filterKey]: value });
   };
 

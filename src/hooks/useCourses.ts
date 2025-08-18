@@ -174,15 +174,18 @@ export const useCourses = (initialParams?: SearchParams) => {
     });
   };
 
-  // Get statistics
-  const getStats = () => {
-    return {
-      totalCourses: courses.length,
-      totalEnrollments: courses.reduce((sum, course) => sum + course.enrollmentCount, 0),
-      averageRating: courses.reduce((sum, course) => sum + course.rating.average, 0) / courses.length,
-      categories: categories.length,
-    };
-  };
+  // Aggregate statistics
+  const stats = useMemo(() => ({
+    totalCourses: courses.length,
+    totalEnrollments: courses.reduce(
+      (sum, course) => sum + course.enrollmentCount,
+      0
+    ),
+    averageRating:
+      courses.reduce((sum, course) => sum + course.rating.average, 0) /
+      courses.length,
+    categories: categories.length,
+  }), [courses]);
 
   return {
     // Data
@@ -207,7 +210,9 @@ export const useCourses = (initialParams?: SearchParams) => {
     getCoursesByCategory,
     getPopularCourses,
     getRecentCourses,
-    getStats,
+
+    // Stats
+    stats,
   };
 };
 
