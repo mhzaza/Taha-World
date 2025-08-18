@@ -96,7 +96,7 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                   {renderStars(course.rating.average)}
                 </div>
                 <span className="text-sm font-medium">{course.rating.average}</span>
-                <span className="text-sm text-blue-200">({course.rating.average} طالب)</span>
+                <span className="text-sm text-blue-200">({course.rating.count} طالب)</span>
               </div>
 
               {/* Level */}
@@ -110,23 +110,25 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                 <span>{formatDuration(course.duration)}</span>
               </div>
 
-              {/* Students Count */}
-              <div className="flex items-center gap-1 text-sm text-blue-200">
-                <UserGroupIcon className="w-4 h-4" />
-                <span>{course.studentsCount.toLocaleString()} طالب</span>
-              </div>
+            {/* Students Count */}
+<div className="flex items-center gap-1 text-sm text-blue-200">
+  <UserGroupIcon className="w-4 h-4" />
+  <span>{course.enrollmentCount.toLocaleString()} طالب</span>
+</div>
             </div>
 
-            {/* Instructor */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">
-                <span className="text-sm font-bold">{course.instructor.charAt(0)}</span>
-              </div>
-              <div>
-                <p className="text-sm text-blue-200">المدرب</p>
-                <p className="font-medium">{course.instructor}</p>
-              </div>
-            </div>
+          {/* Instructor */}
+<div className="flex items-center gap-3 mb-6">
+  <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">
+    {/* Use instructor's name to get the first character */}
+    <span className="text-sm font-bold">{course.instructor.name.charAt(0)}</span>
+  </div>
+  <div>
+    <p className="text-sm text-blue-200">المدرب</p>
+    {/* Display the instructor's name */}
+    <p className="font-medium">{course.instructor.name}</p>
+  </div>
+</div>
 
             {/* Progress Bar (if enrolled) */}
             {isEnrolled && (

@@ -60,6 +60,12 @@ export default function Header() {
             >
               الدورات
             </Link>
+            <Link
+              href="/consultations"
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              الاستشارات
+            </Link>
             {user && (
               <Link
                 href="/dashboard"
@@ -196,6 +202,13 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 الدورات
+              </Link>
+              <Link
+                href="/consultations"
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                الاستشارات
               </Link>
               {user && (
                 <Link

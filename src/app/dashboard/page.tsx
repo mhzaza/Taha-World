@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Layout, Container } from '@/components/layout';
 import RequireAuth from '@/components/auth/RequireAuth';
 import { useAuth } from '@/contexts/AuthContext';
-import { courses } from '@/data/courses';
+import { dummyCourses as courses } from '@/data/courses';
 import { Course } from '@/types';
 
 // Dummy purchased courses data (simulating user's enrolled courses)
