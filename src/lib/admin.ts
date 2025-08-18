@@ -10,8 +10,13 @@ import { db } from './firebase';
 export function isAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false;
   
-  const adminEmails = process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || '';
+  // استخدام NEXT_PUBLIC_ADMIN_EMAILS للعميل و ADMIN_EMAILS للخادم
+  const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS || process.env.ADMIN_EMAILS || '';
   const allowedEmails = adminEmails.split(',').map(e => e.trim().toLowerCase());
+  
+  console.log('Admin emails from env:', adminEmails);
+  console.log('Checking email:', email.toLowerCase());
+  console.log('Allowed emails:', allowedEmails);
   
   return allowedEmails.includes(email.toLowerCase());
 }
@@ -25,18 +30,36 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 export async function isUserAdmin(user: User | null): Promise<boolean> {
   if (!user) return false;
   
-  // First check email allowlist
-  if (isAdminEmail(user.email)) {
-    return true;
-  }
-  
-  // Optionally check admin flag in user document
   try {
+    console.log('isUserAdmin: Starting check for user:', user.email);
+    
+    // First check if email is in admin list
+    const emailCheck = isAdminEmail(user.email);
+    console.log('isUserAdmin: Email check result:', emailCheck);
+    
+    if (emailCheck) {
+      console.log('isUserAdmin: User is admin by email');
+      return true;
+    }
+
+    // Then check Firestore for admin flag
+    console.log('isUserAdmin: Checking Firestore for user:', user.uid);
     const userDoc = await getDoc(doc(db, 'users', user.uid));
-    const userData = userDoc.data();
-    return userData?.isAdmin === true;
+    
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      console.log('isUserAdmin: User document data:', userData);
+      const isAdmin = userData?.isAdmin === true;
+      console.log('isUserAdmin: Firestore admin check result:', isAdmin);
+      return isAdmin;
+    } else {
+      console.log('isUserAdmin: User document does not exist');
+    }
+
+    console.log('isUserAdmin: User is not admin');
+    return false;
   } catch (error) {
-    console.error('Error checking user admin status:', error);
+    console.error('isUserAdmin: Error checking admin status:', error);
     return false;
   }
 }

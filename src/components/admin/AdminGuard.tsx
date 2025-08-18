@@ -16,27 +16,35 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     const checkAdminStatus = async () => {
       if (loading) return;
       
       if (!user) {
-        router.push('/auth/login?redirect=/admin');
+        console.log('AdminGuard: No user found, redirecting to login');
+        router.push('/admin/login');
         return;
       }
 
+      console.log('AdminGuard: Checking admin status for user:', user.email);
+      setDebugInfo(`فحص صلاحيات المستخدم: ${user.email}`);
+
       try {
         const adminStatus = await isUserAdmin(user);
+        console.log('AdminGuard: Admin status result:', adminStatus);
         setIsAdmin(adminStatus);
+        setDebugInfo(`نتيجة الفحص: ${adminStatus ? 'مدير' : 'ليس مدير'}`);
         
         if (!adminStatus) {
-          router.push('/403'); // Redirect to 403 page
+          router.push('/admin/login'); // Redirect to admin login page
         }
       } catch (error) {
-        console.error('Error checking admin status:', error);
+        console.error('AdminGuard: Error checking admin status:', error);
         setIsAdmin(false);
-        router.push('/403');
+        setDebugInfo(`خطأ في الفحص: ${error}`);
+        router.push('/admin/login');
       } finally {
         setChecking(false);
       }
@@ -52,6 +60,7 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">جاري التحقق من الصلاحيات...</p>
+          {debugInfo && <p className="mt-2 text-sm text-gray-500">{debugInfo}</p>}
         </div>
       </div>
     );
@@ -71,12 +80,27 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
           <p className="text-gray-600 mb-6">
             ليس لديك صلاحية للوصول إلى لوحة الإدارة. يرجى التواصل مع المسؤول.
           </p>
-          <button
-            onClick={() => router.push('/')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            العودة للصفحة الرئيسية
-          </button>
+          <p className="text-sm text-gray-500 mb-4">{debugInfo}</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/admin/debug')}
+              className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors mr-3"
+            >
+              صفحة التشخيص
+            </button>
+            <button
+              onClick={() => router.push('/admin/login')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-3"
+            >
+              تسجيل دخول المدير
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              العودة للصفحة الرئيسية
+            </button>
+          </div>
         </div>
       </div>
     );

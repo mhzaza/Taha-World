@@ -20,7 +20,7 @@ interface CourseFormData {
   duration: string;
   instructor: string;
   thumbnail: string;
-  published: boolean;
+  isPublished: boolean;
   lessons: Lesson[];
 }
 
@@ -45,7 +45,7 @@ const mockCourse: Course = {
   duration: '12 أسبوع',
   instructor: 'طه صباغ',
   thumbnail: '/images/bodybuilding-course.jpg',
-  published: true,
+  isPublished: true,
   lessons: [
     {
       id: '1',
@@ -83,7 +83,7 @@ export default function CourseDetailsPage() {
     duration: '',
     instructor: 'طه صباغ',
     thumbnail: '',
-    published: false,
+    isPublished: false,
     lessons: []
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -110,7 +110,7 @@ export default function CourseDetailsPage() {
           duration: course.duration,
           instructor: course.instructor,
           thumbnail: course.thumbnail,
-          published: course.published,
+          isPublished: course.isPublished,
           lessons: course.lessons
         });
       } catch (error) {

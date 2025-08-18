@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   PhotoIcon,
   DocumentIcon,
@@ -47,6 +48,7 @@ interface FormErrors {
 
 export default function CourseForm({ course, isEditing = false }: CourseFormProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [tagInput, setTagInput] = useState('');
@@ -123,9 +125,17 @@ export default function CourseForm({ course, isEditing = false }: CourseFormProp
       return;
     }
 
+    if (!user) {
+      setErrors({ submit: 'يجب تسجيل الدخول أولاً' });
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Get Firebase token
+      const token = await user.getIdToken();
+      
       const url = isEditing ? `/api/admin/courses/${course?.id}` : '/api/admin/courses';
       const method = isEditing ? 'PUT' : 'POST';
 
@@ -133,6 +143,7 @@ export default function CourseForm({ course, isEditing = false }: CourseFormProp
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...formData,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -24,6 +25,7 @@ type SortField = 'title' | 'price' | 'level' | 'enrollments' | 'revenue' | 'last
 type SortDirection = 'asc' | 'desc';
 
 export default function CoursesPage() {
+  const { user } = useAuth();
   const [courses, setCourses] = useState<CourseWithStats[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<CourseWithStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,16 +38,31 @@ export default function CoursesPage() {
   const [itemsPerPage] = useState(10);
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    if (user) {
+      fetchCourses();
+    }
+  }, [user]);
 
   useEffect(() => {
     filterAndSortCourses();
   }, [courses, searchTerm, sortField, sortDirection, levelFilter, statusFilter]);
 
   const fetchCourses = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/admin/courses');
+      // Get Firebase token
+      const token = await user.getIdToken();
+      
+      const response = await fetch('/api/admin/courses', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
       if (!response.ok) {
         throw new Error('Failed to fetch courses');
       }
@@ -57,8 +74,7 @@ export default function CoursesPage() {
         ...course,
         enrollments: course.enrollmentCount || 0,
         revenue: (course.enrollmentCount || 0) * course.price,
-        lastUpdated: new Date(course.updatedAt),
-        published: course.isPublished
+        lastUpdated: new Date(course.updatedAt)
       }));
       
       setCourses(coursesWithStats);
@@ -88,7 +104,7 @@ export default function CoursesPage() {
     // Apply status filter
     if (statusFilter !== 'all') {
       const isPublished = statusFilter === 'published';
-      filtered = filtered.filter(course => course.published === isPublished);
+      filtered = filtered.filter(course => course.isPublished === isPublished);
     }
 
     // Apply sorting
@@ -138,7 +154,7 @@ export default function CoursesPage() {
         },
         body: JSON.stringify({
           ...course,
-          published: !course.published
+          isPublished: !course.isPublished
         }),
       });
 
@@ -148,7 +164,7 @@ export default function CoursesPage() {
 
       setCourses(prev => prev.map(c => 
         c.id === courseId 
-          ? { ...c, published: !c.published }
+          ? { ...c, isPublished: !c.isPublished }
           : c
       ));
     } catch (error) {
@@ -379,12 +395,12 @@ export default function CoursesPage() {
                     <button
                       onClick={() => toggleCourseStatus(course.id)}
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        course.published
+                        course.isPublished
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                       }`}
                     >
-                      {course.published ? (
+                      {course.isPublished ? (
                         <>
                           <EyeIcon className="h-3 w-3 ml-1" />
                           منشور
