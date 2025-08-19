@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAvailableTimeSlots, createTimeSlot } from '@/lib/services/bookingService';
-import { isAdmin } from '@/lib/admin';
-import { auth } from '@/lib/firebase-admin';
+import { isAdminEmail as isAdmin } from '@/lib/admin';
+import { adminAuth as auth } from '@/lib/firebase-admin';
 
 // GET /api/timeslots?consultationId=xxx - Get available time slots for a consultation
 export async function GET(request: NextRequest) {
@@ -18,10 +18,11 @@ export async function GET(request: NextRequest) {
 
     const timeSlots = await getAvailableTimeSlots(consultationId);
     return NextResponse.json({ success: true, data: timeSlots });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error getting time slots:', error);
+    const message = error instanceof Error ? error.message : 'Failed to get time slots';
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to get time slots' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -101,10 +102,11 @@ export async function POST(request: NextRequest) {
       { success: true, data: result },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating time slot:', error);
+    const message = error instanceof Error ? error.message : 'Failed to create time slot';
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create time slot' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

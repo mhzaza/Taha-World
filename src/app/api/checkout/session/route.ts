@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, formatPriceForStripe } from '@/lib/stripe';
-import { auth } from '@/lib/firebase';
-import { useCourses } from '@/hooks/useCourses';
-import { courses } from '@/data/courses';
+import { dummyCourses as courses } from '@/data/courses';
 
 export async function POST(request: NextRequest) {
   try {

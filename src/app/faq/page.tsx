@@ -247,7 +247,7 @@ const FAQPage = () => {
                 <div className="text-gray-700">دعم متواصل</div>
               </div>
               <div className="bg-purple-50 rounded-lg p-6">
-                <div className="text-3xl font-bold text-purple-600 mb-2">< 2 ساعة</div>
+                <div className="text-3xl font-bold text-purple-600 mb-2">&lt; 2 ساعة</div>
                 <div className="text-gray-700">متوسط وقت الاستجابة</div>
               </div>
               <div className="bg-purple-50 rounded-lg p-6">

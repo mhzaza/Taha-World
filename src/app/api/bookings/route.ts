@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createBooking, getUserBookings } from '@/lib/services/bookingService';
-import { auth } from '@/lib/firebase-admin';
+import { adminAuth as auth } from '@/lib/firebase-admin';
 
 // GET /api/bookings - Get all bookings for the authenticated user
 export async function GET(request: NextRequest) {
@@ -21,10 +21,11 @@ export async function GET(request: NextRequest) {
     // Get bookings for the user
     const bookings = await getUserBookings(userId);
     return NextResponse.json({ success: true, data: bookings });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error getting bookings:', error);
+    const message = error instanceof Error ? error.message : 'Failed to get bookings';
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to get bookings' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -77,10 +78,11 @@ export async function POST(request: NextRequest) {
       { success: true, data: result },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating booking:', error);
+    const message = error instanceof Error ? error.message : 'Failed to create booking';
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create booking' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

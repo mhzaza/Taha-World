@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { paypalClient, PayPalError, formatPayPalAmount } from '@/lib/paypal';
-import { useCourses } from '@/hooks/useCourses';
-import { courses } from '@/data/courses';
+import { dummyCourses as courses } from '@/data/courses';
 
 export async function POST(request: NextRequest) {
   try {

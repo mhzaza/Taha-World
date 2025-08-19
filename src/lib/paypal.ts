@@ -1,4 +1,4 @@
-import { PayPalApi } from '@paypal/paypal-server-sdk';
+import { Client, Environment } from '@paypal/paypal-server-sdk';
 
 // PayPal configuration
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!;
@@ -10,12 +10,12 @@ if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
 }
 
 // Initialize PayPal client
-const paypalClient = new PayPalApi({
+const paypalClient = new Client({
   clientCredentialsAuthCredentials: {
     oAuthClientId: PAYPAL_CLIENT_ID,
     oAuthClientSecret: PAYPAL_CLIENT_SECRET,
   },
-  environment: PAYPAL_MODE === 'production' ? 'production' : 'sandbox',
+  environment: PAYPAL_MODE === 'production' ? Environment.Production : Environment.Sandbox,
 });
 
 export { paypalClient };
@@ -79,7 +79,7 @@ export class PayPalError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = 'PayPalError';
@@ -87,10 +87,7 @@ export class PayPalError extends Error {
 }
 
 // PayPal webhook verification (if needed)
-export const verifyPayPalWebhook = async (
-  headers: Record<string, string>,
-  body: string
-): Promise<boolean> => {
+export const verifyPayPalWebhook = async (): Promise<boolean> => {
   // PayPal webhook verification logic would go here
   // For now, we'll use the capture verification instead
   return true;
