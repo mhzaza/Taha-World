@@ -291,6 +291,12 @@ export async function DELETE(request: NextRequest) {
     // Check admin permissions
     const isAdmin = await isServerAdmin(session.user.email);
     if (!isAdmin) {
+      await logAdminAction({
+        adminEmail: session.user.email,
+        action: 'EXPORT_AUDIT_LOG',
+        target: 'audit_logs',
+        details: { count: logs.length }
+      });
       return NextResponse.json(
         { error: 'غير مصرح بالوصول - صلاحيات المدير مطلوبة' },
         { status: 403 }

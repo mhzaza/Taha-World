@@ -122,7 +122,7 @@ export async function GET(
             adminEmail: session.user.email,
             action: 'VIEW_COURSE_DETAILS',
             target: stringCourse.id,
-            details: { courseTitle: stringCourse.title },
+            details: { courseTitle: (stringCourse as any).title },
             timestamp: new Date()
           });
           
