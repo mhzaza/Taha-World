@@ -1,46 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../../lib/auth';
+import { authOptions } from '@/lib/auth';
+import { adminDb } from '@/lib/firebase-admin';
 import { isServerAdmin, logAdminAction } from '@/lib/admin';
 import { getClientIP } from '@/lib/utils';
+import { Timestamp } from 'firebase-admin/firestore';
 
-// Mock data - replace with actual database calls
-const mockCourses = [
-  {
-    id: 'course-1',
-    title: 'كورس تدريب كمال الأجسام المتقدم',
-    description: 'كورس شامل لتدريب كمال الأجسام للمستوى المتقدم',
-    price: 299,
-    level: 'متقدم',
-    duration: '8 أسابيع',
-    instructor: 'أحمد محمد',
-    thumbnail: '/images/bodybuilding-course.jpg',
-    published: true,
-    createdAt: '2024-01-10T10:30:00Z',
-    updatedAt: '2024-01-15T14:20:00Z',
-    lessons: [
-      { id: 'lesson-1', title: 'مقدمة في كمال الأجسام', duration: '30 دقيقة' },
-      { id: 'lesson-2', title: 'تمارين الصدر والكتفين', duration: '45 دقيقة' }
-    ]
-  },
-  {
-    id: 'course-2',
-    title: 'كورس تدريب المصارعة للمبتدئين',
-    description: 'تعلم أساسيات المصارعة من الصفر',
-    price: 199,
-    level: 'مبتدئ',
-    duration: '6 أسابيع',
-    instructor: 'سارة أحمد',
-    thumbnail: '/images/wrestling-course.jpg',
-    published: true,
-    createdAt: '2024-01-08T15:45:00Z',
-    updatedAt: '2024-01-12T09:15:00Z',
-    lessons: [
-      { id: 'lesson-3', title: 'أساسيات المصارعة', duration: '25 دقيقة' },
-      { id: 'lesson-4', title: 'تقنيات الإمساك', duration: '35 دقيقة' }
-    ]
-  }
-];
+
 
 interface RouteParams {
   params: {
@@ -54,9 +20,12 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
+    console.log('GET request for course ID:', params.id);
+    
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
+      console.log('Authentication failed: No session or email');
       return NextResponse.json(
         { error: 'غير مصرح بالوصول - يجب تسجيل الدخول' },
         { status: 401 }
@@ -66,12 +35,13 @@ export async function GET(
     // Check admin permissions
     const isAdmin = await isServerAdmin(session.user.email);
     if (!isAdmin) {
+      console.log('Authorization failed: User is not admin', session.user.email);
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: `admin_course_${params.id}`,
         details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        timestamp: Timestamp.fromDate(new Date())
       });
       
       return NextResponse.json(
@@ -79,26 +49,132 @@ export async function GET(
         { status: 403 }
       );
     }
+    
+    console.log('Authentication and authorization successful');
 
-    // Find course
-    const course = mockCourses.find(c => c.id === params.id);
-    if (!course) {
+    // Find course in Firestore
+    try {
+      console.log('Fetching course with ID:', params.id);
+      
+      // Try to get all courses first to debug
+      console.log('Listing all courses for debugging:');
+      const allCoursesSnapshot = await adminDb.collection('courses').get();
+      console.log(`Found ${allCoursesSnapshot.size} courses in total`);
+      
+      // Log the first few courses
+      allCoursesSnapshot.docs.slice(0, 5).forEach((doc, index) => {
+        console.log(`Course ${index + 1}:`, { id: doc.id, ...doc.data() });
+      });
+      
+      // Try to get the course directly
+      console.log('Attempting to fetch course directly with ID:', params.id);
+      const courseDoc = await adminDb.collection('courses').doc(params.id).get();
+      
+      if (!courseDoc.exists) {
+        console.log('Course not found with direct ID, trying to query by ID');
+        
+        // Try with numeric ID
+        let numericId = params.id;
+        if (!isNaN(Number(params.id))) {
+          numericId = Number(params.id).toString();
+          console.log('Converting to numeric ID:', numericId);
+        }
+        
+        // If not found, try to query by ID field in case the ID is stored differently
+        console.log('Querying by ID field with value:', numericId);
+        const coursesQuery = await adminDb.collection('courses')
+          .where('id', '==', numericId)
+          .limit(1)
+          .get();
+        
+        console.log('Query results:', coursesQuery.size);
+        
+        if (coursesQuery.empty) {
+          console.log('Course not found in query either, trying with string ID');
+          
+          // Try with string ID
+          const stringQuery = await adminDb.collection('courses')
+            .where('id', '==', params.id.toString())
+            .limit(1)
+            .get();
+            
+          console.log('String query results:', stringQuery.size);
+          
+          if (stringQuery.empty) {
+            console.log('Course not found with any ID format');
+            return NextResponse.json(
+              { error: 'الكورس غير موجود' },
+              { status: 404 }
+            );
+          }
+          
+          // Use the first matching document from string query
+          const stringDoc = stringQuery.docs[0];
+          const stringCourse = {
+            id: stringDoc.id,
+            ...stringDoc.data()
+          };
+          
+          console.log('Course found via string query:', stringCourse.id);
+          
+          // Log admin action
+          await logAdminAction({
+            adminEmail: session.user.email,
+            action: 'VIEW_COURSE_DETAILS',
+            target: stringCourse.id,
+            details: { courseTitle: stringCourse.title },
+            timestamp: new Date()
+          });
+          
+          return NextResponse.json({ course: stringCourse });
+        }
+        
+        // Use the first matching document
+        const queryDoc = coursesQuery.docs[0];
+        const course = {
+          id: queryDoc.id,
+          ...queryDoc.data()
+        };
+        
+        console.log('Course found via numeric query:', course.id);
+        
+        // Log admin action
+        await logAdminAction({
+          adminEmail: session.user.email,
+          action: 'VIEW_COURSE_DETAILS',
+          target: course.id,
+          details: { courseTitle: course.title },
+          timestamp: new Date()
+        });
+        
+        return NextResponse.json({ course });
+      }
+      
+      // If found directly
+      const course = {
+        id: courseDoc.id,
+        ...courseDoc.data()
+      };
+      
+      console.log('Course found directly:', course.id);
+
+      // Log admin action
+      await logAdminAction({
+        adminEmail: session.user.email,
+        action: 'VIEW_COURSE_DETAILS',
+        target: course.id,
+        details: { courseTitle: course.title },
+        timestamp: new Date()
+      });
+
+      return NextResponse.json({ course });
+    } catch (error) {
+      console.error('Error fetching course from Firestore:', error);
       return NextResponse.json(
-        { error: 'الكورس غير موجود' },
-        { status: 404 }
+        { error: 'خطأ في جلب بيانات الكورس' },
+        { status: 500 }
       );
     }
-
-    // Log admin action
-    await logAdminAction({
-      adminEmail: session.user.email,
-      action: 'VIEW_COURSE_DETAILS',
-      target: course.id,
-      details: { courseTitle: course.title },
-      timestamp: new Date()
-    });
-
-    return NextResponse.json({ course });
 
   } catch (error) {
     console.error('Error fetching course:', error);
@@ -141,16 +217,21 @@ export async function PUT(
       );
     }
 
-    // Find course
-    const courseIndex = mockCourses.findIndex(c => c.id === params.id);
-    if (courseIndex === -1) {
+    // Check if course exists in Firestore
+    const courseRef = adminDb.collection('courses').doc(params.id);
+    const courseDoc = await courseRef.get();
+    
+    if (!courseDoc.exists) {
       return NextResponse.json(
         { error: 'الكورس غير موجود' },
         { status: 404 }
       );
     }
 
-    const existingCourse = mockCourses[courseIndex];
+    const existingCourse = {
+      id: courseDoc.id,
+      ...courseDoc.data()
+    };
 
     // Parse request body
     const body = await request.json();
@@ -190,7 +271,6 @@ export async function PUT(
 
     // Update course
     const updatedCourse = {
-      ...existingCourse,
       title: title.trim(),
       description: description.trim(),
       price,
@@ -203,17 +283,23 @@ export async function PUT(
       updatedAt: new Date().toISOString()
     };
 
-    // In a real app, update in database
-    // await db.courses.update(params.id, updatedCourse);
-    mockCourses[courseIndex] = updatedCourse;
+    // Update in Firestore
+    await courseRef.update(updatedCourse);
+
+    // Get the updated document for response
+    const updatedDoc = await courseRef.get();
+    const updatedCourseData = {
+      id: updatedDoc.id,
+      ...updatedDoc.data()
+    };
 
     // Log admin action
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'UPDATE_COURSE',
-      target: updatedCourse.id,
+      target: params.id,
       details: { 
-        courseTitle: updatedCourse.title,
+        courseTitle: updatedCourseData.title,
         changes
       },
       timestamp: new Date()
@@ -221,7 +307,7 @@ export async function PUT(
 
     return NextResponse.json({
       message: 'تم تحديث الكورس بنجاح',
-      course: updatedCourse
+      course: updatedCourseData
     });
 
   } catch (error) {
@@ -265,30 +351,27 @@ export async function DELETE(
       );
     }
 
-    // Find course
-    const courseIndex = mockCourses.findIndex(c => c.id === params.id);
-    if (courseIndex === -1) {
+    // Check if course exists in Firestore
+    const courseRef = adminDb.collection('courses').doc(params.id);
+    const courseDoc = await courseRef.get();
+    
+    if (!courseDoc.exists) {
       return NextResponse.json(
         { error: 'الكورس غير موجود' },
         { status: 404 }
       );
     }
 
-    const courseToDelete = mockCourses[courseIndex];
+    const courseToDelete = {
+      id: courseDoc.id,
+      ...courseDoc.data()
+    };
 
-    // Check if course has enrolled students (in a real app)
-    // const enrolledStudents = await db.enrollments.count({ courseId: params.id });
-    // if (enrolledStudents > 0) {
-    //   return NextResponse.json(
-    //     { error: 'لا يمكن حذف كورس يحتوي على طلاب مسجلين' },
-    //     { status: 400 }
-    //   );
-    // }
+    // Check if course has enrolled students (optional)
+    // You can implement this check if needed
 
-    // Delete course
-    // In a real app, delete from database
-    // await db.courses.delete(params.id);
-    mockCourses.splice(courseIndex, 1);
+    // Delete course from Firestore
+    await courseRef.delete();
 
     // Log admin action
     await logAdminAction({

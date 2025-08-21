@@ -23,43 +23,7 @@ async function getEmailFromRequest(request: NextRequest) {
   }
 }
 
-// Mock data - replace with actual database calls
-const mockCourses = [
-  {
-    id: 'course-1',
-    title: 'كورس تدريب كمال الأجسام المتقدم',
-    description: 'كورس شامل لتدريب كمال الأجسام للمستوى المتقدم',
-    price: 299,
-    level: 'متقدم',
-    duration: '8 أسابيع',
-    instructor: 'أحمد محمد',
-    thumbnail: '/images/bodybuilding-course.jpg',
-    published: true,
-    createdAt: '2024-01-10T10:30:00Z',
-    updatedAt: '2024-01-15T14:20:00Z',
-    lessons: [
-      { id: 'lesson-1', title: 'مقدمة في كمال الأجسام', duration: '30 دقيقة' },
-      { id: 'lesson-2', title: 'تمارين الصدر والكتفين', duration: '45 دقيقة' }
-    ]
-  },
-  {
-    id: 'course-2',
-    title: 'كورس تدريب المصارعة للمبتدئين',
-    description: 'تعلم أساسيات المصارعة من الصفر',
-    price: 199,
-    level: 'مبتدئ',
-    duration: '6 أسابيع',
-    instructor: 'سارة أحمد',
-    thumbnail: '/images/wrestling-course.jpg',
-    published: true,
-    createdAt: '2024-01-08T15:45:00Z',
-    updatedAt: '2024-01-12T09:15:00Z',
-    lessons: [
-      { id: 'lesson-3', title: 'أساسيات المصارعة', duration: '25 دقيقة' },
-      { id: 'lesson-4', title: 'تقنيات الإمساك', duration: '35 دقيقة' }
-    ]
-  }
-];
+
 
 // GET /api/admin/courses - List all courses
 export async function GET(request: NextRequest) {
@@ -101,6 +65,7 @@ export async function GET(request: NextRequest) {
 
     // Get courses from Firestore
      try {
+       console.log('Fetching courses with params:', { search, status, page, pageSize, sortBy, sortOrder });
        let coursesRef = adminDb.collection('courses');
        
        // Apply filters
@@ -109,12 +74,17 @@ export async function GET(request: NextRequest) {
          coursesRef = coursesRef.where('published', '==', isPublished);
        }
        
-       // Apply sorting
-       coursesRef = coursesRef.orderBy(sortBy, sortOrder === 'desc' ? 'desc' : 'asc');
+       // Apply sorting - ensure the field exists in documents
+       const validSortFields = ['createdAt', 'title', 'price', 'updatedAt'];
+       const finalSortBy = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
+       coursesRef = coursesRef.orderBy(finalSortBy, sortOrder === 'desc' ? 'desc' : 'asc');
+       
+       console.log('Executing Firestore query with sort:', { field: finalSortBy, order: sortOrder });
        
        // Get total count for pagination
        const countSnapshot = await coursesRef.get();
        const totalCount = countSnapshot.size;
+       console.log('Total courses found:', totalCount);
        
        // Apply pagination
        const startIndex = (page - 1) * pageSize;
@@ -129,6 +99,7 @@ export async function GET(request: NextRequest) {
        
        // Execute query
        const paginatedSnapshot = await paginatedRef.get();
+       console.log('Paginated courses found:', paginatedSnapshot.size);
        const courses = [];
        
        // Process results
@@ -187,7 +158,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/courses - Create new course
+// POST /api/admin/courses - Create a new course
 export async function POST(request: NextRequest) {
   try {
     // Check authentication (temporary implementation)
@@ -205,7 +176,7 @@ export async function POST(request: NextRequest) {
       await logAdminAction({
         adminEmail: email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: 'admin_courses_create',
+        target: 'create_course',
         details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
         timestamp: new Date()
       });
@@ -217,76 +188,63 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = await request.json();
-    const {
-      title,
-      description,
-      price,
-      level,
-      duration,
-      instructor,
-      thumbnail,
-      lessons,
-      published = false
-    } = body;
-
-    // Validate required fields
-    if (!title || !description || !price || !level || !instructor) {
-      return NextResponse.json(
-        { error: 'الحقول المطلوبة مفقودة' },
-        { status: 400 }
-      );
-    }
-
-    // Validate price
-    if (typeof price !== 'number' || price < 0) {
-      return NextResponse.json(
-        { error: 'السعر يجب أن يكون رقم موجب' },
-        { status: 400 }
-      );
-    }
-
-    // Create new course
-    const newCourse = {
-      id: `course-${Date.now()}`,
-      title: title.trim(),
-      description: description.trim(),
-      price,
-      level,
-      duration,
-      instructor: instructor, // instructor is an object, not a string
-      thumbnail: thumbnail || '',
-      lessons: lessons || [],
-      published,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Save to Firestore database
-    const docRef = await adminDb.collection('courses').add(newCourse);
+    const courseData = await request.json();
     
-    // Log admin action
-    await logAdminAction({
-      adminEmail: email,
-      action: 'CREATE_COURSE',
-      target: newCourse.id,
-      details: { 
-        courseTitle: newCourse.title,
-        price: newCourse.price,
-        published: newCourse.published
-      },
-      timestamp: new Date()
-    });
-
-    return NextResponse.json(
-      { 
+    // Validate course data
+    if (!courseData.title || !courseData.description) {
+      return NextResponse.json(
+        { error: 'بيانات الكورس غير مكتملة' },
+        { status: 400 }
+      );
+    }
+    
+    // Create course in Firestore
+    try {
+      console.log('Creating new course with data:', courseData);
+      
+      // Generate a unique ID for the course
+      const courseId = Date.now().toString();
+      console.log('Generated course ID:', courseId);
+      
+      // Prepare course data
+      const newCourse = {
+        id: courseId,
+        title: courseData.title,
+        description: courseData.description,
+        price: courseData.price || 0,
+        published: courseData.published || false,
+        thumbnail: courseData.thumbnail || '',
+        instructor: courseData.instructor || '',
+        duration: courseData.duration || '',
+        level: courseData.level || 'beginner',
+        category: courseData.category || '',
+        tags: courseData.tags || [],
+        lessons: courseData.lessons || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      console.log('Prepared course data:', newCourse);
+      
+      // Save to Firestore
+      await adminDb.collection('courses').doc(courseId).set(newCourse);
+      console.log('Course saved to Firestore with ID:', courseId);
+      
+      // Log admin action
+      await logAdminAction({
+        adminEmail: email,
+        action: 'CREATE_COURSE',
+        target: courseId,
+        details: { courseTitle: newCourse.title },
+        timestamp: new Date()
+      });
+      
+      return NextResponse.json({ 
         message: 'تم إنشاء الكورس بنجاح',
-        course: newCourse
-      },
-      { status: 201 }
-    );
+        course: newCourse 
+      }, { status: 201 });
 
-  } catch (error) {
+    } catch (error) {
     console.error('Error creating course:', error);
     return NextResponse.json(
       { error: 'خطأ في الخادم الداخلي' },
@@ -295,7 +253,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/admin/courses/[id] - Update a course
+ 
+ // PUT /api/admin/courses/[id] - Update a course
 export async function PUT(request: NextRequest) {
   try {
     // Check authentication (temporary implementation)

@@ -56,7 +56,6 @@ export default function CoursesPage() {
     try {
       // Get Firebase token
       const token = await user.getIdToken();
-      
       const response = await fetch('/api/admin/courses', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -375,8 +374,8 @@ export default function CoursesPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      course.level === 'مبتدئ' ? 'bg-green-100 text-green-800' :
-                      course.level === 'متوسط' ? 'bg-yellow-100 text-yellow-800' :
+                      course.level === 'beginner' ? 'bg-green-100 text-green-800' :
+                      course.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     }`}>
                       {course.level}
@@ -482,7 +481,7 @@ export default function CoursesPage() {
                         onClick={() => setCurrentPage(page)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === page
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                            ? 'z-10 bg-blue-500 border-blue-500 text-blue-600'
                             : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                         }`}
                       >

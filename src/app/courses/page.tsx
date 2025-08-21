@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { Layout, Container } from '@/components/layout';
 import { useCourses } from '@/hooks/useCourses';
 import { CourseFilters } from '@/types';
+import ClientOnly from '@/components/ClientOnly';
 
 const CoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const {
     courses,
     pagination,
-    categories,
     loading,
     searchParams,
     searchCourses,
@@ -47,7 +47,6 @@ const CoursesPage = () => {
 
   return (
     <Layout>
-      {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-green-50 py-16">
         <Container>
           <div className="text-center mb-8">
@@ -58,28 +57,26 @@ const CoursesPage = () => {
               اكتشف مجموعة واسعة من الدورات التدريبية المتخصصة في الرياضة واللياقة البدنية
             </p>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">{stats.totalCourses}</div>
-              <div className="text-gray-600">دورة تدريبية</div>
+          <ClientOnly>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{stats.totalCourses}</div>
+                <div className="text-gray-600">دورة تدريبية</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-600">{stats.totalEnrollments.toLocaleString()}</div>
+                <div className="text-gray-600">متدرب</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-600">{stats.averageRating.toFixed(1)}</div>
+                <div className="text-gray-600">تقييم متوسط</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600">{stats.categories.length}</div>
+                <div className="text-gray-600">فئة</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">{stats.totalEnrollments.toLocaleString()}</div>
-              <div className="text-gray-600">متدرب</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-600">{stats.averageRating.toFixed(1)}</div>
-              <div className="text-gray-600">تقييم متوسط</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">{stats.categories}</div>
-              <div className="text-gray-600">فئة</div>
-            </div>
-          </div>
-
-          {/* Search Bar */}
+          </ClientOnly>
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
             <div className="flex gap-4">
               <input
@@ -100,11 +97,9 @@ const CoursesPage = () => {
         </Container>
       </section>
 
-      {/* Filters and Courses */}
       <section className="py-16">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
                 <div className="flex justify-between items-center mb-6">
@@ -116,109 +111,105 @@ const CoursesPage = () => {
                     مسح الكل
                   </button>
                 </div>
+                <ClientOnly>
+                  <div className="mb-6">
+                    <h4 className="font-medium text-gray-900 mb-3">الفئة</h4>
+                    <div className="space-y-2">
+                      {stats.categories.map((category) => (
+                        <label key={category.id} className="flex items-center">
+                          <input
+                            type="radio"
+                            name="category"
+                            value={category.name}
+                            checked={searchParams.filters?.category === category.name}
+                            onChange={(e) => handleFilterChange('category', e.target.value)}
+                            className="ml-2"
+                          />
+                          <span className="text-gray-700">
+                            {category.name} ({category.courseCount})
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
 
-                {/* Category Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">الفئة</h4>
-                  <div className="space-y-2">
-                    {categories.map((category) => (
-                      <label key={category.id} className="flex items-center">
+                  <div className="mb-6">
+                    <h4 className="font-medium text-gray-900 mb-3">المستوى</h4>
+                    <div className="space-y-2">
+                      {['beginner', 'intermediate', 'advanced'].map((level) => (
+                        <label key={level} className="flex items-center">
+                          <input
+                            type="radio"
+                            name="level"
+                            value={level}
+                            checked={searchParams.filters?.level === level}
+                            onChange={(e) => handleFilterChange('level', e.target.value)}
+                            className="ml-2"
+                          />
+                          <span className="text-gray-700">
+                            {level === 'beginner' ? 'مبتدئ' : 
+                             level === 'intermediate' ? 'متوسط' : 'متقدم'}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="font-medium text-gray-900 mb-3">السعر</h4>
+                    <div className="space-y-2">
+                      <label className="flex items-center">
                         <input
                           type="radio"
-                          name="category"
-                          value={category.name}
-                          checked={searchParams.filters?.category === category.name}
-                          onChange={(e) => handleFilterChange('category', e.target.value)}
+                          name="price"
+                          value="0-50"
+                          onChange={() => handleFilterChange('priceRange', [0, 50])}
                           className="ml-2"
                         />
-                        <span className="text-gray-700">
-                          {category.name} ({category.courseCount})
-                        </span>
+                        <span className="text-gray-700">أقل من 50$</span>
                       </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Level Filter */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">المستوى</h4>
-                  <div className="space-y-2">
-                    {['beginner', 'intermediate', 'advanced'].map((level) => (
-                      <label key={level} className="flex items-center">
+                      <label className="flex items-center">
                         <input
                           type="radio"
-                          name="level"
-                          value={level}
-                          checked={searchParams.filters?.level === level}
-                          onChange={(e) => handleFilterChange('level', e.target.value)}
+                          name="price"
+                          value="50-100"
+                          onChange={() => handleFilterChange('priceRange', [50, 100])}
                           className="ml-2"
                         />
-                        <span className="text-gray-700">
-                          {level === 'beginner' ? 'مبتدئ' : 
-                           level === 'intermediate' ? 'متوسط' : 'متقدم'}
-                        </span>
+                        <span className="text-gray-700">50$ - 100$</span>
                       </label>
-                    ))}
+                      <label className="flex items-center">
+                        <input
+                          type="radio"
+                          name="price"
+                          value="100+"
+                          onChange={() => handleFilterChange('priceRange', [100, 1000])}
+                          className="ml-2"
+                        />
+                        <span className="text-gray-700">أكثر من 100$</span>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {/* Price Range */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">السعر</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="price"
-                        value="0-50"
-                        onChange={() => handleFilterChange('priceRange', [0, 50])}
-                        className="ml-2"
-                      />
-                      <span className="text-gray-700">أقل من 50$</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="price"
-                        value="50-100"
-                        onChange={() => handleFilterChange('priceRange', [50, 100])}
-                        className="ml-2"
-                      />
-                      <span className="text-gray-700">50$ - 100$</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name="price"
-                        value="100+"
-                        onChange={() => handleFilterChange('priceRange', [100, 1000])}
-                        className="ml-2"
-                      />
-                      <span className="text-gray-700">أكثر من 100$</span>
-                    </label>
+                  <div className="mb-6">
+                    <h4 className="font-medium text-gray-900 mb-3">ترتيب حسب</h4>
+                    <select
+                      value={searchParams.filters?.sortBy || ''}
+onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['sortBy'])}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">الافتراضي</option>
+                      <option value="newest">الأحدث</option>
+                      <option value="popular">الأكثر شعبية</option>
+                      <option value="rating">الأعلى تقييماً</option>
+                      <option value="price-low">السعر: من الأقل للأعلى</option>
+                      <option value="price-high">السعر: من الأعلى للأقل</option>
+                    </select>
                   </div>
-                </div>
-
-                {/* Sort By */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-900 mb-3">ترتيب حسب</h4>
-                  <select
-                    value={searchParams.filters?.sortBy || ''}
-                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">الافتراضي</option>
-                    <option value="newest">الأحدث</option>
-                    <option value="popular">الأكثر شعبية</option>
-                    <option value="rating">الأعلى تقييماً</option>
-                    <option value="price-low">السعر: من الأقل للأعلى</option>
-                    <option value="price-high">السعر: من الأعلى للأقل</option>
-                  </select>
-                </div>
+                </ClientOnly>
               </div>
             </div>
 
-            {/* Courses Grid */}
             <div className="lg:col-span-3">
               {loading ? (
                 <div className="text-center py-12">
@@ -320,7 +311,6 @@ const CoursesPage = () => {
                     ))}
                   </div>
 
-                  {/* Pagination */}
                   {pagination.totalPages > 1 && (
                     <div className="flex justify-center mt-12">
                       <div className="flex space-x-2 space-x-reverse">

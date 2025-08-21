@@ -17,6 +17,7 @@ export default function SecurePlayer({ url, title, autoplay = false }: SecurePla
 
   // Extract YouTube video ID from URL
   const getYouTubeVideoId = (url: string): string | null => {
+      if (!url) return null;
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
       /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
@@ -210,7 +211,7 @@ export const PlayerContainer = ({ children }: { children: React.ReactNode }) => 
         WebkitTouchCallout: 'none',
         WebkitUserDrag: 'none',
         KhtmlUserSelect: 'none'
-      }}
+      } as any}
     >
       {children}
     </div>

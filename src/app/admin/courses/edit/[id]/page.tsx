@@ -1,43 +1,75 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'react-hot-toast';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import CourseForm from '@/components/admin/CourseForm';
+import AdminLayout from '@/components/layouts/AdminLayout';
+// Remove unused import since LoadingSkeleton component is not being used
 import { Course } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function EditCoursePage() {
   const params = useParams();
+  const router = useRouter();
   const courseId = params.id as string;
+const { user } = useAuth();
+  
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
+  
+  // Fetch course data
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/admin/courses/${courseId}`);
+        console.log('Fetching course with ID:', courseId, 'Attempt:', retryCount + 1);
+        const token = user ? await user.getIdToken() : null;
+        const response = await fetch(`/api/admin/courses/${courseId}`, {
+          // Add cache: 'no-store' to prevent caching issues
+          cache: 'no-store',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          }
+        });
         
         if (!response.ok) {
-          throw new Error('فشل في تحميل بيانات الكورس');
+          const errorData = await response.json().catch(() => ({}));
+          console.error('API error response:', response.status, errorData);
+          throw new Error(errorData.error || 'فشل في تحميل بيانات الكورس');
         }
         
         const data = await response.json();
+        console.log('Course data received:', data.course ? 'success' : 'empty');
+        
+        if (!data.course) {
+          throw new Error('لم يتم العثور على بيانات الكورس');
+        }
+        
         setCourse(data.course);
       } catch (error) {
         console.error('Error fetching course:', error);
-        setError(error instanceof Error ? error.message : 'حدث خطأ غير متوقع');
+        setError(error instanceof Error ? error.message : 'حدث خطأ أثناء تحميل الكورس');
+        
+        // Retry logic
+        if (retryCount < MAX_RETRIES) {
+          console.log(`Retrying fetch (${retryCount + 1}/${MAX_RETRIES})...`);
+          setRetryCount(prev => prev + 1);
+          return; // Will trigger useEffect again due to retryCount change
+        }
       } finally {
         setLoading(false);
       }
     };
-
-    if (courseId) {
-      fetchCourse();
-    }
-  }, [courseId]);
+    
+    fetchCourse();
+  }, [courseId, retryCount]);
 
   if (loading) {
     return (
