@@ -23,7 +23,8 @@ interface AdminLayoutProps {
 
 const navigation = [
   { name: 'لوحة التحكم', href: '/admin', icon: HomeIcon },
-  { name: 'الكورسات', href: '/admin/courses', icon: AcademicCapIcon },
+  // Remove this line from the navigation array:
+  // { name: 'الكورسات', href: '/admin/courses', icon: AcademicCapIcon },
   { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCartIcon },
   { name: 'المستخدمين', href: '/admin/users', icon: UsersIcon },
   { name: 'التحليلات', href: '/admin/analytics', icon: ChartBarIcon },

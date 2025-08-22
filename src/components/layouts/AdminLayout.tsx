@@ -25,7 +25,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navigation = [
     { name: 'لوحة التحكم', href: '/admin', icon: HomeIcon },
     { name: 'المستخدمين', href: '/admin/users', icon: UsersIcon },
-    { name: 'الدورات', href: '/admin/courses', icon: BookOpenIcon },
+    // Remove this line from the navigation array:
+    // { name: 'الدورات', href: '/admin/courses', icon: BookOpenIcon },
     { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCartIcon },
     { name: 'الاستشارات', href: '/admin/consultations', icon: VideoCameraIcon },
     { name: 'التحليلات', href: '/admin/analytics', icon: ChartBarIcon },

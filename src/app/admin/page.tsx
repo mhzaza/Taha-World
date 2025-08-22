@@ -366,13 +366,9 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
-          <div className="px-6 py-3 bg-gray-50 text-center">
-            <a href="/admin/courses" className="text-sm text-blue-600 hover:text-blue-700">
-              إدارة الكورسات
-            </a>
           </div>
+          {/* previous "Manage Courses" link removed here */}
         </div>
       </div>
-    </div>
   );
 }

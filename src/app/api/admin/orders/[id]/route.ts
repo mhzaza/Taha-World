@@ -39,16 +39,10 @@ const mockOrders = [
   }
 ];
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET /api/admin/orders/[id] - Get specific order
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     // Check authentication
@@ -114,7 +108,7 @@ export async function GET(
 // PUT /api/admin/orders/[id] - Update order
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     // Check authentication
@@ -224,7 +218,7 @@ export async function PUT(
 // DELETE /api/admin/orders/[id] - Delete order (admin only, use with caution)
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: { id: string } }
 ) {
   try {
     // Check authentication
