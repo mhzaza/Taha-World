@@ -370,5 +370,6 @@ export default function AdminDashboard() {
           {/* previous "Manage Courses" link removed here */}
         </div>
       </div>
+    </div>
   );
 }
