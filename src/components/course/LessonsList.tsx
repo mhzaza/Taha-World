@@ -94,13 +94,14 @@ export default function LessonsList({
         <div className="flex-1 overflow-y-auto max-h-[calc(100vh-300px)] lg:max-h-[600px]">
           <div className="p-4 space-y-2">
             {course.lessons.map((lesson, index) => {
+              const lessonKey = lesson.id || `lesson-${lesson.order ?? index}`;
               const isCompleted = completedLessons.includes(lesson.id);
               const isCurrent = lesson.id === currentLessonId;
               const isLocked = !isEnrolled;
               
               return (
                 <div
-                  key={lesson.id}
+                  key={lessonKey}
                   className={`
                     relative rounded-lg border transition-all duration-200 cursor-pointer
                     ${isCurrent 
@@ -147,13 +148,7 @@ export default function LessonsList({
                         <div className="flex items-center gap-2 text-xs text-gray-500">
                           <span>الدرس {index + 1}</span>
                           <span>•</span>
-                          <span>{lesson.duration} دقيقة</span>
-                          {lesson.type && (
-                            <>
-                              <span>•</span>
-                              <span className="capitalize">{lesson.type}</span>
-                            </>
-                          )}
+                          <span>{Math.floor(lesson.duration / 60)} دقيقة</span>
                         </div>
 
                         {/* Lesson Description (if current) */}

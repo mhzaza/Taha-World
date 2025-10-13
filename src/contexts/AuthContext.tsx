@@ -41,6 +41,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -50,6 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const login = async (email: string, password: string): Promise<void> => {
+    if (!auth) throw new Error('خدمة المصادقة غير متاحة');
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error: any) {
@@ -58,6 +64,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const register = async (email: string, password: string, displayName: string): Promise<void> => {
+    if (!auth) throw new Error('خدمة المصادقة غير متاحة');
+    if (!db) throw new Error('قاعدة البيانات غير متاحة');
     try {
       // الخطوة 1: إنشاء المستخدم في خدمة المصادقة
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
@@ -66,13 +74,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await updateProfile(user, { displayName });
 
       // الخطوة 3 (مضافة): إنشاء مستند للمستخدم في قاعدة بيانات Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        displayName,
-        email,
-        createdAt: new Date(),
-        // يمكنك إضافة أي بيانات أخرى هنا
-      });
+      if (db) {
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          displayName,
+          email,
+          createdAt: new Date(),
+          // يمكنك إضافة أي بيانات أخرى هنا
+        });
+      }
 
     } catch (error: any) {
       throw new Error(getErrorMessage(error.code));
@@ -80,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async (): Promise<void> => {
+    if (!auth) throw new Error('خدمة المصادقة غير متاحة');
     try {
       await signOut(auth);
     } catch (error: any) {
@@ -88,6 +99,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const resetPassword = async (email: string): Promise<void> => {
+    if (!auth) throw new Error('خدمة المصادقة غير متاحة');
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error: any) {

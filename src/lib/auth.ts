@@ -18,6 +18,10 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          if (!auth) {
+            throw new Error('Firebase Auth not initialized');
+          }
+          
           // Sign in with Firebase Auth
           const userCredential = await signInWithEmailAndPassword(
             auth,
@@ -28,6 +32,15 @@ export const authOptions: NextAuthOptions = {
           const user = userCredential.user;
 
           // Get additional user data from Firestore
+          if (!db) {
+            return {
+              id: user.uid,
+              email: user.email,
+              name: user.displayName,
+              role: 'user',
+              image: user.photoURL,
+            };
+          }
           const userDocRef = doc(db, 'users', user.uid);
           const userDoc = await getDoc(userDocRef);
           const userData = userDoc.data();
@@ -52,27 +65,29 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = (user as any).role || 'user';
       }
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!;
-        session.user.role = token.role as string;
+      if (token && session.user) {
+        (session.user as any).id = token.sub!;
+        (session.user as any).role = token.role as string;
       }
       return session;
     },
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
 };
 
 // Helper function to check if user is admin
 export async function isAdmin(userId: string): Promise<boolean> {
   try {
+    if (!db) {
+      return false;
+    }
     const userDocRef = doc(db, 'users', userId);
     const userDoc = await getDoc(userDocRef);
     const userData = userDoc.data();
@@ -86,6 +101,9 @@ export async function isAdmin(userId: string): Promise<boolean> {
 // Helper function to check if user is coach
 export async function isCoach(userId: string): Promise<boolean> {
   try {
+    if (!db) {
+      return false;
+    }
     const userDocRef = doc(db, 'users', userId);
     const userDoc = await getDoc(userDocRef);
     const userData = userDoc.data();

@@ -1,11 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { IconType } from 'react-icons';
 
 interface BackButtonProps {
   label: string;
   href: string;
-  icon?: IconType | any;
+  icon?: React.ComponentType<any>;
 }
 
 interface PageHeaderProps {

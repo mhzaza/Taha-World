@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     // Remove this line from the navigation array:
     // { name: 'الدورات', href: '/admin/courses', icon: BookOpenIcon },
     { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCartIcon },
-    { name: 'الاستشارات', href: '/admin/consultations', icon: VideoCameraIcon },
+
     { name: 'التحليلات', href: '/admin/analytics', icon: ChartBarIcon },
   ];
 

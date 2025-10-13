@@ -29,8 +29,6 @@ export default function UserSettings() {
   // Notification settings state
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
-    bookingReminders: true,
-    consultationUpdates: true,
     marketingEmails: false
   });
 
@@ -116,6 +114,7 @@ export default function UserSettings() {
 
     try {
       if (!user) throw new Error('يجب تسجيل الدخول لتحديث الإعدادات');
+      if (!db) throw new Error('قاعدة البيانات غير متاحة');
 
       // Update notification settings in Firestore
       const userRef = doc(db, 'users', user.uid);
@@ -311,43 +310,7 @@ export default function UserSettings() {
                 </div>
               </div>
 
-              <div className="flex items-start">
-                <div className="flex items-center h-5">
-                  <input
-                    id="bookingReminders"
-                    name="bookingReminders"
-                    type="checkbox"
-                    checked={notificationSettings.bookingReminders}
-                    onChange={handleNotificationChange}
-                    className="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded"
-                  />
-                </div>
-                <div className="mr-3 text-sm">
-                  <label htmlFor="bookingReminders" className="font-medium text-gray-700">
-                    تذكيرات الحجوزات
-                  </label>
-                  <p className="text-gray-500">استلام تذكيرات قبل موعد الاستشارات المحجوزة</p>
-                </div>
-              </div>
 
-              <div className="flex items-start">
-                <div className="flex items-center h-5">
-                  <input
-                    id="consultationUpdates"
-                    name="consultationUpdates"
-                    type="checkbox"
-                    checked={notificationSettings.consultationUpdates}
-                    onChange={handleNotificationChange}
-                    className="focus:ring-primary h-4 w-4 text-primary border-gray-300 rounded"
-                  />
-                </div>
-                <div className="mr-3 text-sm">
-                  <label htmlFor="consultationUpdates" className="font-medium text-gray-700">
-                    تحديثات الاستشارات
-                  </label>
-                  <p className="text-gray-500">استلام إشعارات عند تغيير موعد أو تفاصيل الاستشارة</p>
-                </div>
-              </div>
 
               <div className="flex items-start">
                 <div className="flex items-center h-5">

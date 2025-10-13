@@ -3,8 +3,15 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
+// Extend Window interface to include gtag
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
+}
+
 const pageview = (url: string) => {
-  if (typeof window.gtag !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof window.gtag !== 'undefined') {
     window.gtag('config', process.env.NEXT_PUBLIC_GA_ID || '', {
       page_path: url,
     });

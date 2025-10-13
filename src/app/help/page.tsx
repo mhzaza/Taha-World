@@ -169,13 +169,13 @@ const HelpPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {helpCategories.map((category, index) => {
                 const IconComponent = category.icon;
-                const colorClasses = {
+                const colorClasses: Record<string, string> = {
                   blue: 'bg-blue-50 border-blue-200 hover:border-blue-300',
                   green: 'bg-green-50 border-green-200 hover:border-green-300',
                   purple: 'bg-purple-50 border-purple-200 hover:border-purple-300',
                   orange: 'bg-orange-50 border-orange-200 hover:border-orange-300'
                 };
-                const iconClasses = {
+                const iconClasses: Record<string, string> = {
                   blue: 'text-blue-600',
                   green: 'text-green-600',
                   purple: 'text-purple-600',

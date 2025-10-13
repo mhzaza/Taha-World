@@ -9,7 +9,7 @@ import { AcademicCapIcon, PlayIcon, ClockIcon, CheckCircleIcon } from '@heroicon
 import { Course, Progress } from '@/types';
 
 interface UserCourse extends Course {
-  progress?: Progress;
+  progress?: any;
   enrolledAt?: Date;
 }
 
@@ -21,7 +21,7 @@ export default function UserCourses() {
 
   useEffect(() => {
     const fetchUserCourses = async () => {
-      if (!user) return;
+      if (!user || !db) return;
       
       try {
         setLoading(true);
@@ -35,7 +35,7 @@ export default function UserCourses() {
           id: doc.id,
           ...doc.data(),
           enrolledAt: doc.data().enrolledAt?.toDate() || new Date(),
-        }));
+        })) as Array<{id: string; courseId: string; enrolledAt: Date; [key: string]: any}>;
         
         if (enrollments.length === 0) {
           setCourses([]);
@@ -66,7 +66,7 @@ export default function UserCourses() {
         const progressData = progressSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-        })) as Progress[];
+        })) as Array<{id: string; courseId: string; [key: string]: any}>;
         
         // Combine course data with enrollment and progress data
         const userCourses = coursesData.map(course => {
@@ -154,7 +154,7 @@ export default function UserCourses() {
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition duration-300">
                       <Link 
-                        href={`/courses/${course.slug}`}
+                        href={`/courses/${course.id}`}
                         className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition duration-300 flex items-center"
                       >
                         <PlayIcon className="h-5 w-5 ml-2" />
@@ -166,7 +166,7 @@ export default function UserCourses() {
                 
                 <div className="p-4">
                   <h3 className="text-lg font-semibold mb-2">
-                    <Link href={`/courses/${course.slug}`} className="hover:text-primary transition duration-300">
+                    <Link href={`/courses/${course.id}`} className="hover:text-primary transition duration-300">
                       {course.title}
                     </Link>
                   </h3>
@@ -200,8 +200,8 @@ export default function UserCourses() {
                   )}
                   
                   <div className="flex justify-between items-center">
-                    <Link 
-                      href={`/courses/${course.slug}`}
+                    <Link
+                      href={`/courses/${course.id}`}
                       className="text-primary hover:text-primary-dark transition duration-300 text-sm font-medium"
                     >
                       متابعة الدورة

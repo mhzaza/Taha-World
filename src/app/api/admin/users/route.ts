@@ -114,8 +114,7 @@ export async function GET(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_users_list',
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -215,8 +214,7 @@ export async function GET(request: NextRequest) {
       details: { 
         filters: { search, status, emailVerified, provider, page, limit, sortBy, sortOrder },
         resultCount: paginatedUsers.length
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({
@@ -258,8 +256,7 @@ export async function POST(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_users_create',
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -337,8 +334,7 @@ export async function POST(request: NextRequest) {
         userName: newUser.name,
         status: newUser.status,
         provider: newUser.provider
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json(

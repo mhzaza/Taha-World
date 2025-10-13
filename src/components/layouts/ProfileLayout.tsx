@@ -54,11 +54,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
       href: '/profile', 
       icon: UserIcon 
     },
-    { 
-      name: 'حجوزاتي', 
-      href: '/profile/bookings', 
-      icon: CalendarIcon 
-    },
+
     { 
       name: 'دوراتي', 
       href: '/profile/courses', 

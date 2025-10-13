@@ -1,18 +1,26 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCourses } from '@/hooks/useCourses';
-import { Course, Lesson } from '@/types';
-// Removed RequireAuth import - course details should be viewable without login
+import type { Course, Lesson } from '@/types';
 import SecurePlayer from '@/components/course/SecurePlayer';
 import LessonsList from '@/components/course/LessonsList';
 import CourseHeader from '@/components/course/CourseHeader';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
-// import { checkEnrollmentStatus } from '@/lib/checkout'; // Temporarily disabled to prevent Stripe API errors
-// import PayPalButton from '@/components/payment/PayPalButton'; // Temporarily disabled to prevent payment errors
-import { ChevronLeftIcon, ChevronRightIcon, CheckIcon } from '@heroicons/react/24/outline';
+import BuyButtonStub from '@/components/payment/BuyButtonStub';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 
 interface CourseProgress {
   completedLessons: string[];
@@ -20,354 +28,543 @@ interface CourseProgress {
   progressPercentage: number;
 }
 
+const EMPTY_PROGRESS: CourseProgress = {
+  completedLessons: [],
+  currentLesson: '',
+  progressPercentage: 0,
+};
+
+const FIRST_LESSON_INDEX = 0;
+
 export default function CoursePage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const { getCourseById } = useCourses();
-  // Removed Stripe checkout hook
-  
+
   const courseId = params.id as string;
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentLessonId, setCurrentLessonId] = useState<string>('');
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [progress, setProgress] = useState<CourseProgress>({
-    completedLessons: [],
-    currentLesson: '',
-    progressPercentage: 0
-  });
+  const [progress, setProgress] = useState<CourseProgress>(EMPTY_PROGRESS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Removed purchase loading state - handled by PayPal component
+  const [progressLoading, setProgressLoading] = useState(false);
 
-  // Load course data
+  const adminEmailList = useMemo(
+    () =>
+      (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '')
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter(Boolean),
+    []
+  );
+
+  const isAdmin = useMemo(() => {
+    if (!user?.email) return false;
+    return adminEmailList.includes(user.email.toLowerCase());
+  }, [adminEmailList, user?.email]);
+
+  const canAccessCourse = useMemo(() => isEnrolled || isAdmin, [isAdmin, isEnrolled]);
+
   useEffect(() => {
     const loadCourse = async () => {
+      if (!courseId) {
+        setError('معرّف الدورة غير صحيح');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const courseData = getCourseById(courseId);
-        if (!courseData) {
-          router.push('/404');
+        setLoading(true);
+        setError(null);
+
+        console.log(`🚀 Fetching course data for ID: ${courseId}`);
+
+        const response = await fetch(`/api/courses/${courseId}`);
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('لم يتم العثور على الدورة المطلوبة');
+            return;
+          }
+
+          const errorData = await response.json().catch(() => ({}));
+          setError(errorData.error || 'حدث خطأ أثناء تحميل الدورة. يرجى المحاولة مرة أخرى.');
           return;
         }
-        setCourse(courseData);
-        
-        // Set first lesson as current if none selected
-        if (courseData.lessons && courseData.lessons.length > 0) {
-          setCurrentLessonId(courseData.lessons[0].id);
+
+        const courseData: Course = await response.json();
+        console.log(`✅ Successfully loaded course: ${courseData.title}`);
+
+        const normalizedLessons = (courseData.lessons || [])
+          .map((lesson, index) => {
+            const fallbackOrder = lesson.order ?? index + 1;
+            const normalizedId =
+              lesson.id ||
+              (lesson as Record<string, unknown>).lessonId ||
+              `${courseId}-lesson-${fallbackOrder}`;
+
+            return {
+              ...lesson,
+              id: normalizedId,
+              order: fallbackOrder,
+            } as Lesson;
+          })
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        const normalizedCourse: Course = {
+          ...courseData,
+          lessons: normalizedLessons,
+        };
+
+        setCourse(normalizedCourse);
+
+        if (normalizedLessons.length > 0) {
+          setCurrentLessonId(normalizedLessons[FIRST_LESSON_INDEX].id);
         }
-        
-        checkUserEnrollment(courseId);
-      } catch (error) {
-        console.error('Error loading course:', error);
-        router.push('/404');
+      } catch (err) {
+        console.error('⚠️ Error loading course:', err);
+        setError('حدث خطأ غير متوقع أثناء تحميل تفاصيل الدورة.');
       } finally {
         setLoading(false);
       }
     };
 
-    if (courseId) {
-      loadCourse();
-    }
-  }, [courseId, getCourseById, router]);
+    loadCourse();
+  }, [courseId]);
 
-  // Load progress from localStorage
-  const loadProgress = () => {
-    const savedProgress = localStorage.getItem(`course_progress_${courseId}`);
-    if (savedProgress) {
-      const progressData = JSON.parse(savedProgress);
-      setProgress(progressData);
-      if (progressData.currentLesson) {
-        setCurrentLessonId(progressData.currentLesson);
+  const getLocalProgressKey = (uid?: string | null) =>
+    `course_progress_${courseId}_${uid || 'guest'}`;
+
+  const loadProgress = async () => {
+    if (!courseId) return;
+
+    const fallbackToDefaults = () => {
+      const defaultLessonId = course?.lessons?.[FIRST_LESSON_INDEX]?.id || '';
+      const defaultProgress: CourseProgress = {
+        completedLessons: [],
+        currentLesson: defaultLessonId,
+        progressPercentage: 0,
+      };
+
+      setProgress(defaultProgress);
+      if (defaultLessonId) {
+        setCurrentLessonId(defaultLessonId);
       }
-    }
-  };
+    };
 
-  // Save progress to localStorage
-  const saveProgress = (newProgress: CourseProgress) => {
-    localStorage.setItem(`course_progress_${courseId}`, JSON.stringify(newProgress));
-    setProgress(newProgress);
-  };
+    try {
+      setProgressLoading(true);
+      let storedProgress: CourseProgress | null = null;
 
-  // Check enrollment status
-  useEffect(() => {
-    if (course) {
-      if (user) {
-        // In a real app, this would check against user's purchased courses
-        // For now, we'll simulate enrollment for demo purposes
-        const enrolled = Math.random() > 0.5; // 50% chance of being enrolled
-        setIsEnrolled(enrolled);
-        
-        if (enrolled) {
-          loadProgress();
+      if (user?.uid && db) {
+        const progressDocRef = doc(db, 'progress', `${user.uid}_${courseId}`);
+        const progressDoc = await getDoc(progressDocRef);
+
+        if (progressDoc.exists()) {
+          const data = progressDoc.data() as Partial<CourseProgress>;
+          storedProgress = {
+            completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
+            currentLesson: typeof data.currentLesson === 'string' ? data.currentLesson : '',
+            progressPercentage: typeof data.progressPercentage === 'number' ? data.progressPercentage : 0,
+          };
+        }
+      }
+
+      if (!storedProgress && typeof window !== 'undefined') {
+        const raw = localStorage.getItem(getLocalProgressKey(user?.uid));
+        if (raw) {
+          try {
+            storedProgress = JSON.parse(raw);
+          } catch (parseError) {
+            console.warn('Failed to parse local course progress', parseError);
+          }
+        }
+      }
+
+      if (storedProgress) {
+        setProgress(storedProgress);
+        if (storedProgress.currentLesson) {
+          setCurrentLessonId(storedProgress.currentLesson);
+        } else if (course?.lessons?.length) {
+          setCurrentLessonId(course.lessons[FIRST_LESSON_INDEX].id);
         }
       } else {
-        // User not logged in - not enrolled
-        setIsEnrolled(false);
+        fallbackToDefaults();
+      }
+    } catch (err) {
+      console.error('Error loading course progress:', err);
+      fallbackToDefaults();
+    } finally {
+      setProgressLoading(false);
+    }
+  };
+
+  const saveProgress = async (nextProgress: CourseProgress) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(getLocalProgressKey(user?.uid), JSON.stringify(nextProgress));
+      } catch (storageError) {
+        console.warn('Unable to persist course progress locally', storageError);
       }
     }
-  }, [user, course]);
 
-  // Check enrollment status - temporarily mocked to prevent Stripe API errors
-  const checkUserEnrollment = async (courseId: string) => {
-    if (user) {
-      try {
-        // Mock enrollment check - always returns false for demo
-        // TODO: Replace with actual enrollment check when payment system is configured
-        const enrolled = false;
-        setIsEnrolled(enrolled);
-      } catch (error) {
-        console.error('Error checking enrollment:', error);
-        setIsEnrolled(false);
+    setProgress(nextProgress);
+
+    if (!user?.uid || !db) return;
+
+    try {
+      const progressDocRef = doc(db, 'progress', `${user.uid}_${courseId}`);
+      await setDoc(
+        progressDocRef,
+        {
+          userId: user.uid,
+          courseId,
+          completedLessons: nextProgress.completedLessons,
+          currentLesson: nextProgress.currentLesson,
+          progressPercentage: nextProgress.progressPercentage,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch (err) {
+      console.error('Error saving course progress:', err);
+    }
+  };
+
+  const checkUserEnrollment = async () => {
+    if (!user?.uid || !db) {
+      setIsEnrolled(false);
+      return;
+    }
+
+    try {
+      let enrolled = false;
+
+      const enrollmentDocRef = doc(db, 'enrollments', `${user.uid}_${courseId}`);
+      const enrollmentDoc = await getDoc(enrollmentDocRef);
+      if (enrollmentDoc.exists()) {
+        enrolled = true;
+      } else {
+        const enrollmentsRef = collection(db, 'enrollments');
+        const enrollmentQuery = query(
+          enrollmentsRef,
+          where('userId', '==', user.uid),
+          where('courseId', '==', courseId)
+        );
+        const snapshot = await getDocs(enrollmentQuery);
+        enrolled = !snapshot.empty;
       }
-    } else {
+
+      if (!enrolled && isAdmin) {
+        enrolled = true;
+      }
+
+      setIsEnrolled(enrolled);
+
+      if (enrolled) {
+        await loadProgress();
+      } else if (course?.lessons?.length) {
+        const firstLessonId = course.lessons[FIRST_LESSON_INDEX].id;
+        setCurrentLessonId(firstLessonId);
+        setProgress({
+          completedLessons: [],
+          currentLesson: firstLessonId,
+          progressPercentage: 0,
+        });
+      }
+    } catch (err) {
+      console.error('Error checking enrollment:', err);
       setIsEnrolled(false);
     }
   };
 
-  // PayPal handlers temporarily disabled
-  // const handlePayPalSuccess = (details: any) => {
-  //   console.log('PayPal payment successful:', details);
-  //   // Refresh enrollment status
-  //   checkUserEnrollment(courseId);
-  //   // Show success message
-  //   alert('تم الشراء بنجاح! يمكنك الآن الوصول إلى جميع دروس الكورس.');
-  // };
+  useEffect(() => {
+    if (!course || !courseId) return;
 
-  // const handlePayPalError = (error: any) => {
-  //   console.error('PayPal payment error:', error);
-  //   alert('حدث خطأ أثناء عملية الدفع. يرجى المحاولة مرة أخرى.');
-  // };
-
-  // const handlePayPalCancel = () => {
-  //   console.log('PayPal payment cancelled');
-  //   // Optionally show a message or redirect
-  // };
-
-  // Mark lesson as complete
-  const markLessonComplete = (lessonId: string) => {
-    if (!isEnrolled) return;
-    
-    const newCompletedLessons = [...progress.completedLessons];
-    if (!newCompletedLessons.includes(lessonId)) {
-      newCompletedLessons.push(lessonId);
+    if (!user?.uid) {
+      const defaultLessonId = course.lessons?.[FIRST_LESSON_INDEX]?.id || '';
+      setIsEnrolled(false);
+      setProgress(EMPTY_PROGRESS);
+      if (defaultLessonId) {
+        setCurrentLessonId(defaultLessonId);
+      }
+      return;
     }
-    
+
+    void checkUserEnrollment();
+  }, [course, courseId, user?.uid]);
+
+  useEffect(() => {
+    if (!course?.lessons?.length) return;
+    const lessonExists = course.lessons.some((lesson) => lesson.id === currentLessonId);
+    if (!lessonExists) {
+      setCurrentLessonId(course.lessons[FIRST_LESSON_INDEX].id);
+    }
+  }, [course, currentLessonId]);
+
+  useEffect(() => {
+    if (!course?.lessons?.length) return;
+    const total = course.lessons.length;
+    const computedProgress =
+      total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
+
+    if (computedProgress !== progress.progressPercentage) {
+      setProgress((prev) => ({
+        ...prev,
+        progressPercentage: computedProgress,
+      }));
+    }
+  }, [course?.lessons?.length, progress.completedLessons.length, progress.progressPercentage]);
+
+  const markLessonComplete = async (lessonId: string) => {
+    if (!lessonId || (!isEnrolled && !isAdmin)) return;
+
+    const completed = new Set(progress.completedLessons);
+    completed.add(lessonId);
+
     const totalLessons = course?.lessons?.length || 0;
-    const progressPercentage = Math.round((newCompletedLessons.length / totalLessons) * 100);
-    
-    const newProgress = {
-      ...progress,
-      completedLessons: newCompletedLessons,
-      currentLesson: currentLessonId,
-      progressPercentage
-    };
-    
-    saveProgress(newProgress);
+    const progressPercentage =
+      totalLessons > 0 ? Math.round((completed.size / totalLessons) * 100) : 0;
+
+    await saveProgress({
+      completedLessons: Array.from(completed),
+      currentLesson: lessonId,
+      progressPercentage,
+    });
   };
 
-  // Navigate to next/previous lesson
   const navigateLesson = (direction: 'next' | 'prev') => {
-    if (!course?.lessons) return;
-    
-    const currentIndex = course.lessons.findIndex(lesson => lesson.id === currentLessonId);
-    let newIndex;
-    
-    if (direction === 'next') {
-      newIndex = currentIndex + 1;
-    } else {
-      newIndex = currentIndex - 1;
+    if (!course?.lessons?.length) return;
+
+    const currentIndex = course.lessons.findIndex((lesson) => lesson.id === currentLessonId);
+    const offset = direction === 'next' ? 1 : -1;
+    const newIndex = currentIndex + offset;
+
+    if (newIndex < 0 || newIndex >= course.lessons.length) return;
+
+    const nextLessonId = course.lessons[newIndex].id;
+    setCurrentLessonId(nextLessonId);
+
+    if (canAccessCourse) {
+      const totalLessons = course.lessons.length;
+      const progressPercentage =
+        totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
+
+      void saveProgress({
+        ...progress,
+        currentLesson: nextLessonId,
+        progressPercentage,
+      });
     }
-    
-    if (newIndex >= 0 && newIndex < course.lessons.length) {
-      setCurrentLessonId(course.lessons[newIndex].id);
+  };
+
+  const handleLessonSelect = (lessonId: string) => {
+    setCurrentLessonId(lessonId);
+
+    if (canAccessCourse) {
+      const totalLessons = course?.lessons?.length || 0;
+      const progressPercentage =
+        totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
+
+      void saveProgress({
+        ...progress,
+        currentLesson: lessonId,
+        progressPercentage,
+      });
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <SkeletonLoader type="course" />
+        <SkeletonLoader variant="course" />
       </div>
     );
   }
 
-  if (!course) {
+  if (error || !course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">الكورس غير موجود</h1>
-          <p className="text-gray-600 mb-6">عذراً، لم نتمكن من العثور على الكورس المطلوب</p>
-          <button 
-            onClick={() => router.push('/courses')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            العودة إلى الكورسات
-          </button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h1 className="mb-3 text-2xl font-bold text-gray-900">
+            {error || 'حدث خطأ غير متوقع'}
+          </h1>
+          <p className="mb-6 text-gray-600">
+            {error === 'لم يتم العثور على الدورة المطلوبة'
+              ? 'تأكد من صحة الرابط أو اختر دورة مختلفة من قائمة الدورات.'
+              : 'واجهنا مشكلة أثناء تحميل تفاصيل الدورة. يرجى المحاولة من جديد أو الاتصال بالدعم.'}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
+            >
+              إعادة المحاولة
+            </button>
+            <button
+              onClick={() => router.push('/courses')}
+              className="w-full rounded-lg bg-gray-200 px-6 py-3 text-gray-700 transition hover:bg-gray-300"
+            >
+              العودة إلى قائمة الدورات
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const currentLesson = course.lessons?.find(lesson => lesson.id === currentLessonId);
-  const currentLessonIndex = course.lessons?.findIndex(lesson => lesson.id === currentLessonId) || 0;
-  const isLessonCompleted = progress.completedLessons.includes(currentLessonId);
+  const currentLesson =
+    course.lessons?.find((lesson) => lesson.id === currentLessonId) ?? course.lessons?.[0];
+  const currentLessonIndex = Math.max(
+    0,
+    course.lessons?.findIndex((lesson) => lesson.id === currentLessonId) ?? 0
+  );
+  const isLessonCompleted = currentLesson?.id
+    ? progress.completedLessons.includes(currentLesson.id)
+    : false;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Course Header */}
-      <CourseHeader 
-        course={course}
-        isEnrolled={isEnrolled}
-        progress={progress.progressPercentage}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-      />
+      <CourseHeader course={course} isEnrolled={canAccessCourse} progress={progress.progressPercentage} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main Content - Video Player */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              {isEnrolled ? (
-                <div>
-                  {/* Video Player */}
+            <div className="overflow-hidden rounded-lg bg-white shadow-lg">
+              {canAccessCourse ? (
+                <>
                   <div className="relative">
                     {currentLesson ? (
-                      <SecurePlayer
-                        videoUrl={currentLesson.videoUrl}
-                        title={currentLesson.title}
-                        onProgress={() => {}}
-                      />
+                      <SecurePlayer url={currentLesson.videoUrl} title={currentLesson.title} />
                     ) : (
-                      <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                        <p className="text-gray-500">لا يوجد درس محدد</p>
+                      <div className="flex aspect-video items-center justify-center bg-gray-200">
+                        <p className="text-gray-500">لم يتم العثور على محتوى هذا الدرس.</p>
                       </div>
                     )}
                   </div>
 
-                  {/* Lesson Info and Controls */}
                   <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900 mb-2">
-                          {currentLesson?.title}
+                        <h2 className="mb-2 text-xl font-bold text-gray-900">
+                          {currentLesson?.title || 'درس بدون عنوان'}
                         </h2>
                         <p className="text-sm text-gray-600">
-                          الدرس {currentLessonIndex + 1} من {course.lessons?.length}
+                          الدرس {currentLessonIndex + 1} من {course.lessons?.length || 0}
                         </p>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2 space-x-reverse">
                         <button
                           onClick={() => navigateLesson('prev')}
                           disabled={currentLessonIndex === 0}
-                          className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="rounded-lg border border-gray-300 p-2 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <ChevronRightIcon className="w-5 h-5" />
+                          <ChevronRightIcon className="h-5 w-5" />
                         </button>
-                        
                         <button
                           onClick={() => navigateLesson('next')}
-                          disabled={currentLessonIndex === (course.lessons?.length || 0) - 1}
-                          className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={currentLessonIndex >= (course.lessons?.length || 1) - 1}
+                          className="rounded-lg border border-gray-300 p-2 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <ChevronLeftIcon className="w-5 h-5" />
+                          <ChevronLeftIcon className="h-5 w-5" />
                         </button>
                       </div>
 
                       <button
-                        onClick={() => markLessonComplete(currentLessonId)}
-                        disabled={isLessonCompleted}
-                        className={`px-6 py-2 rounded-lg font-medium ${
+                        onClick={() => markLessonComplete(currentLesson?.id || '')}
+                        disabled={!currentLesson?.id || isLessonCompleted || progressLoading || !canAccessCourse}
+                        className={`rounded-lg px-6 py-2 font-medium transition ${
                           isLessonCompleted
-                            ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                            ? 'cursor-not-allowed bg-green-100 text-green-700'
+                            : progressLoading
+                            ? 'cursor-wait bg-blue-200 text-white'
                             : 'bg-blue-600 text-white hover:bg-blue-700'
                         }`}
                       >
-                        {isLessonCompleted ? 'مكتمل' : 'تم الانتهاء'}
+                        {progressLoading
+                          ? 'جارٍ حفظ التقدم...'
+                          : isLessonCompleted
+                          ? 'تم إكمال الدرس'
+                          : 'علّم الدرس كمكتمل'}
                       </button>
                     </div>
 
-                    {/* Lesson Description */}
                     {currentLesson?.description && (
                       <div className="mt-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">وصف الدرس</h3>
-                        <p className="text-gray-700 leading-relaxed">
-                          {currentLesson.description}
-                        </p>
+                        <h3 className="mb-2 text-lg font-semibold text-gray-900">وصف الدرس</h3>
+                        <p className="leading-relaxed text-gray-700">{currentLesson.description}</p>
                       </div>
                     )}
                   </div>
-                </div>
+                </>
               ) : (
-                // Locked State - Not Enrolled or Not Logged In
-                <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-                  <div className="mb-6">
-                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">محتوى مقفل</h3>
-                    {!user ? (
-                      <>
-                        <p className="text-gray-600 mb-6">
-                          يجب تسجيل الدخول أولاً للوصول إلى محتوى الكورس
-                        </p>
-                        <div className="space-y-3">
-                          <button 
-                            onClick={() => router.push('/auth/login')}
-                            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 w-full"
-                          >
-                            تسجيل الدخول
-                          </button>
-                          <button 
-                            onClick={() => router.push('/auth/register')}
-                            className="bg-gray-200 text-gray-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 w-full"
-                          >
-                            إنشاء حساب جديد
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-gray-600 mb-6">
-                          يجب شراء الكورس للوصول إلى الدروس والمحتوى
-                        </p>
-                        <div className="space-y-4">
-                          {/* PayPal button temporarily disabled */}
-                          <div className="text-center">
-                            <span className="text-3xl font-bold text-blue-600">${course.price}</span>
-                            <span className="text-gray-500 text-sm block">دفعة واحدة - وصول مدى الحياة</span>
-                          </div>
-                          <button 
-                            disabled
-                            className="bg-gray-400 text-white px-8 py-3 rounded-lg font-semibold cursor-not-allowed w-full"
-                          >
-                            الدفع غير متاح حالياً
-                          </button>
-                          <p className="text-xs text-gray-500 text-center">
-                            💳 سيتم تفعيل نظام الدفع قريباً
-                          </p>
-                        </div>
-                      </>
-                    )}
+                <div className="p-8 text-center">
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-gray-500">
+                    🔒
                   </div>
+                  <h3 className="mb-3 text-xl font-bold text-gray-900">المحتوى غير متاح</h3>
+
+                  {!user ? (
+                    <>
+                      <p className="mb-6 text-gray-600">
+                        يجب تسجيل الدخول أولاً للوصول إلى محتوى الدورة ومشاهدة الدروس.
+                      </p>
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => router.push('/auth/login')}
+                          className="w-full rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700"
+                        >
+                          تسجيل الدخول
+                        </button>
+                        <button
+                          onClick={() => router.push('/auth/register')}
+                          className="w-full rounded-lg bg-gray-200 px-8 py-3 font-semibold text-gray-700 transition hover:bg-gray-300"
+                        >
+                          إنشاء حساب جديد
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mb-6 text-gray-600">
+                        للوصول إلى محتوى الدورة كاملة يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
+                      </p>
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <span className="text-3xl font-bold text-blue-600">${course.price}</span>
+                          <span className="mt-1 block text-sm text-gray-500">دفعة واحدة – وصول دائم</span>
+                        </div>
+                        <BuyButtonStub
+                          label="اشترِ الآن"
+                          className="w-full px-8 py-3 text-lg font-semibold"
+                        />
+                        <p className="text-center text-xs text-gray-500">
+                          💳 سيتم تفعيل بوابة الدفع قريباً، هذا الزر للتجربة فقط.
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Sidebar - Lessons List */}
-            <div className="lg:col-span-1">
-              <LessonsList
-                course={course}
-                currentLessonId={currentLessonId}
-                onLessonSelect={setCurrentLessonId}
-                completedLessons={progress.completedLessons}
-                isEnrolled={isEnrolled}
-                isOpen={sidebarOpen}
-                onClose={() => setSidebarOpen(false)}
-              />
-            </div>
+          <div className="lg:col-span-1">
+            <LessonsList
+              course={course}
+              currentLessonId={currentLessonId}
+              onLessonSelect={handleLessonSelect}
+              completedLessons={progress.completedLessons}
+              isEnrolled={canAccessCourse}
+              isOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
           </div>
         </div>
       </div>

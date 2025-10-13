@@ -44,6 +44,10 @@ export async function isUserAdmin(user: User | null): Promise<boolean> {
 
     // Then check Firestore for admin flag
     console.log('isUserAdmin: Checking Firestore for user:', user.uid);
+    if (!db) {
+      console.log('isUserAdmin: Database not available');
+      return false;
+    }
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     
     if (userDoc.exists()) {
@@ -81,6 +85,10 @@ export async function isServerAdmin(email: string | null, uid?: string): Promise
   // If UID provided, check user document
   if (uid) {
     try {
+      if (!db) {
+        console.log('Database not available');
+        return false;
+      }
       const userDoc = await getDoc(doc(db, 'users', uid));
       const userData = userDoc.data();
       return userData?.isAdmin === true;
@@ -114,6 +122,10 @@ export async function getUserAdminRole(user: User | null): Promise<AdminRole | n
   if (!isAdmin) return null;
   
   try {
+    if (!db) {
+      console.log('Database not available');
+      return AdminRole.ADMIN;
+    }
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const userData = userDoc.data();
     return userData?.adminRole || AdminRole.ADMIN;
@@ -174,6 +186,11 @@ export interface AuditLogEntry {
  */
 export async function logAdminAction(entry: Omit<AuditLogEntry, 'timestamp'>): Promise<void> {
   try {
+    if (!db) {
+      console.warn('Database not available, skipping audit log');
+      return;
+    }
+    
     const { addDoc, collection } = await import('firebase/firestore');
     
     await addDoc(collection(db, 'audit_logs'), {

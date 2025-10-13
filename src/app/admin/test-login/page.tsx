@@ -21,6 +21,9 @@ export default function TestLoginPage() {
       setResult(prev => prev + `\nفحص البريد الإلكتروني: ${emailCheck ? 'مدير' : 'ليس مدير'}`);
       
       // Try to sign in
+      if (!auth) {
+        throw new Error('Firebase auth is not initialized');
+      }
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       

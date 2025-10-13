@@ -104,8 +104,7 @@ export async function GET(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
         target: 'admin_audit_logs',
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -196,8 +195,7 @@ export async function GET(request: NextRequest) {
       details: { 
         filters: { search, action, adminEmail, dateFrom, dateTo, page, limit, sortOrder },
         resultCount: paginatedLogs.length
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({
@@ -295,7 +293,7 @@ export async function DELETE(request: NextRequest) {
         adminEmail: session.user.email,
         action: 'EXPORT_AUDIT_LOG',
         target: 'audit_logs',
-        details: { count: logs.length }
+        details: { count: mockAuditLogs.length }
       });
       return NextResponse.json(
         { error: 'غير مصرح بالوصول - صلاحيات المدير مطلوبة' },
@@ -337,8 +335,7 @@ export async function DELETE(request: NextRequest) {
         olderThanDays,
         deletedCount: logsToDelete.length,
         cutoffDate: cutoffDate.toISOString()
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({

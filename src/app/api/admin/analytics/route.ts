@@ -50,6 +50,11 @@ async function getAnalyticsData(period: string) {
         startDate.setDate(now.getDate() - 30);
     }
 
+    // Check if db is initialized
+    if (!db) {
+      throw new Error('Firebase db is not initialized');
+    }
+
     // Get users count
     const usersRef = collection(db, 'users');
     const usersSnapshot = await getDocs(usersRef);
@@ -74,22 +79,7 @@ async function getAnalyticsData(period: string) {
       }
     });
 
-    // Get consultations count
-    const consultationsRef = collection(db, 'consultations');
-    const consultationsSnapshot = await getDocs(consultationsRef);
-    const totalConsultations = consultationsSnapshot.size;
 
-    // Get bookings count
-    const bookingsRef = collection(db, 'bookings');
-    const bookingsSnapshot = await getDocs(bookingsRef);
-    let totalBookings = 0;
-    
-    bookingsSnapshot.forEach((doc) => {
-      const booking = doc.data();
-      if (booking.createdAt?.toDate() >= startDate) {
-        totalBookings++;
-      }
-    });
 
     return {
       users: {
@@ -106,14 +96,6 @@ async function getAnalyticsData(period: string) {
       },
       orders: {
         total: totalOrders,
-        growth: 0
-      },
-      consultations: {
-        total: totalConsultations,
-        growth: 0
-      },
-      bookings: {
-        total: totalBookings,
         growth: 0
       },
       period
