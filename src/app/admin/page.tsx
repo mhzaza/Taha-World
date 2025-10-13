@@ -366,7 +366,6 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
-          </div>
           {/* previous "Manage Courses" link removed here */}
         </div>
       </div>

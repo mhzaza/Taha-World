@@ -43,11 +43,19 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
+      if (!auth) {
+        throw new Error('Firebase Auth not initialized');
+      }
+      
       // إنشاء حساب المدير
-      const { user } = await createUserWithEmailAndPassword(auth!, email, password);
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
       // إضافة بيانات المدير إلى Firestore
-      await setDoc(doc(db!, 'users', user.uid), {
+      if (!db) {
+        throw new Error('Firebase Database not initialized');
+      }
+      
+      await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
         email: email,
         displayName: 'مدير النظام',

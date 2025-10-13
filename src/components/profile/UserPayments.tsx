@@ -16,9 +16,7 @@ interface Payment {
   description: string;
   metadata?: {
     orderId?: string;
-    bookingId?: string;
     courseId?: string;
-    consultationId?: string;
   };
   createdAt: Date;
   updatedAt: Date;
@@ -32,7 +30,7 @@ export default function UserPayments() {
 
   useEffect(() => {
     const fetchPayments = async () => {
-      if (!user) return;
+      if (!user || !db) return;
       
       try {
         setLoading(true);
@@ -159,9 +157,7 @@ export default function UserPayments() {
 
   // Helper function to get payment type description
   const getPaymentTypeDescription = (payment: Payment) => {
-    if (payment.metadata?.bookingId) {
-      return 'حجز استشارة';
-    } else if (payment.metadata?.courseId) {
+    if (payment.metadata?.courseId) {
       return 'شراء دورة تدريبية';
     } else {
       return payment.description || 'دفع';

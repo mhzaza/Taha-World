@@ -47,17 +47,12 @@ const mockCourses = [
   { id: 'course-4', title: 'كورس تدريب الملاكمة', price: 249 }
 ];
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 // GET /api/admin/users/[id] - Get specific user
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -74,9 +69,8 @@ export async function GET(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_user_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_user_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -86,7 +80,7 @@ export async function GET(
     }
 
     // Find user
-    const user = mockUsers.find(u => u.id === params.id);
+    const user = mockUsers.find(u => u.id === id);
     if (!user) {
       return NextResponse.json(
         { error: 'المستخدم غير موجود' },
@@ -109,14 +103,13 @@ export async function GET(
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'VIEW_USER_DETAILS',
-      target: params.id,
+      target: id,
       details: { 
         userEmail: user.email,
         userName: user.name,
         status: user.status,
         enrolledCoursesCount: user.enrolledCourses.length
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({ user: userWithCourseDetails });
@@ -133,9 +126,10 @@ export async function GET(
 // PUT /api/admin/users/[id] - Update user
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -151,9 +145,8 @@ export async function PUT(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_user_update_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_user_update_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -163,7 +156,7 @@ export async function PUT(
     }
 
     // Find user
-    const userIndex = mockUsers.findIndex(u => u.id === params.id);
+    const userIndex = mockUsers.findIndex(u => u.id === id);
     if (userIndex === -1) {
       return NextResponse.json(
         { error: 'المستخدم غير موجود' },
@@ -257,7 +250,7 @@ export async function PUT(
     };
 
     // In a real app, update in database
-    // await db.users.update(params.id, updatedUser);
+    // await db.users.update(id, updatedUser);
     mockUsers[userIndex] = updatedUser;
 
     // Log admin action
@@ -281,18 +274,17 @@ export async function PUT(
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'UPDATE_USER',
-      target: params.id,
-      details: actionDetails,
-      timestamp: new Date()
+      target: id,
+      details: actionDetails
     });
 
     // Add course details to response
     const userWithCourseDetails = {
       ...updatedUser,
-      enrolledCoursesDetails: updatedUser.enrolledCourses.map(courseId => 
+      enrolledCoursesDetails: updatedUser.enrolledCourses.map((courseId: string) => 
         mockCourses.find(course => course.id === courseId)
       ).filter(Boolean),
-      completedCoursesDetails: updatedUser.completedCourses.map(courseId => 
+      completedCoursesDetails: updatedUser.completedCourses.map((courseId: string) => 
         mockCourses.find(course => course.id === courseId)
       ).filter(Boolean)
     };
@@ -314,9 +306,10 @@ export async function PUT(
 // DELETE /api/admin/users/[id] - Delete user (admin only, use with caution)
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -332,9 +325,8 @@ export async function DELETE(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_user_delete_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_user_delete_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -344,7 +336,7 @@ export async function DELETE(
     }
 
     // Find user
-    const userIndex = mockUsers.findIndex(u => u.id === params.id);
+    const userIndex = mockUsers.findIndex(u => u.id === id);
     if (userIndex === -1) {
       return NextResponse.json(
         { error: 'المستخدم غير موجود' },
@@ -363,14 +355,14 @@ export async function DELETE(
     }
 
     // In a real app, soft delete or anonymize user data
-    // await db.users.softDelete(params.id);
+    // await db.users.softDelete(id);
     mockUsers.splice(userIndex, 1);
 
     // Log admin action
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'DELETE_USER',
-      target: params.id,
+      target: id,
       details: { 
         userEmail: userToDelete.email,
         userName: userToDelete.name,
@@ -383,8 +375,7 @@ export async function DELETE(
           name: userToDelete.name,
           createdAt: userToDelete.createdAt
         }
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({

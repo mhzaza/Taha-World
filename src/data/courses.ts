@@ -1,318 +1,159 @@
-import { Course, Lesson } from '@/types';
+import { Course } from '@/types';
 
-// Dummy lessons for courses
-const armWrestlingLessons: Lesson[] = [
-  {
-    id: 'lesson-1',
-    courseId: 'course-1',
-    title: 'مقدمة في مصارعة الذراعين',
-    titleEn: 'Introduction to Arm Wrestling',
-    description: 'تعرف على أساسيات مصارعة الذراعين وتاريخها',
-    videoUrl: 'https://www.youtube.com/watch?v=jeoT4IE_R2I&ab_channel=%D8%B7%D9%87%D8%A7%D9%84%D8%B5%D8%A8%D8%A7%D8%BA',
-    duration: 900, // 15 minutes
-    order: 1,
-    isPreview: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-  {
-    id: 'lesson-2',
-    courseId: 'course-1',
-    title: 'تقنيات الإمساك الصحيح',
-    titleEn: 'Proper Grip Techniques',
-    description: 'تعلم الطرق الصحيحة للإمساك في مصارعة الذراعين',
-    videoUrl: 'https://example.com/video2.mp4',
-    duration: 1200, // 20 minutes
-    order: 2,
-    isPreview: false,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-  {
-    id: 'lesson-3',
-    courseId: 'course-1',
-    title: 'تمارين تقوية الذراعين',
-    titleEn: 'Arm Strengthening Exercises',
-    description: 'تمارين متخصصة لتقوية عضلات الذراعين',
-    videoUrl: 'y6120QOlsfU',
-    duration: 1800, // 30 minutes
-    order: 3,
-    isPreview: false,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-  {
-    id: 'lesson-4',
-    courseId: 'course-1',
-    title: 'استراتيجيات المنافسة',
-    titleEn: 'Competition Strategies',
-    description: 'تعلم الاستراتيجيات المتقدمة للفوز في المنافسات',
-    videoUrl: 'kJQP7kiw5Fk',
-    duration: 1500, // 25 minutes
-    order: 4,
-    isPreview: false,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-];
-
-const boxingLessons: Lesson[] = [
-  {
-    id: 'lesson-5',
-    courseId: 'course-2',
-    title: 'أساسيات الملاكمة',
-    titleEn: 'Boxing Fundamentals',
-    description: 'تعلم الأساسيات الأولى في رياضة الملاكمة',
-    videoUrl: 'ScXvuavqhzo',
-    duration: 1200,
-    order: 1,
-    isPreview: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-  {
-    id: 'lesson-6',
-    courseId: 'course-2',
-    title: 'تقنيات اللكم',
-    titleEn: 'Punching Techniques',
-    description: 'تعلم تقنيات اللكم المختلفة والصحيحة',
-    videoUrl: 'IODxDxX7oi4',
-    duration: 1800,
-    order: 2,
-    isPreview: false,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-];
-
-const fitnessLessons: Lesson[] = [
-  {
-    id: 'lesson-7',
-    courseId: 'course-3',
-    title: 'برنامج اللياقة الشامل',
-    titleEn: 'Complete Fitness Program',
-    description: 'برنامج متكامل لتحسين اللياقة البدنية',
-    videoUrl: 'xqvCmoLULNY',
-    duration: 2400,
-    order: 1,
-    isPreview: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-  },
-];
-
-// Dummy courses data
 export const dummyCourses: Course[] = [
   {
-    id: 'course-1',
-    title: 'كورس مصارعة الذراعين',
-    titleEn: 'Arm Wrestling Course',
-    description: 'تعلم فن مصارعة الذراعين من الصفر حتى الاحتراف. كورس شامل يغطي جميع التقنيات والاستراتيجيات المطلوبة للفوز في المنافسات.',
-    descriptionEn: 'Learn the art of arm wrestling from beginner to professional level. A comprehensive course covering all techniques and strategies needed to win competitions.',
+    id: '1',
+    title: 'كورس مصارعة الذراعين للمبتدئين',
+    description: 'تعلم أساسيات مصارعة الذراعين من الصفر حتى الاحتراف',
     instructor: {
       id: 'instructor-1',
-      name: 'طه صباغ',
-      avatar: '/images/taha-sabag.jpg',
-      bio: 'مدرب رياضي معتمد مع خبرة 15 عام في مصارعة الذراعين',
-      credentials: ['مدرب معتمد', 'بطل عربي سابق', 'خبرة 15 عام'],
+      name: 'طه الصباغ',
+      avatar: '/images/instructors/taha-sabag.jpg',
+      bio: 'مدرب محترف في مصارعة الذراعين والقوة البدنية',
+      credentials: ['مدرب معتمد', 'بطل عالمي سابق']
     },
-    thumbnail: '/images/arm-wrestling-course.jpg',
-    price: 50,
-    originalPrice: 75,
+    duration: 120,
+    price: 99,
     currency: 'USD',
-    duration: 300, // 5 hours total
+    category: 'arm-wrestling',
     level: 'beginner',
-    category: 'قتال',
-    tags: ['مصارعة الذراعين', 'قوة', 'تقنية', 'منافسة'],
-    lessons: armWrestlingLessons,
-    requirements: ['لا توجد متطلبات مسبقة', 'الرغبة في التعلم'],
-    whatYouWillLearn: [
-      'أساسيات مصارعة الذراعين',
-      'تقنيات الإمساك الصحيح',
-      'تمارين تقوية متخصصة',
-      'استراتيجيات المنافسة',
-      'تجنب الإصابات',
-    ],
+    enrollmentCount: 150,
     rating: {
       average: 4.8,
-      count: 156,
+      count: 45
     },
-    enrollmentCount: 1250,
+    thumbnail: '/images/courses/arm-wrestling-basics.jpg',
+    tags: ['مصارعة الذراعين', 'مبتدئين', 'قوة', 'تدريب'],
+    whatYouWillLearn: [
+      'أساسيات مصارعة الذراعين',
+      'الوضعية الصحيحة',
+      'تقنيات الفوز',
+      'تمارين القوة المناسبة'
+    ],
     isPublished: true,
     isFeatured: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-15'),
     language: 'ar',
-    subtitles: ['ar', 'en'],
-    previewVideo: 'https://example.com/preview1.mp4',
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15'),
+    lessons: [
+      {
+        id: '1-1',
+        courseId: '1',
+        title: 'مقدمة في مصارعة الذراعين',
+        duration: 900, // 15 minutes in seconds
+        videoUrl: '/videos/lesson-1-1.mp4',
+        order: 1,
+        isPreview: true,
+        createdAt: new Date('2024-01-15'),
+        updatedAt: new Date('2024-01-15')
+      },
+      {
+        id: '1-2',
+        courseId: '1',
+        title: 'الوضعية الصحيحة',
+        duration: 1200, // 20 minutes in seconds
+        videoUrl: '/videos/lesson-1-2.mp4',
+        order: 2,
+        isPreview: false,
+        createdAt: new Date('2024-01-15'),
+        updatedAt: new Date('2024-01-15')
+      }
+    ]
   },
   {
-    id: 'course-2',
-    title: 'أساسيات الملاكمة',
-    titleEn: 'Boxing Fundamentals',
-    description: 'تعلم أساسيات الملاكمة مع المدرب طه صباغ. كورس مناسب للمبتدئين يغطي جميع التقنيات الأساسية.',
-    descriptionEn: 'Learn boxing fundamentals with trainer Taha Sabag. A beginner-friendly course covering all basic techniques.',
+    id: '2',
+    title: 'تدريب القوة الأساسي',
+    description: 'برنامج تدريبي شامل لبناء القوة الأساسية',
     instructor: {
       id: 'instructor-1',
-      name: 'طه صباغ',
-      avatar: '/images/taha-sabag.jpg',
-      bio: 'مدرب ملاكمة محترف مع خبرة 12 عام',
-      credentials: ['مدرب ملاكمة معتمد', 'خبرة 12 عام'],
+      name: 'طه الصباغ',
+      avatar: '/images/instructors/taha-sabag.jpg',
+      bio: 'مدرب محترف في مصارعة الذراعين والقوة البدنية',
+      credentials: ['مدرب معتمد', 'بطل عالمي سابق']
     },
-    thumbnail: '/images/boxing-course.jpg',
-    price: 75,
-    originalPrice: 100,
+    duration: 180,
+    price: 149,
     currency: 'USD',
-    duration: 480, // 8 hours
-    level: 'beginner',
-    category: 'قتال',
-    tags: ['ملاكمة', 'لياقة', 'دفاع عن النفس'],
-    lessons: boxingLessons,
-    requirements: ['لا توجد متطلبات مسبقة'],
-    whatYouWillLearn: [
-      'وقفة الملاكمة الصحيحة',
-      'تقنيات اللكم الأساسية',
-      'الدفاع والمراوغة',
-      'تمارين اللياقة للملاكمة',
-    ],
+    category: 'strength-training',
+    level: 'intermediate',
+    enrollmentCount: 89,
     rating: {
       average: 4.6,
-      count: 89,
+      count: 32
     },
-    enrollmentCount: 567,
+    thumbnail: '/images/courses/strength-training.jpg',
+    tags: ['تدريب القوة', 'متوسط', 'لياقة', 'عضلات'],
+    whatYouWillLearn: [
+      'أساسيات تدريب القوة',
+      'تمارين مركبة',
+      'برمجة التدريب',
+      'التغذية الرياضية'
+    ],
     isPublished: true,
     isFeatured: false,
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-20'),
     language: 'ar',
-    subtitles: ['ar'],
-    previewVideo: 'https://example.com/preview2.mp4',
+    createdAt: new Date('2024-02-01'),
+    updatedAt: new Date('2024-02-01'),
+    lessons: [
+      {
+        id: '2-1',
+        courseId: '2',
+        title: 'أساسيات تدريب القوة',
+        duration: 1500, // 25 minutes in seconds
+        videoUrl: '/videos/lesson-2-1.mp4',
+        order: 1,
+        isPreview: true,
+        createdAt: new Date('2024-02-01'),
+        updatedAt: new Date('2024-02-01')
+      }
+    ]
   },
   {
-    id: 'course-3',
-    title: 'اللياقة البدنية الشاملة',
-    titleEn: 'Complete Physical Fitness',
-    description: 'برنامج لياقة بدنية شامل مصمم خصيصاً للرياضيين العرب. يشمل تمارين القوة والتحمل والمرونة.',
-    descriptionEn: 'A comprehensive fitness program designed specifically for Arab athletes. Includes strength, endurance, and flexibility exercises.',
+    id: '3',
+    title: 'فنون القتال المختلطة',
+    description: 'تعلم تقنيات فنون القتال المختلطة',
     instructor: {
       id: 'instructor-1',
-      name: 'طه صباغ',
-      avatar: '/images/taha-sabag.jpg',
-      bio: 'مدرب لياقة بدنية معتمد',
-      credentials: ['مدرب لياقة معتمد', 'أخصائي تغذية رياضية'],
+      name: 'طه الصباغ',
+      avatar: '/images/instructors/taha-sabag.jpg',
+      bio: 'مدرب محترف في مصارعة الذراعين والقوة البدنية',
+      credentials: ['مدرب معتمد', 'بطل عالمي سابق']
     },
-    thumbnail: '/images/fitness-course.jpg',
-    price: 60,
+    duration: 240,
+    price: 199,
     currency: 'USD',
-    duration: 600, // 10 hours
-    level: 'intermediate',
-    category: 'لياقة بدنية',
-    tags: ['لياقة', 'قوة', 'تحمل', 'مرونة'],
-    lessons: fitnessLessons,
-    requirements: ['مستوى لياقة أساسي'],
-    whatYouWillLearn: [
-      'تمارين القوة الأساسية',
-      'تمارين التحمل',
-      'تمارين المرونة',
-      'التغذية الرياضية',
-      'برنامج تدريبي متكامل',
-    ],
-    rating: {
-      average: 4.7,
-      count: 234,
-    },
-    enrollmentCount: 890,
-    isPublished: true,
-    isFeatured: true,
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-25'),
-    language: 'ar',
-    subtitles: ['ar', 'en'],
-    previewVideo: 'https://example.com/preview3.mp4',
-  },
-  {
-    id: 'course-4',
-    title: 'تدريب المقاومة المتقدم',
-    titleEn: 'Advanced Resistance Training',
-    description: 'كورس متقدم في تدريب المقاومة للرياضيين المحترفين. يشمل تقنيات متقدمة وبرامج تدريبية متخصصة.',
-    instructor: {
-      id: 'instructor-1',
-      name: 'طه صباغ',
-      avatar: '/images/taha-sabag.jpg',
-      bio: 'خبير تدريب المقاومة',
-    },
-    thumbnail: '/images/resistance-course.jpg',
-    price: 90,
-    currency: 'USD',
-    duration: 720, // 12 hours
+    category: 'mma',
     level: 'advanced',
-    category: 'تدريب متقدم',
-    tags: ['مقاومة', 'قوة', 'احتراف'],
-    lessons: [],
-    requirements: ['خبرة سابقة في التدريب', 'مستوى لياقة عالي'],
-    whatYouWillLearn: [
-      'تقنيات المقاومة المتقدمة',
-      'برمجة التدريب',
-      'تجنب الإصابات',
-      'التعافي والاستشفاء',
-    ],
+    enrollmentCount: 67,
     rating: {
       average: 4.9,
-      count: 67,
+      count: 28
     },
-    enrollmentCount: 234,
-    isPublished: true,
-    isFeatured: false,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-30'),
-    language: 'ar',
-  },
-  {
-    id: 'course-5',
-    title: 'التغذية الرياضية',
-    titleEn: 'Sports Nutrition',
-    description: 'دليل شامل للتغذية الرياضية المناسبة للرياضيين العرب. يشمل خطط غذائية ونصائح عملية.',
-    instructor: {
-      id: 'instructor-2',
-      name: 'د. سارة أحمد',
-      avatar: '/images/sara-ahmed.jpg',
-      bio: 'أخصائية تغذية رياضية معتمدة',
-    },
-    thumbnail: '/images/nutrition-course.jpg',
-    price: 45,
-    currency: 'USD',
-    duration: 360, // 6 hours
-    level: 'beginner',
-    category: 'تغذية',
-    tags: ['تغذية', 'صحة', 'أداء'],
-    lessons: [],
-    requirements: ['لا توجد متطلبات'],
+    thumbnail: '/images/courses/mma-basics.jpg',
+    tags: ['فنون قتالية', 'متقدم', 'قتال', 'دفاع عن النفس'],
     whatYouWillLearn: [
-      'أساسيات التغذية الرياضية',
-      'التوقيت المناسب للوجبات',
-      'المكملات الغذائية',
-      'خطط غذائية متخصصة',
+      'تقنيات الضرب',
+      'تقنيات المصارعة',
+      'الدفاع عن النفس',
+      'استراتيجيات القتال'
     ],
-    rating: {
-      average: 4.5,
-      count: 123,
-    },
-    enrollmentCount: 456,
     isPublished: true,
-    isFeatured: false,
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-02-01'),
+    isFeatured: true,
     language: 'ar',
-  },
-];
-
-// Featured courses (subset of all courses)
-export const featuredCourses = dummyCourses.filter(course => course.isFeatured);
-
-// Categories
-export const categories = [
-  { id: 'fighting', name: 'قتال', nameEn: 'Fighting', courseCount: 2 },
-  { id: 'fitness', name: 'لياقة بدنية', nameEn: 'Fitness', courseCount: 1 },
-  { id: 'advanced', name: 'تدريب متقدم', nameEn: 'Advanced Training', courseCount: 1 },
-  { id: 'nutrition', name: 'تغذية', nameEn: 'Nutrition', courseCount: 1 },
+    createdAt: new Date('2024-03-01'),
+    updatedAt: new Date('2024-03-01'),
+    lessons: [
+      {
+        id: '3-1',
+        courseId: '3',
+        title: 'مقدمة في فنون القتال المختلطة',
+        duration: 1800, // 30 minutes in seconds
+        videoUrl: '/videos/lesson-3-1.mp4',
+        order: 1,
+        isPreview: true,
+        createdAt: new Date('2024-03-01'),
+        updatedAt: new Date('2024-03-01')
+      }
+    ]
+  }
 ];

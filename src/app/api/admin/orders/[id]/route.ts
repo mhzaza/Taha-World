@@ -42,9 +42,11 @@ const mockOrders = [
 // GET /api/admin/orders/[id] - Get specific order
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -60,9 +62,8 @@ export async function GET(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_order_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_order_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -72,7 +73,7 @@ export async function GET(
     }
 
     // Find order
-    const order = mockOrders.find(o => o.id === params.id);
+    const order = mockOrders.find(o => o.id === id);
     if (!order) {
       return NextResponse.json(
         { error: 'الطلب غير موجود' },
@@ -84,14 +85,13 @@ export async function GET(
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'VIEW_ORDER_DETAILS',
-      target: params.id,
+      target: id,
       details: { 
         userEmail: order.userEmail,
         courseTitle: order.courseTitle,
         amount: order.amount,
         status: order.status
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({ order });
@@ -108,9 +108,10 @@ export async function GET(
 // PUT /api/admin/orders/[id] - Update order
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -126,9 +127,8 @@ export async function PUT(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_order_update_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_order_update_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -138,7 +138,7 @@ export async function PUT(
     }
 
     // Find order
-    const orderIndex = mockOrders.findIndex(o => o.id === params.id);
+    const orderIndex = mockOrders.findIndex(o => o.id === id);
     if (orderIndex === -1) {
       return NextResponse.json(
         { error: 'الطلب غير موجود' },
@@ -182,14 +182,14 @@ export async function PUT(
     };
 
     // In a real app, update in database
-    // await db.orders.update(params.id, updatedOrder);
+    // await db.orders.update(id, updatedOrder);
     mockOrders[orderIndex] = updatedOrder;
 
     // Log admin action
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'UPDATE_ORDER',
-      target: params.id,
+      target: id,
       details: { 
         oldStatus,
         newStatus: status,
@@ -197,8 +197,7 @@ export async function PUT(
         courseTitle: updatedOrder.courseTitle,
         amount: updatedOrder.amount,
         changes: body
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({
@@ -218,9 +217,10 @@ export async function PUT(
 // DELETE /api/admin/orders/[id] - Delete order (admin only, use with caution)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -236,9 +236,8 @@ export async function DELETE(
       await logAdminAction({
         adminEmail: session.user.email,
         action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
-        target: `admin_order_delete_${params.id}`,
-        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') },
-        timestamp: new Date()
+        target: `admin_order_delete_${id}`,
+        details: { ip: getClientIP(request), userAgent: request.headers.get('user-agent') }
       });
       
       return NextResponse.json(
@@ -248,7 +247,7 @@ export async function DELETE(
     }
 
     // Find order
-    const orderIndex = mockOrders.findIndex(o => o.id === params.id);
+    const orderIndex = mockOrders.findIndex(o => o.id === id);
     if (orderIndex === -1) {
       return NextResponse.json(
         { error: 'الطلب غير موجود' },
@@ -267,22 +266,21 @@ export async function DELETE(
     }
 
     // In a real app, soft delete or move to archive
-    // await db.orders.softDelete(params.id);
+    // await db.orders.softDelete(id);
     mockOrders.splice(orderIndex, 1);
 
     // Log admin action
     await logAdminAction({
       adminEmail: session.user.email,
       action: 'DELETE_ORDER',
-      target: params.id,
+      target: id,
       details: { 
         userEmail: orderToDelete.userEmail,
         courseTitle: orderToDelete.courseTitle,
         amount: orderToDelete.amount,
         status: orderToDelete.status,
         deletedOrder: orderToDelete
-      },
-      timestamp: new Date()
+      }
     });
 
     return NextResponse.json({

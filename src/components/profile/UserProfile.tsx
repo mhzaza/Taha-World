@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { UserIcon, PhoneIcon, MapPinIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { UserIcon, PhoneIcon, MapPinIcon, CalendarIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 export default function UserProfile() {
   const { user } = useAuth();
@@ -63,6 +63,7 @@ export default function UserProfile() {
 
     try {
       if (!user) throw new Error('يجب تسجيل الدخول لتحديث الملف الشخصي');
+      if (!db) throw new Error('قاعدة البيانات غير متاحة');
 
       // Update display name in Firebase Auth
       if (profileForm.displayName !== user.displayName) {
@@ -72,15 +73,17 @@ export default function UserProfile() {
       }
 
       // Update additional user data in Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        displayName: profileForm.displayName,
-        phone: profileForm.phone,
-        location: profileForm.location,
-        birthDate: profileForm.birthDate,
-        bio: profileForm.bio,
-        updatedAt: new Date()
-      });
+      if (db) {
+        const userRef = doc(db, 'users', user.uid);
+        await updateDoc(userRef, {
+          displayName: profileForm.displayName,
+          phone: profileForm.phone,
+          location: profileForm.location,
+          birthDate: profileForm.birthDate,
+          bio: profileForm.bio,
+          updatedAt: new Date()
+        });
+      }
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
