@@ -36,6 +36,35 @@ const EMPTY_PROGRESS: CourseProgress = {
 
 const FIRST_LESSON_INDEX = 0;
 
+const AR = {
+  invalidCourseId: '\u0645\u0639\u0631\u0641 \u0627\u0644\u062f\u0648\u0631\u0629 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d.',
+  courseNotFound: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0627\u0644\u062f\u0648\u0631\u0629 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629.',
+  loadError: '\u062d\u062f\u062b \u062e\u0637\u0623 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.',
+  unexpectedLoadError: '\u062d\u062f\u062b \u062e\u0637\u0623 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629.',
+  genericErrorTitle: '\u062d\u062f\u062b \u062e\u0637\u0623 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639',
+  notFoundHint:
+    '\u062a\u0623\u0643\u062f \u0645\u0646 \u0635\u062d\u0629 \u0627\u0644\u0631\u0627\u0628\u0637 \u0623\u0648 \u0627\u062e\u062a\u0631 \u062f\u0648\u0631\u0629 \u0645\u062e\u062a\u0644\u0641\u0629 \u0645\u0646 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062f\u0648\u0631\u0627\u062a.',
+  genericErrorHint:
+    '\u0648\u0627\u062c\u0647\u0646\u0627 \u0645\u0634\u0643\u0644\u0629 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0646 \u062c\u062f\u064a\u062f \u0623\u0648 \u0627\u0644\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062f\u0639\u0645 \u0627\u0644\u0641\u0646\u064a.',
+  retry: '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629',
+  backToCourses: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0635\u0641\u062d\u0629 \u0627\u0644\u062f\u0648\u0631\u0627\u062a',
+  untitledLesson: '\u062f\u0631\u0633 \u0628\u062f\u0648\u0646 \u0639\u0646\u0648\u0627\u0646',
+  lessonPlaceholder: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u062d\u062a\u0648\u0649 \u0647\u0630\u0627 \u0627\u0644\u062f\u0631\u0633.',
+  lockedTitle: '\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',
+  loginPrompt:
+    '\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0627\u0644\u062f\u0631\u0648\u0633 \u0648\u0645\u062a\u0627\u0628\u0639\u0629 \u062a\u0642\u062f\u0645\u0643 \u0641\u064a \u0627\u0644\u062f\u0648\u0631\u0629.',
+  loginAction: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
+  registerAction: '\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628 \u062c\u062f\u064a\u062f',
+  purchasePrompt:
+    '\u0644\u0644\u062d\u0635\u0648\u0644 \u0639\u0644\u0649 \u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062f\u0648\u0631\u0629 \u0627\u0644\u0643\u0627\u0645\u0644\u060c \u064a\u0631\u062c\u0649 \u0634\u0631\u0627\u0621 \u0627\u0644\u062f\u0648\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0623\u0643\u062f \u0645\u0646 \u062a\u0641\u0639\u064a\u0644 \u0627\u0634\u062a\u0631\u0627\u0643\u0643.',
+  oneTimePayment: '\u062f\u0641\u0639\u0629 \u0648\u0627\u062d\u062f\u0629 - \u0648\u0635\u0648\u0644 \u062f\u0627\u0626\u0645',
+  buyNow: '\u0627\u0634\u062a\u0631\u0650 \u0627\u0644\u0622\u0646',
+  paymentNote:
+    '\u0645\u0644\u0627\u062d\u0638\u0629: \u0628\u0648\u0627\u0628\u0629 \u0627\u0644\u062f\u0641\u0639 \u0627\u0644\u062d\u0642\u064a\u0642\u064a\u0629 \u063a\u064a\u0631 \u0645\u0641\u0639\u0644\u0629 \u0628\u0639\u062f\u060c \u0647\u0630\u0627 \u0627\u0644\u0632\u0631 \u0644\u0644\u0639\u0631\u0636 \u0641\u0642\u0637.',
+  savingProgress: '\u062c\u0627\u0631\u064d \u062d\u0641\u0638 \u0627\u0644\u062a\u0642\u062f\u0645...',
+  lessonCompleted: '\u062a\u0645 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u062f\u0631\u0633',
+  markComplete: '\u0639\u0644\u0651\u0645 \u0627\u0644\u062f\u0631\u0633 \u0643\u0645\u0643\u062a\u0645\u0644',
+};
 export default function CoursePage() {
   const params = useParams();
   const router = useRouter();
@@ -65,12 +94,12 @@ export default function CoursePage() {
     return adminEmailList.includes(user.email.toLowerCase());
   }, [adminEmailList, user?.email]);
 
-  const canAccessCourse = useMemo(() => isEnrolled || isAdmin, [isAdmin, isEnrolled]);
+  const canAccessCourse = useMemo(() => isEnrolled || isAdmin, [isEnrolled, isAdmin]);
 
   useEffect(() => {
     const loadCourse = async () => {
       if (!courseId) {
-        setError('معرّف الدورة غير صحيح');
+        setError(AR.invalidCourseId);
         setLoading(false);
         return;
       }
@@ -79,23 +108,20 @@ export default function CoursePage() {
         setLoading(true);
         setError(null);
 
-        console.log(`🚀 Fetching course data for ID: ${courseId}`);
-
         const response = await fetch(`/api/courses/${courseId}`);
 
         if (!response.ok) {
           if (response.status === 404) {
-            setError('لم يتم العثور على الدورة المطلوبة');
+            setError(AR.courseNotFound);
             return;
           }
 
-          const errorData = await response.json().catch(() => ({}));
-          setError(errorData.error || 'حدث خطأ أثناء تحميل الدورة. يرجى المحاولة مرة أخرى.');
+          const payload = await response.json().catch(() => ({}));
+          setError(payload.error || AR.loadError);
           return;
         }
 
         const courseData: Course = await response.json();
-        console.log(`✅ Successfully loaded course: ${courseData.title}`);
 
         const normalizedLessons = (courseData.lessons || [])
           .map((lesson, index) => {
@@ -124,8 +150,8 @@ export default function CoursePage() {
           setCurrentLessonId(normalizedLessons[FIRST_LESSON_INDEX].id);
         }
       } catch (err) {
-        console.error('⚠️ Error loading course:', err);
-        setError('حدث خطأ غير متوقع أثناء تحميل تفاصيل الدورة.');
+        console.error('Error loading course:', err);
+        setError(AR.unexpectedLoadError);
       } finally {
         setLoading(false);
       }
@@ -147,7 +173,6 @@ export default function CoursePage() {
         currentLesson: defaultLessonId,
         progressPercentage: 0,
       };
-
       setProgress(defaultProgress);
       if (defaultLessonId) {
         setCurrentLessonId(defaultLessonId);
@@ -161,7 +186,6 @@ export default function CoursePage() {
       if (user?.uid && db) {
         const progressDocRef = doc(db, 'progress', `${user.uid}_${courseId}`);
         const progressDoc = await getDoc(progressDocRef);
-
         if (progressDoc.exists()) {
           const data = progressDoc.data() as Partial<CourseProgress>;
           storedProgress = {
@@ -178,7 +202,7 @@ export default function CoursePage() {
           try {
             storedProgress = JSON.parse(raw);
           } catch (parseError) {
-            console.warn('Failed to parse local course progress', parseError);
+            console.warn('Failed to parse persisted course progress', parseError);
           }
         }
       }
@@ -306,9 +330,9 @@ export default function CoursePage() {
 
   useEffect(() => {
     if (!course?.lessons?.length) return;
-    const total = course.lessons.length;
+    const totalLessons = course.lessons.length;
     const computedProgress =
-      total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
+      totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
 
     if (computedProgress !== progress.progressPercentage) {
       setProgress((prev) => ({
@@ -321,15 +345,15 @@ export default function CoursePage() {
   const markLessonComplete = async (lessonId: string) => {
     if (!lessonId || (!isEnrolled && !isAdmin)) return;
 
-    const completed = new Set(progress.completedLessons);
-    completed.add(lessonId);
+    const completedLessons = new Set(progress.completedLessons);
+    completedLessons.add(lessonId);
 
     const totalLessons = course?.lessons?.length || 0;
     const progressPercentage =
-      totalLessons > 0 ? Math.round((completed.size / totalLessons) * 100) : 0;
+      totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
 
     await saveProgress({
-      completedLessons: Array.from(completed),
+      completedLessons: Array.from(completedLessons),
       currentLesson: lessonId,
       progressPercentage,
     });
@@ -348,9 +372,9 @@ export default function CoursePage() {
     setCurrentLessonId(nextLessonId);
 
     if (canAccessCourse) {
-      const totalLessons = course.lessons.length;
+      const total = course.lessons.length;
       const progressPercentage =
-        totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
+        total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
 
       void saveProgress({
         ...progress,
@@ -364,9 +388,9 @@ export default function CoursePage() {
     setCurrentLessonId(lessonId);
 
     if (canAccessCourse) {
-      const totalLessons = course?.lessons?.length || 0;
+      const total = course?.lessons?.length || 0;
       const progressPercentage =
-        totalLessons > 0 ? Math.round((progress.completedLessons.length / totalLessons) * 100) : 0;
+        total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
 
       void saveProgress({
         ...progress,
@@ -388,29 +412,27 @@ export default function CoursePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="max-w-md text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <span className="text-3xl">⚠️</span>
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600">
+            !
           </div>
           <h1 className="mb-3 text-2xl font-bold text-gray-900">
-            {error || 'حدث خطأ غير متوقع'}
+            {error || AR.genericErrorTitle}
           </h1>
           <p className="mb-6 text-gray-600">
-            {error === 'لم يتم العثور على الدورة المطلوبة'
-              ? 'تأكد من صحة الرابط أو اختر دورة مختلفة من قائمة الدورات.'
-              : 'واجهنا مشكلة أثناء تحميل تفاصيل الدورة. يرجى المحاولة من جديد أو الاتصال بالدعم.'}
+            {error === AR.courseNotFound ? AR.notFoundHint : AR.genericErrorHint}
           </p>
           <div className="space-y-3">
             <button
               onClick={() => window.location.reload()}
               className="w-full rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
             >
-              إعادة المحاولة
+              {AR.retry}
             </button>
             <button
               onClick={() => router.push('/courses')}
               className="w-full rounded-lg bg-gray-200 px-6 py-3 text-gray-700 transition hover:bg-gray-300"
             >
-              العودة إلى قائمة الدورات
+              {AR.backToCourses}
             </button>
           </div>
         </div>
@@ -443,7 +465,7 @@ export default function CoursePage() {
                       <SecurePlayer url={currentLesson.videoUrl} title={currentLesson.title} />
                     ) : (
                       <div className="flex aspect-video items-center justify-center bg-gray-200">
-                        <p className="text-gray-500">لم يتم العثور على محتوى هذا الدرس.</p>
+                        <p className="text-gray-500">{AR.lessonPlaceholder}</p>
                       </div>
                     )}
                   </div>
@@ -452,10 +474,12 @@ export default function CoursePage() {
                     <div className="mb-4 flex items-center justify-between">
                       <div>
                         <h2 className="mb-2 text-xl font-bold text-gray-900">
-                          {currentLesson?.title || 'درس بدون عنوان'}
+                          {currentLesson?.title || AR.untitledLesson}
                         </h2>
                         <p className="text-sm text-gray-600">
-                          الدرس {currentLessonIndex + 1} من {course.lessons?.length || 0}
+                          {`${AR.lessonLabel} ${currentLessonIndex + 1} ${AR.ofLabel} ${
+                            course.lessons?.length || 0
+                          }`}
                         </p>
                       </div>
 
@@ -477,8 +501,8 @@ export default function CoursePage() {
                       </div>
 
                       <button
-                        onClick={() => markLessonComplete(currentLesson?.id || '')}
-                        disabled={!currentLesson?.id || isLessonCompleted || progressLoading || !canAccessCourse}
+                        onClick={() => currentLesson?.id && markLessonComplete(currentLesson.id)}
+                        disabled={!currentLesson?.id || isLessonCompleted || progressLoading}
                         className={`rounded-lg px-6 py-2 font-medium transition ${
                           isLessonCompleted
                             ? 'cursor-not-allowed bg-green-100 text-green-700'
@@ -488,7 +512,7 @@ export default function CoursePage() {
                         }`}
                       >
                         {progressLoading
-                          ? 'جارٍ حفظ التقدم...'
+                          ? 'جاري حفظ التقدم...'
                           : isLessonCompleted
                           ? 'تم إكمال الدرس'
                           : 'علّم الدرس كمكتمل'}
@@ -508,44 +532,39 @@ export default function CoursePage() {
                   <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-gray-500">
                     🔒
                   </div>
-                  <h3 className="mb-3 text-xl font-bold text-gray-900">المحتوى غير متاح</h3>
+                  <h3 className="mb-3 text-xl font-bold text-gray-900">{AR.lockedTitle}</h3>
 
                   {!user ? (
                     <>
-                      <p className="mb-6 text-gray-600">
-                        يجب تسجيل الدخول أولاً للوصول إلى محتوى الدورة ومشاهدة الدروس.
-                      </p>
+                      <p className="mb-6 text-gray-600">{AR.loginPrompt}</p>
                       <div className="space-y-3">
                         <button
                           onClick={() => router.push('/auth/login')}
                           className="w-full rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700"
                         >
-                          تسجيل الدخول
+                          {AR.loginAction}
                         </button>
                         <button
                           onClick={() => router.push('/auth/register')}
                           className="w-full rounded-lg bg-gray-200 px-8 py-3 font-semibold text-gray-700 transition hover:bg-gray-300"
                         >
-                          إنشاء حساب جديد
+                          {AR.registerAction}
                         </button>
                       </div>
                     </>
                   ) : (
                     <>
                       <p className="mb-6 text-gray-600">
-                        للوصول إلى محتوى الدورة كاملة يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
+                        للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
                       </p>
                       <div className="space-y-4">
                         <div className="text-center">
                           <span className="text-3xl font-bold text-blue-600">${course.price}</span>
                           <span className="mt-1 block text-sm text-gray-500">دفعة واحدة – وصول دائم</span>
                         </div>
-                        <BuyButtonStub
-                          label="اشترِ الآن"
-                          className="w-full px-8 py-3 text-lg font-semibold"
-                        />
+                        <BuyButtonStub label="اشترِ الآن" className="w-full px-8 py-3 text-lg font-semibold" />
                         <p className="text-center text-xs text-gray-500">
-                          💳 سيتم تفعيل بوابة الدفع قريباً، هذا الزر للتجربة فقط.
+                          ملاحظة: بوابة الدفع الحقيقية غير مفعّلة بعد، هذا الزر للعرض فقط.
                         </p>
                       </div>
                     </>
