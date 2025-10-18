@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Container } from '@/components/layout';
+import RedirectIfAuthenticated from '@/components/auth/RedirectIfAuthenticated';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +33,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <RedirectIfAuthenticated>
+      <div className="min-h-screen bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Container size="sm">
         <div className="max-w-md w-full mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">
@@ -158,7 +160,8 @@ const LoginPage = () => {
           </div>
         </div>
       </Container>
-    </div>
+      </div>
+    </RedirectIfAuthenticated>
   );
 };
 

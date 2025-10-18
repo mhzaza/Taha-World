@@ -59,6 +59,7 @@ export interface Course {
   subtitles?: string[]; // Language codes
   certificateTemplate?: string;
   previewVideo?: string;
+  isEnrolled?: boolean;
 }
 
 export interface Lesson {

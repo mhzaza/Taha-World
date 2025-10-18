@@ -84,7 +84,9 @@ const uploadToCloudinary = async (file, type = 'generalUpload', options = {}) =>
     } else if (Buffer.isBuffer(file)) {
       // Buffer data - convert to base64 data URI
       const base64Data = file.toString('base64');
-      const dataUri = `data:${uploadConfig.resource_type || 'image'}/jpeg;base64,${base64Data}`;
+      // Detect MIME type from buffer or use default
+      const mimeType = uploadConfig.resource_type === 'video' ? 'video/mp4' : 'image/jpeg';
+      const dataUri = `data:${mimeType};base64,${base64Data}`;
       result = await cloudinary.uploader.upload(dataUri, uploadConfig);
     } else {
       throw new Error('Invalid file type. Expected string (path) or Buffer.');

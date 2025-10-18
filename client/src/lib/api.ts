@@ -73,15 +73,33 @@ export interface Course {
 }
 
 export interface Order {
-  _id: string;
+  _id?: string;
+  id: string;
   userId: string;
+  userEmail: string;
+  userName: string;
+  userPhone?: string;
   courseId: string;
+  courseTitle: string;
+  courseThumbnail?: string;
   amount: number;
-  currency: string;
-  status: string;
+  currency?: string;
+  originalAmount?: number;
+  discountAmount?: number;
+  taxAmount?: number;
+  status: 'pending' | 'completed' | 'failed' | 'refunded' | 'processing';
   paymentMethod: string;
+  paymentIntentId?: string;
+  transactionId?: string;
+  couponCode?: string;
   createdAt: string;
   updatedAt: string;
+  completedAt?: string;
+  refundedAt?: string;
+  processingTime?: number;
+  notes?: string;
+  refundReason?: string;
+  isNew?: boolean;
 }
 
 export interface PaginationInfo {
@@ -317,6 +335,10 @@ export const userAPI = {
 
   getStats: () => api.get<ApiResponse<{ stats: unknown }>>('/users/stats'),
 
+  getEnrolledCourses: () => api.get<ApiResponse<{ courses: Course[] }>>('/users/enrolled-courses'),
+
+  getUserProgress: () => api.get<ApiResponse<{ progress: unknown[] }>>('/users/dashboard-progress'),
+
   changePassword: (currentPassword: string, newPassword: string) =>
     api.put<ApiResponse>('/users/change-password', {
       currentPassword,
@@ -387,6 +409,15 @@ export const adminAPI = {
     totalSpent?: number;
     notes?: string;
   }) => api.put<ApiResponse<{ user: User }>>(`/admin/users/${id}`, data),
+
+  updateUserNotes: (userId: string, notes: string) => 
+    api.put<ApiResponse>(`/admin/users/${userId}/notes`, { notes }),
+
+  enrollUserInCourse: (userId: string, courseId: string) => 
+    api.post<ApiResponse>(`/admin/users/${userId}/enroll/${courseId}`),
+
+  unenrollUserFromCourse: (userId: string, courseId: string) => 
+    api.delete<ApiResponse>(`/admin/users/${userId}/enroll/${courseId}`),
 
   getCourses: (params?: {
     page?: number;

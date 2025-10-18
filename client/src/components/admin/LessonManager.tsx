@@ -528,3 +528,6 @@ export default function LessonManager({ courseId, courseTitle, onClose }: Lesson
     </div>
   );
 }
+
+
+

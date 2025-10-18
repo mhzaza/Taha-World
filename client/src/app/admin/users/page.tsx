@@ -23,7 +23,7 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
-import { adminAPI, apiUtils, User } from '@/lib/api';
+import { adminAPI, apiUtils, User, Course } from '@/lib/api';
 
 // User interface is now imported from @/lib/api
 
@@ -35,11 +35,6 @@ interface AdminUser extends Omit<User, 'enrolledCourses'> {
   totalSpent?: number;
 }
 
-interface Course {
-  id: string;
-  title: string;
-  price: number;
-}
 
 type StatusFilter = 'all' | 'active' | 'inactive' | 'suspended';
 type SortField = 'createdAt' | 'name' | 'totalSpent' | 'enrolledCourses';
@@ -69,6 +64,8 @@ export default function UsersPage() {
     message: string;
     timestamp: Date;
   }>>([]);
+  const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
 
   // Fetch users data from API
   const fetchUsers = useCallback(async () => {
@@ -103,9 +100,9 @@ export default function UsersPage() {
       // Add error notification
       addNotification('error', `خطأ في تحميل المستخدمين: ${errorMessage}`);
       
-      // Fallback to mock data if API fails
-      setUsers(mockUsers);
-      setTotalUsers(mockUsers.length);
+      // Set empty data if API fails
+      setUsers([]);
+      setTotalUsers(0);
     } finally {
       setLoading(false);
     }
@@ -116,6 +113,24 @@ export default function UsersPage() {
     await fetchUsers();
     setRefreshing(false);
   };
+
+  // Fetch available courses for enrollment
+  const fetchCourses = useCallback(async () => {
+    try {
+      setLoadingCourses(true);
+      const response = await adminAPI.getCourses({ limit: 100 }); // Get all courses
+      
+      if (response.data.success) {
+        setAvailableCourses(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      const errorMessage = apiUtils.handleApiError(error);
+      addNotification('error', `خطأ في تحميل الكورسات: ${errorMessage}`);
+    } finally {
+      setLoadingCourses(false);
+    }
+  }, []);
 
   // Add notification function
   const addNotification = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
@@ -136,7 +151,8 @@ export default function UsersPage() {
   // Load users on component mount and when dependencies change
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+    fetchCourses(); // Load courses for better course title display
+  }, [fetchUsers, fetchCourses]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -178,8 +194,8 @@ export default function UsersPage() {
           bValue = b.displayName.toLowerCase();
           break;
         case 'totalSpent':
-          aValue = a.totalSpent;
-          bValue = b.totalSpent;
+          aValue = a.totalSpent || 0;
+          bValue = b.totalSpent || 0;
           break;
         case 'enrolledCourses':
           aValue = a.enrolledCourses.length;
@@ -256,7 +272,7 @@ export default function UsersPage() {
     setCurrentPage(1);
   };
 
-  const openUserModal = (user: User) => {
+  const openUserModal = (user: AdminUser) => {
     setSelectedUser(user);
     setUserNotes(user.notes || '');
     setShowUserModal(true);
@@ -268,37 +284,104 @@ export default function UsersPage() {
     setShowUserModal(false);
   };
 
-  const saveUserNotes = () => {
+  const saveUserNotes = async () => {
     if (selectedUser) {
-      // Mock API call to save notes
-      console.log('Saving notes for user:', selectedUser._id, userNotes);
-      alert('تم حفظ الملاحظات بنجاح!');
-      closeUserModal();
+      try {
+        await adminAPI.updateUserNotes(selectedUser._id, userNotes);
+        addNotification('success', 'تم حفظ الملاحظات بنجاح!');
+        closeUserModal();
+        // Refresh users to get updated data
+        fetchUsers();
+      } catch (error) {
+        console.error('Error saving user notes:', error);
+        const errorMessage = apiUtils.handleApiError(error);
+        addNotification('error', `خطأ في حفظ الملاحظات: ${errorMessage}`);
+      }
     }
   };
 
-  const enrollUserInCourse = (courseId: string) => {
+  const enrollUserInCourse = async (courseId: string) => {
     if (selectedUser) {
-      // Mock API call to enroll user
-      console.log('Enrolling user:', selectedUser._id, 'in course:', courseId);
-      alert('تم تسجيل المستخدم في الكورس بنجاح!');
-      setShowEnrollModal(false);
+      try {
+        await adminAPI.enrollUserInCourse(selectedUser._id, courseId);
+        addNotification('success', 'تم تسجيل المستخدم في الكورس بنجاح!');
+        setShowEnrollModal(false);
+        
+        // Update selected user immediately to reflect changes in modal
+        const course = availableCourses.find(c => c._id === courseId);
+        if (course) {
+          setSelectedUser(prev => prev ? {
+            ...prev,
+            enrolledCourses: [...prev.enrolledCourses, course]
+          } : null);
+          
+          // Also update the users list immediately
+          setUsers(prevUsers => prevUsers.map(user => 
+            user._id === selectedUser._id ? {
+              ...user,
+              enrolledCourses: [...user.enrolledCourses, course]
+            } : user
+          ));
+        }
+        
+        // Refresh users list silently to sync with server
+        refreshUsers();
+      } catch (error) {
+        console.error('Error enrolling user:', error);
+        const errorMessage = apiUtils.handleApiError(error);
+        addNotification('error', `خطأ في تسجيل المستخدم: ${errorMessage}`);
+      }
     }
   };
 
-  const unenrollUserFromCourse = (courseId: string) => {
+  const unenrollUserFromCourse = async (courseId: string) => {
     if (selectedUser && confirm('هل أنت متأكد من إلغاء تسجيل المستخدم من هذا الكورس؟')) {
-      // Mock API call to unenroll user
-      console.log('Unenrolling user:', selectedUser._id, 'from course:', courseId);
-      alert('تم إلغاء تسجيل المستخدم من الكورس!');
+      try {
+        await adminAPI.unenrollUserFromCourse(selectedUser._id, courseId);
+        addNotification('success', 'تم إلغاء تسجيل المستخدم من الكورس!');
+        
+        // Update selected user immediately to reflect changes in modal
+        setSelectedUser(prev => prev ? {
+          ...prev,
+          enrolledCourses: prev.enrolledCourses.filter(course => 
+            typeof course === 'string' ? course !== courseId : course._id !== courseId
+          )
+        } : null);
+        
+        // Also update the users list immediately
+        setUsers(prevUsers => prevUsers.map(user => 
+          user._id === selectedUser._id ? {
+            ...user,
+            enrolledCourses: user.enrolledCourses.filter(course => 
+              typeof course === 'string' ? course !== courseId : course._id !== courseId
+            )
+          } : user
+        ));
+        
+        // Refresh users list silently to sync with server
+        refreshUsers();
+      } catch (error) {
+        console.error('Error unenrolling user:', error);
+        const errorMessage = apiUtils.handleApiError(error);
+        addNotification('error', `خطأ في إلغاء تسجيل المستخدم: ${errorMessage}`);
+      }
     }
   };
 
-  const toggleUserStatus = (userId: string, newStatus: string) => {
+  const toggleUserStatus = async (userId: string, newStatus: string) => {
     if (confirm(`هل أنت متأكد من تغيير حالة المستخدم إلى "${getStatusText(newStatus)}"؟`)) {
-      // Mock API call to update user status
-      console.log('Updating user status:', userId, 'to:', newStatus);
-      alert('تم تحديث حالة المستخدم بنجاح!');
+      try {
+        await adminAPI.updateUser(userId, { 
+          isActive: newStatus === 'active' 
+        });
+        addNotification('success', 'تم تحديث حالة المستخدم بنجاح!');
+        // Refresh users to get updated data
+        fetchUsers();
+      } catch (error) {
+        console.error('Error updating user status:', error);
+        const errorMessage = apiUtils.handleApiError(error);
+        addNotification('error', `خطأ في تحديث حالة المستخدم: ${errorMessage}`);
+      }
     }
   };
 
@@ -308,7 +391,7 @@ export default function UsersPage() {
     const activeUsers = filteredUsers.filter(user => user.status === 'active').length;
     const inactiveUsers = filteredUsers.filter(user => user.status === 'inactive').length;
     const suspendedUsers = filteredUsers.filter(user => user.status === 'suspended').length;
-    const totalRevenue = filteredUsers.reduce((sum, user) => sum + user.totalSpent, 0);
+    const totalRevenue = filteredUsers.reduce((sum, user) => sum + (user.totalSpent || 0), 0);
     
     return {
       totalUsers,
@@ -320,16 +403,23 @@ export default function UsersPage() {
   }, [filteredUsers]);
 
   const getCourseTitle = (courseId: string) => {
-    const course = mockCourses.find(c => c.id === courseId);
+    const course = availableCourses.find(c => c._id === courseId);
     return course ? course.title : 'كورس غير معروف';
   };
 
-  const getAvailableCoursesForUser = (user: AdminUser) => {
-    return mockCourses.filter(course => 
+  const getAvailableCoursesForUser = (user: AdminUser): Course[] => {
+    return availableCourses.filter(course => 
       !user.enrolledCourses.some(enrolled => 
-        typeof enrolled === 'string' ? enrolled === course.id : enrolled._id === course.id
+        typeof enrolled === 'string' ? enrolled === course._id : enrolled._id === course._id
       )
     );
+  };
+
+  const openEnrollModal = async () => {
+    setShowEnrollModal(true);
+    if (availableCourses.length === 0) {
+      await fetchCourses();
+    }
   };
 
   return (
@@ -715,7 +805,7 @@ export default function UsersPage() {
                     {user.enrolledCourses.length > 0 && (
                       <div className="text-xs text-gray-500">
                         {user.enrolledCourses.slice(0, 2).map((course, index) => (
-                          <div key={course._id || course.id || index} className="truncate max-w-xs">
+                          <div key={typeof course === 'string' ? course : course._id || course.id || index} className="truncate max-w-xs">
                             {typeof course === 'string' ? getCourseTitle(course) : course.title || 'كورس غير معروف'}
                           </div>
                         ))}
@@ -730,9 +820,9 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      getStatusColor(user.status)
+                      getStatusColor(user.status || 'active')
                     }`}>
-                      {getStatusText(user.status)}
+                      {getStatusText(user.status || 'active')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -977,7 +1067,7 @@ export default function UsersPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-md font-medium text-gray-900">الكورسات المسجلة</h4>
                     <button
-                      onClick={() => setShowEnrollModal(true)}
+                      onClick={openEnrollModal}
                       className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
                     >
                       <PlusIcon className="h-4 w-4 ml-1" />
@@ -990,12 +1080,15 @@ export default function UsersPage() {
                   ) : (
                     <div className="space-y-2">
                       {selectedUser.enrolledCourses.map((course, index) => (
-                        <div key={course._id || course.id || index} className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
+                        <div key={typeof course === 'string' ? course : course._id || course.id || index} className="flex items-center justify-between p-3 border border-gray-200 rounded-md">
                           <span className="text-sm text-gray-900">
                             {typeof course === 'string' ? getCourseTitle(course) : course.title || 'كورس غير معروف'}
                           </span>
                           <button
-                            onClick={() => unenrollUserFromCourse(typeof course === 'string' ? course : course._id || course.id)}
+                            onClick={() => {
+                              const courseId = typeof course === 'string' ? course : course._id || course.id;
+                              if (courseId) unenrollUserFromCourse(courseId);
+                            }}
                             className="text-red-600 hover:text-red-700"
                           >
                             <MinusIcon className="h-4 w-4" />
@@ -1054,17 +1147,22 @@ export default function UsersPage() {
               </div>
               
               <div className="space-y-4">
-                {getAvailableCoursesForUser(selectedUser).length === 0 ? (
+                {loadingCourses ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span className="mr-3 text-sm text-gray-600">جاري تحميل الكورسات...</span>
+                  </div>
+                ) : getAvailableCoursesForUser(selectedUser).length === 0 ? (
                   <p className="text-sm text-gray-500">المستخدم مسجل في جميع الكورسات المتاحة</p>
                 ) : (
                   getAvailableCoursesForUser(selectedUser).map(course => (
-                    <div key={course.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-md">
+                    <div key={course._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-md">
                       <div>
                         <h4 className="text-sm font-medium text-gray-900">{course.title}</h4>
                         <p className="text-sm text-gray-500">{formatCurrency(course.price)}</p>
                       </div>
                       <button
-                        onClick={() => enrollUserInCourse(course.id)}
+                        onClick={() => enrollUserInCourse(course._id)}
                         className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
                       >
                         تسجيل

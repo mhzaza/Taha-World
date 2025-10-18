@@ -41,7 +41,10 @@ router.post('/paypal/create-order', authenticate, [
 
     // Check if user is already enrolled
     const user = await User.findById(userId);
-    if (user.enrolledCourses.includes(courseId)) {
+    const isAlreadyEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+    if (isAlreadyEnrolled) {
       return res.status(400).json({
         error: 'Already enrolled in this course',
         arabic: 'أنت مسجل بالفعل في هذا الكورس'
@@ -154,7 +157,10 @@ router.post('/paypal/capture', authenticate, [
 
       // Enroll user in course
       const user = await User.findById(req.user._id);
-      if (!user.enrolledCourses.includes(orderRecord.courseId)) {
+      const isAlreadyEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+        enrolledCourseId.toString() === orderRecord.courseId
+      );
+      if (!isAlreadyEnrolled) {
         user.enrolledCourses.push(orderRecord.courseId);
         user.totalSpent = (user.totalSpent || 0) + orderRecord.amount;
         await user.save();

@@ -1,14 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Layout, Container } from '@/components/layout';
 import { useCourses } from '@/hooks/useCourses';
 import { CourseFilters } from '@/types';
 import ClientOnly from '@/components/ClientOnly';
+import { useAuth } from '@/contexts/AuthContext';
+import { userAPI, apiUtils } from '@/lib/api';
+
+interface UserProgress {
+  courseId: string;
+  completedLessons: string[];
+  totalLessons: number;
+  progressPercentage: number;
+  totalWatchTime: number;
+}
 
 const CoursesPage = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
   const {
     courses,
     pagination,
@@ -45,9 +58,51 @@ const CoursesPage = () => {
     return `${price} ${currency === 'USD' ? '$' : currency}`;
   };
 
+  // Fetch user progress data
+  const fetchUserProgress = async () => {
+    if (!user?._id) return;
+    
+    try {
+      const [coursesResponse, progressResponse] = await Promise.all([
+        userAPI.getCourses(),
+        userAPI.getProgress()
+      ]);
+
+      if (coursesResponse.data.success) {
+        const enrolledCourseIds = ((coursesResponse.data as any).courses || []).map((course: any) => course._id);
+        setEnrolledCourses(enrolledCourseIds);
+      }
+
+      if (progressResponse.data.success) {
+        const progressData = (progressResponse.data.data?.progress || []) as UserProgress[];
+        setUserProgress(progressData);
+      }
+    } catch (err) {
+      console.error('Error fetching user progress:', err);
+    }
+  };
+
+  // Get progress for a specific course
+  const getProgressData = (courseId: string): number => {
+    const courseProgress = userProgress.find(p => p.courseId === courseId);
+    return courseProgress?.progressPercentage || 0;
+  };
+
+  // Check if user is enrolled in a course
+  const isEnrolledInCourse = (courseId: string): boolean => {
+    return enrolledCourses.includes(courseId);
+  };
+
+  // Load user progress when user changes
+  useEffect(() => {
+    if (user?._id) {
+      fetchUserProgress();
+    }
+  }, [user?._id]);
+
   return (
     <Layout>
-      <section className="bg-gradient-to-br from-blue-50 to-green-50 py-16">
+      <section className="bg-gradient-to-br from-gray-400 to-gray-500 py-16">
         <Container>
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -224,7 +279,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                     </h2>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {courses.map((course) => (
                       <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <div className="relative">
@@ -250,7 +305,15 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                               {course.title.charAt(0)}
                             </div>
                           </div>
-                          {course.isFeatured && (
+                          {isEnrolledInCourse(course.id) && (
+                            <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              مسجل
+                            </div>
+                          )}
+                          {!isEnrolledInCourse(course.id) && course.isFeatured && (
                             <div className="absolute top-4 right-4 bg-yellow-500 text-white px-2 py-1 rounded text-sm font-medium">
                               مميز
                             </div>
@@ -302,21 +365,40 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2 space-x-reverse">
-                              <span className="text-2xl font-bold text-blue-600">
-                                {formatPrice(course.price, course.currency)}
-                              </span>
-                              {course.originalPrice && (
-                                <span className="text-sm text-gray-500 line-through">
-                                  {formatPrice(course.originalPrice, course.currency)}
+                            {isEnrolledInCourse(course.id) ? (
+                              <div className="flex-1 ml-4">
+                                <div className="flex justify-between items-center mb-2">
+                                  <span className="text-sm text-gray-600">التقدم</span>
+                                  <span className="text-sm font-medium text-gray-900">{getProgressData(course.id)}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${getProgressData(course.id)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2 space-x-reverse">
+                                <span className="text-2xl font-bold text-blue-600">
+                                  {formatPrice(course.price, course.currency)}
                                 </span>
-                              )}
-                            </div>
+                                {course.originalPrice && (
+                                  <span className="text-sm text-gray-500 line-through">
+                                    {formatPrice(course.originalPrice, course.currency)}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                             <Link
                               href={`/courses/${course.id}`}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                                isEnrolledInCourse(course.id)
+                                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              }`}
                             >
-                              عرض التفاصيل
+                              {isEnrolledInCourse(course.id) ? 'متابعة التعلم' : 'عرض التفاصيل'}
                             </Link>
                           </div>
                           

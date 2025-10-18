@@ -118,7 +118,9 @@ router.get('/:id', optionalAuth, async (req, res) => {
     let isEnrolled = false;
     if (req.user) {
       const user = await User.findById(req.user._id);
-      isEnrolled = user.enrolledCourses.includes(course._id);
+      isEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+        enrolledCourseId.toString() === course._id.toString()
+      );
     }
 
     // Increment view count

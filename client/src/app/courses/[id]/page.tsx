@@ -4,11 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Course, Lesson } from '@/types';
-import SecurePlayer from '@/components/course/SecurePlayer';
+import Cookies from 'js-cookie';
+import EnhancedMediaPlayer from '@/components/course/EnhancedMediaPlayer';
 import LessonsList from '@/components/course/LessonsList';
 import CourseHeader from '@/components/course/CourseHeader';
+import CourseReviews from '@/components/course/CourseReviews';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
 import PayPalButton from '@/components/payment/PayPalButton';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 // Firebase imports removed - using API calls instead
 
@@ -27,34 +31,32 @@ const EMPTY_PROGRESS: CourseProgress = {
 const FIRST_LESSON_INDEX = 0;
 
 const AR = {
-  invalidCourseId: '\u0645\u0639\u0631\u0641 \u0627\u0644\u062f\u0648\u0631\u0629 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d.',
-  courseNotFound: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0627\u0644\u062f\u0648\u0631\u0629 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629.',
-  loadError: '\u062d\u062f\u062b \u062e\u0637\u0623 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.',
-  unexpectedLoadError: '\u062d\u062f\u062b \u062e\u0637\u0623 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629.',
-  genericErrorTitle: '\u062d\u062f\u062b \u062e\u0637\u0623 \u063a\u064a\u0631 \u0645\u062a\u0648\u0642\u0639',
-  notFoundHint:
-    '\u062a\u0623\u0643\u062f \u0645\u0646 \u0635\u062d\u0629 \u0627\u0644\u0631\u0627\u0628\u0637 \u0623\u0648 \u0627\u062e\u062a\u0631 \u062f\u0648\u0631\u0629 \u0645\u062e\u062a\u0644\u0641\u0629 \u0645\u0646 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062f\u0648\u0631\u0627\u062a.',
-  genericErrorHint:
-    '\u0648\u0627\u062c\u0647\u0646\u0627 \u0645\u0634\u0643\u0644\u0629 \u0623\u062b\u0646\u0627\u0621 \u062a\u062d\u0645\u064a\u0644 \u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u062f\u0648\u0631\u0629. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0646 \u062c\u062f\u064a\u062f \u0623\u0648 \u0627\u0644\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062f\u0639\u0645 \u0627\u0644\u0641\u0646\u064a.',
-  retry: '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629',
-  backToCourses: '\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0635\u0641\u062d\u0629 \u0627\u0644\u062f\u0648\u0631\u0627\u062a',
-  untitledLesson: '\u062f\u0631\u0633 \u0628\u062f\u0648\u0646 \u0639\u0646\u0648\u0627\u0646',
-  lessonPlaceholder: '\u0644\u0645 \u064a\u062a\u0645 \u0627\u0644\u0639\u062b\u0648\u0631 \u0639\u0644\u0649 \u0645\u062d\u062a\u0648\u0649 \u0647\u0630\u0627 \u0627\u0644\u062f\u0631\u0633.',
-  lockedTitle: '\u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',
-  loginPrompt:
-    '\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 \u0627\u0644\u062f\u0631\u0648\u0633 \u0648\u0645\u062a\u0627\u0628\u0639\u0629 \u062a\u0642\u062f\u0645\u0643 \u0641\u064a \u0627\u0644\u062f\u0648\u0631\u0629.',
-  loginAction: '\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644',
-  registerAction: '\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628 \u062c\u062f\u064a\u062f',
-  purchasePrompt:
-    '\u0644\u0644\u062d\u0635\u0648\u0644 \u0639\u0644\u0649 \u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u062f\u0648\u0631\u0629 \u0627\u0644\u0643\u0627\u0645\u0644\u060c \u064a\u0631\u062c\u0649 \u0634\u0631\u0627\u0621 \u0627\u0644\u062f\u0648\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0623\u0643\u062f \u0645\u0646 \u062a\u0641\u0639\u064a\u0644 \u0627\u0634\u062a\u0631\u0627\u0643\u0643.',
-  oneTimePayment: '\u062f\u0641\u0639\u0629 \u0648\u0627\u062d\u062f\u0629 - \u0648\u0635\u0648\u0644 \u062f\u0627\u0626\u0645',
-  buyNow: '\u0627\u0634\u062a\u0631\u0650 \u0627\u0644\u0622\u0646',
-  paymentNote:
-    '\u0645\u0644\u0627\u062d\u0638\u0629: \u0628\u0648\u0627\u0628\u0629 \u0627\u0644\u062f\u0641\u0639 \u0627\u0644\u062d\u0642\u064a\u0642\u064a\u0629 \u063a\u064a\u0631 \u0645\u0641\u0639\u0644\u0629 \u0628\u0639\u062f\u060c \u0647\u0630\u0627 \u0627\u0644\u0632\u0631 \u0644\u0644\u0639\u0631\u0636 \u0641\u0642\u0637.',
-  savingProgress: '\u062c\u0627\u0631\u064d \u062d\u0641\u0638 \u0627\u0644\u062a\u0642\u062f\u0645...',
-  lessonCompleted: '\u062a\u0645 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u062f\u0631\u0633',
-  markComplete: '\u0639\u0644\u0651\u0645 \u0627\u0644\u062f\u0631\u0633 \u0643\u0645\u0643\u062a\u0645\u0644',
+  invalidCourseId: 'معرف الدورة غير صحيح.',
+  courseNotFound: 'لم يتم العثور على الدورة المطلوبة.',
+  loadError: 'حدث خطأ أثناء تحميل الدورة. يرجى المحاولة مرة أخرى.',
+  unexpectedLoadError: 'حدث خطأ غير متوقع أثناء تحميل تفاصيل الدورة.',
+  genericErrorTitle: 'حدث خطأ غير متوقع',
+  notFoundHint: 'تأكد من صحة الرابط أو اختر دورة مختلفة من قائمة الدورات.',
+  genericErrorHint: 'واجهنا مشكلة أثناء تحميل تفاصيل الدورة. يرجى المحاولة من جديد أو التواصل مع الدعم الفني.',
+  retry: 'إعادة المحاولة',
+  backToCourses: 'العودة إلى صفحة الدورات',
+  untitledLesson: 'درس بدون عنوان',
+  lessonPlaceholder: 'لم يتم العثور على محتوى هذا الدرس.',
+  lockedTitle: 'المحتوى غير متاح',
+  loginPrompt: 'سجّل الدخول للوصول إلى الدروس ومتابعة تقدمك في الدورة.',
+  loginAction: 'تسجيل الدخول',
+  registerAction: 'إنشاء حساب جديد',
+  purchasePrompt: 'للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.',
+  oneTimePayment: 'دفعة واحدة - وصول دائم',
+  buyNow: 'اشترِ الآن',
+  paymentNote: 'ملاحظة: بوابة الدفع الحقيقية غير مفعلة بعد، هذا الزر للعرض فقط.',
+  savingProgress: 'جارٍ حفظ التقدم...',
+  lessonCompleted: 'تم إكمال الدرس',
+  markComplete: 'علّم الدرس كمكتمل',
+  lessonLabel: 'الدرس',
+  ofLabel: 'من',
 };
+
 export default function CoursePage() {
   const params = useParams();
   const router = useRouter();
@@ -84,7 +86,11 @@ export default function CoursePage() {
     return adminEmailList.includes(user.email.toLowerCase());
   }, [adminEmailList, user?.email]);
 
-  const canAccessCourse = useMemo(() => isEnrolled || isAdmin, [isEnrolled, isAdmin]);
+  const canAccessCourse = useMemo(() => {
+    const result = isEnrolled || isAdmin;
+    console.log('canAccessCourse computed:', { isEnrolled, isAdmin, result });
+    return result;
+  }, [isEnrolled, isAdmin]);
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -100,8 +106,8 @@ export default function CoursePage() {
 
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
         
-        // Get token from localStorage for authentication
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        // Get token from cookies for authentication
+        const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
         
         const response = await fetch(`${backendUrl}/api/courses/${courseId}`, {
           headers: {
@@ -132,11 +138,14 @@ export default function CoursePage() {
         const normalizedLessons = (courseData.lessons || [])
           .map((lesson: any, index: number) => {
             const fallbackOrder = lesson.order ?? index + 1;
-            const normalizedId = lesson._id || lesson.id || `${courseId}-lesson-${fallbackOrder}`;
+            // Use the original lesson ID from the database
+            const originalId = lesson._id || lesson.id;
+            const normalizedId = originalId || `${courseId}-lesson-${fallbackOrder}`;
 
             return {
               ...lesson,
               id: normalizedId,
+              originalId: originalId, // Keep the original ID for backend operations
               courseId: courseId,
               order: fallbackOrder,
               isPreview: lesson.isFree || false,
@@ -161,10 +170,30 @@ export default function CoursePage() {
 
         setCourse(normalizedCourse);
         setIsEnrolled(courseData.isEnrolled || false);
+        
+        // Debug logging
+        console.log('Course enrollment status:', {
+          isEnrolled: courseData.isEnrolled,
+          canAccessCourse: (courseData.isEnrolled || false) || isAdmin,
+          user: user?.email,
+          isAdmin,
+          courseId: courseId,
+          userEnrolledCourses: user?.enrolledCourses
+        });
 
         if (normalizedLessons.length > 0) {
           setCurrentLessonId(normalizedLessons[FIRST_LESSON_INDEX].id);
         }
+
+        // Double-check enrollment status after course loads
+        setTimeout(() => {
+          checkUserEnrollment();
+        }, 500);
+
+        // Load progress after course loads
+        setTimeout(() => {
+          loadProgress();
+        }, 1000);
       } catch (err) {
         console.error('Error loading course:', err);
         setError(AR.unexpectedLoadError);
@@ -175,6 +204,14 @@ export default function CoursePage() {
 
     loadCourse();
   }, [courseId]);
+
+  // Also check enrollment when user logs in or course changes
+  useEffect(() => {
+    if (user?._id && courseId && course) {
+      checkUserEnrollment();
+      loadProgress();
+    }
+  }, [user?._id, courseId, course]);
 
   const getLocalProgressKey = (userId?: string | null) =>
     `course_progress_${courseId}_${userId || 'guest'}`;
@@ -199,9 +236,58 @@ export default function CoursePage() {
       setProgressLoading(true);
       let storedProgress: CourseProgress | null = null;
 
-      // Load progress from localStorage for now (Firebase removed)
-      if (typeof window !== 'undefined') {
-        const raw = localStorage.getItem(getLocalProgressKey(user?.id));
+      // Try to load progress from backend first
+      const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
+      if (token && user?._id) {
+        try {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+          
+          // Get individual lesson progress records for this course
+          const response = await fetch(`${backendUrl}/api/users/progress?courseId=${courseId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Backend progress response:', data);
+            
+            if (data.success && data.progress) {
+              // The progress should be an array of individual lesson progress records
+              const completedLessons = data.progress
+                .filter((p: any) => p.completed)
+                .map((p: any) => {
+                  // Find the frontend lesson ID that matches this backend lesson ID
+                  const lesson = course?.lessons?.find(l => (l as any).originalId === p.lessonId);
+                  return lesson?.id || p.lessonId;
+                })
+                .filter(Boolean); // Remove any undefined values
+              
+              const totalLessons = course?.lessons?.length || 0;
+              const progressPercentage = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
+              
+              storedProgress = {
+                completedLessons,
+                currentLesson: course?.lessons?.[FIRST_LESSON_INDEX]?.id || '',
+                progressPercentage,
+              };
+              
+              console.log('Loaded progress from backend:', storedProgress);
+              console.log('Backend progress records:', data.progress);
+            }
+          } else {
+            console.log('Backend progress request failed:', response.status, response.statusText);
+          }
+        } catch (backendError) {
+          console.log('Failed to load progress from backend, falling back to localStorage:', backendError);
+        }
+      }
+
+      // Fallback to localStorage if backend failed
+      if (!storedProgress && typeof window !== 'undefined') {
+        const raw = localStorage.getItem(getLocalProgressKey(user?._id));
         if (raw) {
           try {
             storedProgress = JSON.parse(raw);
@@ -232,7 +318,7 @@ export default function CoursePage() {
   const saveProgress = async (nextProgress: CourseProgress) => {
     if (typeof window !== 'undefined') {
       try {
-        localStorage.setItem(getLocalProgressKey(user?.id), JSON.stringify(nextProgress));
+        localStorage.setItem(getLocalProgressKey(user?._id), JSON.stringify(nextProgress));
       } catch (storageError) {
         console.warn('Unable to persist course progress locally', storageError);
       }
@@ -242,15 +328,78 @@ export default function CoursePage() {
   };
 
   const checkUserEnrollment = async () => {
-    // Enrollment status is already set from the course API response
-    // No need to check separately since the backend already provides isEnrolled
-    return;
+    // Double-check enrollment status if user is logged in
+    if (!user?._id || !courseId) return;
+    
+    try {
+      // Method 1: Try dedicated enrollment endpoint
+      const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
+      if (!token) return;
+      
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const response = await fetch(`${backendUrl}/api/users/enrollment/${courseId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Double-check enrollment result:', data);
+        if (data.success && data.isEnrolled !== undefined) {
+          const actualEnrollmentStatus = data.isEnrolled;
+          console.log('Updating enrollment status from', isEnrolled, 'to', actualEnrollmentStatus);
+          console.log('Current canAccessCourse before update:', canAccessCourse);
+          setIsEnrolled(actualEnrollmentStatus);
+          console.log('New canAccessCourse after update:', actualEnrollmentStatus || isAdmin);
+          return;
+        }
+      } else {
+        console.log('Enrollment check failed:', response.status, response.statusText, 'trying alternative method...');
+      }
+
+      // Method 2: Fallback - check user's enrolled courses list
+      try {
+        const coursesResponse = await fetch(`${backendUrl}/api/users/courses`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (coursesResponse.ok) {
+          const coursesData = await coursesResponse.json();
+          console.log('User courses response:', coursesData);
+          
+          if (coursesData.success && coursesData.courses) {
+            const isEnrolledInCourse = coursesData.courses.some((c: any) => 
+              c._id === courseId || c.id === courseId
+            );
+            console.log('Enrollment check via courses list:', isEnrolledInCourse);
+            console.log('Course IDs in user courses:', coursesData.courses.map((c: any) => ({ id: c._id || c.id, title: c.title })));
+            console.log('Looking for courseId:', courseId);
+            if (isEnrolledInCourse !== isEnrolled) {
+              console.log('Updating enrollment status from', isEnrolled, 'to', isEnrolledInCourse);
+              setIsEnrolled(isEnrolledInCourse);
+            }
+          }
+        } else {
+          console.log('Courses list check failed:', coursesResponse.status, coursesResponse.statusText);
+        }
+      } catch (fallbackError) {
+        console.log('Fallback enrollment check failed:', fallbackError);
+      }
+      
+    } catch (error) {
+      console.log('Could not verify enrollment status:', error);
+    }
   };
 
   useEffect(() => {
     if (!course || !courseId) return;
 
-    if (!user?.id) {
+    if (!user?._id) {
       const defaultLessonId = course.lessons?.[FIRST_LESSON_INDEX]?.id || '';
       setIsEnrolled(false);
       setProgress(EMPTY_PROGRESS);
@@ -261,7 +410,7 @@ export default function CoursePage() {
     }
 
     void checkUserEnrollment();
-  }, [course, courseId, user?.id]);
+  }, [course, courseId, user?._id]);
 
   useEffect(() => {
     if (!course?.lessons?.length) return;
@@ -288,6 +437,10 @@ export default function CoursePage() {
   const markLessonComplete = async (lessonId: string) => {
     if (!lessonId || (!isEnrolled && !isAdmin)) return;
 
+    try {
+      setProgressLoading(true);
+
+      // Update local state immediately for better UX
     const completedLessons = new Set(progress.completedLessons);
     completedLessons.add(lessonId);
 
@@ -295,11 +448,54 @@ export default function CoursePage() {
     const progressPercentage =
       totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
 
-    await saveProgress({
+      const newProgress = {
       completedLessons: Array.from(completedLessons),
       currentLesson: lessonId,
       progressPercentage,
-    });
+      };
+
+      // Save to backend
+      const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
+      if (token && courseId) {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+        
+        // Find the lesson to get its original ID
+        const lesson = course?.lessons?.find(l => l.id === lessonId);
+        const originalLessonId = (lesson as any)?.originalId || lessonId;
+        
+        console.log('Saving progress:', { courseId, lessonId, originalLessonId });
+        
+        const response = await fetch(`${backendUrl}/api/users/progress`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            courseId: courseId,
+            lessonId: originalLessonId,
+            watchTime: 0, // We don't have watch time for manual completion
+            totalDuration: 0, // We don't have duration for manual completion
+            completed: true,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Progress saved to backend successfully');
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Failed to save progress to backend:', response.status, response.statusText, errorData);
+        }
+      }
+
+      // Save to local storage as fallback
+      await saveProgress(newProgress);
+
+    } catch (error) {
+      console.error('Error marking lesson as complete:', error);
+    } finally {
+      setProgressLoading(false);
+    }
   };
 
   const navigateLesson = (direction: 'next' | 'prev') => {
@@ -394,153 +590,196 @@ export default function CoursePage() {
     : false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <Header />
       <CourseHeader course={course} isEnrolled={canAccessCourse} progress={progress.progressPercentage} />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="lg:col-span-3">
-            <div className="overflow-hidden rounded-lg bg-white shadow-lg">
+            <div className="overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100">
               {canAccessCourse ? (
                 <>
-                  <div className="relative">
-                    {currentLesson ? (
-                      <SecurePlayer url={currentLesson.videoUrl} title={currentLesson.title} />
-                    ) : (
-                      <div className="flex aspect-video items-center justify-center bg-gray-200">
-                        <p className="text-gray-500">{AR.lessonPlaceholder}</p>
-                      </div>
-                    )}
+                  <div className="relative p-6 pb-0">
+                    <EnhancedMediaPlayer
+                      videoUrl={currentLesson?.videoUrl}
+                      thumbnailUrl={course.thumbnail}
+                      title={currentLesson?.title || course.title}
+                      isLocked={false}
+                    />
                   </div>
 
-                  <div className="p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <div>
-                        <h2 className="mb-2 text-xl font-bold text-gray-900">
-                          {currentLesson?.title || AR.untitledLesson}
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          {`${AR.lessonLabel} ${currentLessonIndex + 1} ${AR.ofLabel} ${
-                            course.lessons?.length || 0
+                  <div className="p-8">
+                    <div className="mb-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h1 className="text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                            {currentLesson?.title || AR.untitledLesson}
+                          </h1>
+                          <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
+                              الدرس {currentLessonIndex + 1} من {course.lessons?.length || 0}
+                            </span>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-black">
+                              {Math.round(progress.progressPercentage)}% مكتمل
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+                        <div className="flex items-center space-x-3 space-x-reverse">
+                          <button
+                            onClick={() => navigateLesson('prev')}
+                            disabled={currentLessonIndex === 0}
+                            className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 transition-colors shadow-sm"
+                          >
+                            <ChevronRightIcon className="h-4 w-4 ml-2" />
+                            الدرس السابق
+                          </button>
+                          <button
+                            onClick={() => navigateLesson('next')}
+                            disabled={currentLessonIndex >= (course.lessons?.length || 1) - 1}
+                            className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 transition-colors shadow-sm"
+                          >
+                            الدرس التالي
+                            <ChevronLeftIcon className="h-4 w-4 mr-2" />
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => currentLesson?.id && markLessonComplete(currentLesson.id)}
+                          disabled={!currentLesson?.id || isLessonCompleted || progressLoading}
+                          className={`inline-flex items-center px-6 py-2 rounded-lg font-medium transition-colors shadow-sm ${
+                            isLessonCompleted
+                              ? 'cursor-not-allowed bg-green-100 text-green-700 border border-green-200'
+                              : progressLoading
+                              ? 'cursor-wait bg-blue-200 text-blue-700 border border-blue-300'
+                              : 'bg-blue-600 text-white hover:bg-blue-700 border border-blue-600'
                           }`}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center space-x-2 space-x-reverse">
-                        <button
-                          onClick={() => navigateLesson('prev')}
-                          disabled={currentLessonIndex === 0}
-                          className="rounded-lg border border-gray-300 p-2 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          <ChevronRightIcon className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => navigateLesson('next')}
-                          disabled={currentLessonIndex >= (course.lessons?.length || 1) - 1}
-                          className="rounded-lg border border-gray-300 p-2 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <ChevronLeftIcon className="h-5 w-5" />
+                          {progressLoading
+                            ? AR.savingProgress
+                            : isLessonCompleted
+                            ? AR.lessonCompleted
+                            : AR.markComplete}
                         </button>
                       </div>
-
-                      <button
-                        onClick={() => currentLesson?.id && markLessonComplete(currentLesson.id)}
-                        disabled={!currentLesson?.id || isLessonCompleted || progressLoading}
-                        className={`rounded-lg px-6 py-2 font-medium transition ${
-                          isLessonCompleted
-                            ? 'cursor-not-allowed bg-green-100 text-green-700'
-                            : progressLoading
-                            ? 'cursor-wait bg-blue-200 text-white'
-                            : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
-                      >
-                        {progressLoading
-                          ? 'جاري حفظ التقدم...'
-                          : isLessonCompleted
-                          ? 'تم إكمال الدرس'
-                          : 'علّم الدرس كمكتمل'}
-                      </button>
                     </div>
 
                     {currentLesson?.description && (
-                      <div className="mt-6">
-                        <h3 className="mb-2 text-lg font-semibold text-gray-900">وصف الدرس</h3>
-                        <p className="leading-relaxed text-gray-700">{currentLesson.description}</p>
+                      <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                        <h3 className="mb-4 text-xl font-semibold flex items-center text-black">
+                          <div className="w-2 h-6 bg-blue-600 rounded-full ml-3"></div>
+                          وصف الدرس
+                        </h3>
+                        <div className="prose prose-gray max-w-none">
+                          <p className="leading-relaxed text-black text-lg">{currentLesson.description}</p>
+                        </div>
                       </div>
                     )}
                   </div>
                 </>
               ) : (
-                <div className="p-8 text-center">
-                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-gray-500">
-                    🔒
-                  </div>
-                  <h3 className="mb-3 text-xl font-bold text-gray-900">{AR.lockedTitle}</h3>
+                <div className="p-8">
+                  <EnhancedMediaPlayer
+                    videoUrl={currentLesson?.videoUrl}
+                    thumbnailUrl={course.thumbnail}
+                    title={currentLesson?.title || course.title}
+                    isLocked={true}
+                    onUnlock={() => {
+                      if (!user) {
+                        router.push('/auth/login');
+                      }
+                    }}
+                  />
+                  
+                  <div className="mt-8 text-center">
+                    {/* Debug info - remove in production */}
+                    {process.env.NODE_ENV === 'development' && (
+                      <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-black">
+                        <strong>Debug:</strong> isEnrolled: {isEnrolled ? 'true' : 'false'}, 
+                        canAccess: {canAccessCourse ? 'true' : 'false'}, 
+                        isAdmin: {isAdmin ? 'true' : 'false'}
+                      </div>
+                    )}
+                    <h3 className="mb-6 text-2xl font-bold text-gray-900">{AR.lockedTitle}</h3>
 
-                  {!user ? (
-                    <>
-                      <p className="mb-6 text-gray-600">{AR.loginPrompt}</p>
-                      <div className="space-y-3">
-                        <button
-                          onClick={() => router.push('/auth/login')}
-                          className="w-full rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700"
-                        >
-                          {AR.loginAction}
-                        </button>
-                        <button
-                          onClick={() => router.push('/auth/register')}
-                          className="w-full rounded-lg bg-gray-200 px-8 py-3 font-semibold text-gray-700 transition hover:bg-gray-300"
-                        >
-                          {AR.registerAction}
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="mb-6 text-gray-600">
-                        للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
-                      </p>
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <span className="text-3xl font-bold text-blue-600">${course.price}</span>
-                          <span className="mt-1 block text-sm text-gray-500">دفعة واحدة – وصول دائم</span>
+                    {!user ? (
+                      <>
+                        <p className="mb-8 text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">{AR.loginPrompt}</p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                          <button
+                            onClick={() => router.push('/auth/login')}
+                            className="flex-1 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
+                          >
+                            {AR.loginAction}
+                          </button>
+                          <button
+                            onClick={() => router.push('/auth/register')}
+                            className="flex-1 rounded-xl bg-gray-200 px-8 py-4 font-semibold text-black transition-all hover:bg-gray-300 hover:shadow-lg transform hover:-translate-y-0.5"
+                          >
+                            {AR.registerAction}
+                          </button>
                         </div>
-                        <PayPalButton
-                          courseId={course.id}
-                          courseTitle={course.title}
-                          amount={course.price}
-                          currency={course.currency}
-                          onSuccess={(order) => {
-                            console.log('Payment successful:', order);
-                            // Refresh the page to show enrolled status
-                            window.location.reload();
-                          }}
-                          onError={(error) => {
-                            console.error('Payment error:', error);
-                            alert(error);
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
+                      </>
+                    ) : (
+                      <>
+                        <p className="mb-8 text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
+                          للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
+                        </p>
+                        <div className="max-w-md mx-auto">
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6 border border-blue-100">
+                            <div className="text-center">
+                              <span className="text-4xl font-bold text-black block">${course.price}</span>
+                              <span className="font-medium text-black">دفعة واحدة – وصول دائم</span>
+                            </div>
+                          </div>
+                          <PayPalButton
+                            courseId={course.id}
+                            courseTitle={course.title}
+                            amount={course.price}
+                            currency={course.currency}
+                            onSuccess={(order) => {
+                              console.log('Payment successful:', order);
+                              window.location.reload();
+                            }}
+                            onError={(error) => {
+                              console.error('Payment error:', error);
+                              alert(error);
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
           <div className="lg:col-span-1">
-            <LessonsList
-              course={course}
-              currentLessonId={currentLessonId}
-              onLessonSelect={handleLessonSelect}
-              completedLessons={progress.completedLessons}
-              isEnrolled={canAccessCourse}
-              isOpen={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-            />
+            <div className="sticky top-8">
+              <LessonsList
+                course={course}
+                currentLessonId={currentLessonId}
+                onLessonSelect={handleLessonSelect}
+                completedLessons={progress.completedLessons}
+                isEnrolled={canAccessCourse}
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Reviews Section */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <CourseReviews courseId={courseId} isEnrolled={canAccessCourse} />
+      </div>
+      
+      <Footer />
     </div>
   );
 }

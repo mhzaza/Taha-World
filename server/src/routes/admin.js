@@ -315,6 +315,34 @@ router.get('/courses', requirePermission('courses.edit'), async (req, res) => {
   }
 });
 
+// @desc    Get single course by ID (admin view)
+// @route   GET /api/admin/courses/:id
+// @access  Private (Admin)
+router.get('/courses/:id', requirePermission('courses.edit'), async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    
+    if (!course) {
+      return res.status(404).json({
+        error: 'Course not found',
+        arabic: 'الكورس غير موجود'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: course
+    });
+
+  } catch (error) {
+    console.error('Get course error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
 // @desc    Create new course
 // @route   POST /api/admin/courses
 // @access  Private (Admin)
@@ -380,7 +408,7 @@ router.post('/courses', requirePermission('courses.edit'), [
       success: true,
       message: 'Course created successfully',
       arabic: 'تم إنشاء الكورس بنجاح',
-      course
+      data: course
     });
 
   } catch (error) {
@@ -1258,6 +1286,224 @@ router.put('/courses/:courseId/lessons/reorder', requirePermission('courses.edit
 
   } catch (error) {
     console.error('Reorder lessons error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
+// @desc    Enroll user in course
+// @route   POST /api/admin/users/:userId/enroll/:courseId
+// @access  Private (Admin)
+router.post('/users/:userId/enroll/:courseId', requirePermission('users.manage'), async (req, res) => {
+  try {
+    const { userId, courseId } = req.params;
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        arabic: 'المستخدم غير موجود'
+      });
+    }
+
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        error: 'Course not found',
+        arabic: 'الكورس غير موجود'
+      });
+    }
+
+    // Check if user is already enrolled
+    const isAlreadyEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+    if (isAlreadyEnrolled) {
+      return res.status(400).json({
+        error: 'User is already enrolled in this course',
+        arabic: 'المستخدم مسجل بالفعل في هذا الكورس'
+      });
+    }
+
+    // Enroll user
+    user.enrolledCourses.push(courseId);
+    await user.save();
+
+    // Update course enrollment count
+    course.enrollmentCount = (course.enrollmentCount || 0) + 1;
+    await course.save();
+
+    // Log admin action
+    await AuditLog.create({
+      adminEmail: req.user.email,
+      adminId: req.user._id,
+      action: 'user.enroll',
+      target: 'user',
+      targetId: userId,
+      details: {
+        courseId,
+        courseTitle: course.title,
+        userEmail: user.email,
+        userName: user.displayName
+      },
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'User enrolled successfully',
+      arabic: 'تم تسجيل المستخدم في الكورس بنجاح'
+    });
+
+  } catch (error) {
+    console.error('Enroll user error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
+// @desc    Unenroll user from course
+// @route   DELETE /api/admin/users/:userId/enroll/:courseId
+// @access  Private (Admin)
+router.delete('/users/:userId/enroll/:courseId', requirePermission('users.manage'), async (req, res) => {
+  try {
+    const { userId, courseId } = req.params;
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        arabic: 'المستخدم غير موجود'
+      });
+    }
+
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        error: 'Course not found',
+        arabic: 'الكورس غير موجود'
+      });
+    }
+
+    // Check if user is enrolled
+    const isEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+    if (!isEnrolled) {
+      return res.status(400).json({
+        error: 'User is not enrolled in this course',
+        arabic: 'المستخدم غير مسجل في هذا الكورس'
+      });
+    }
+
+    // Unenroll user
+    user.enrolledCourses = user.enrolledCourses.filter(id => id.toString() !== courseId);
+    await user.save();
+
+    // Update course enrollment count
+    course.enrollmentCount = Math.max(0, (course.enrollmentCount || 1) - 1);
+    await course.save();
+
+    // Remove user's progress for this course
+    await Progress.deleteMany({ userId, courseId });
+
+    // Log admin action
+    await AuditLog.create({
+      adminEmail: req.user.email,
+      adminId: req.user._id,
+      action: 'user.unenroll',
+      target: 'user',
+      targetId: userId,
+      details: {
+        courseId,
+        courseTitle: course.title,
+        userEmail: user.email,
+        userName: user.displayName
+      },
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'User unenrolled successfully',
+      arabic: 'تم إلغاء تسجيل المستخدم من الكورس بنجاح'
+    });
+
+  } catch (error) {
+    console.error('Unenroll user error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
+// @desc    Update user notes
+// @route   PUT /api/admin/users/:userId/notes
+// @access  Private (Admin)
+router.put('/users/:userId/notes', requirePermission('users.manage'), [
+  body('notes').isString().withMessage('Notes must be a string')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        arabic: 'فشل في التحقق من البيانات',
+        details: errors.array()
+      });
+    }
+
+    const { userId } = req.params;
+    const { notes } = req.body;
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        arabic: 'المستخدم غير موجود'
+      });
+    }
+
+    // Update user notes
+    user.notes = notes;
+    await user.save();
+
+    // Log admin action
+    await AuditLog.create({
+      adminEmail: req.user.email,
+      adminId: req.user._id,
+      action: 'user.notes.update',
+      target: 'user',
+      targetId: userId,
+      details: {
+        userEmail: user.email,
+        userName: user.displayName,
+        notesLength: notes.length
+      },
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'User notes updated successfully',
+      arabic: 'تم تحديث ملاحظات المستخدم بنجاح'
+    });
+
+  } catch (error) {
+    console.error('Update user notes error:', error);
     res.status(500).json({
       error: 'Internal server error',
       arabic: 'خطأ داخلي في الخادم'

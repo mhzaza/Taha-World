@@ -189,7 +189,19 @@ router.get('/certificates', authenticate, async (req, res) => {
 // @access  Private
 router.get('/progress', authenticate, async (req, res) => {
   try {
-    const progress = await Progress.getUserProgress(req.user._id);
+    const { courseId } = req.query;
+    
+    let progress;
+    if (courseId) {
+      // Get progress for a specific course
+      progress = await Progress.find({ 
+        userId: req.user._id, 
+        courseId: courseId 
+      }).populate('lessonId', 'title order');
+    } else {
+      // Get overall progress (aggregated by course)
+      progress = await Progress.getUserProgress(req.user._id);
+    }
 
     res.json({
       success: true,
@@ -228,7 +240,10 @@ router.post('/progress', authenticate, [
 
     // Check if user is enrolled in the course
     const user = await User.findById(req.user._id);
-    if (!user.enrolledCourses.includes(courseId)) {
+    const isEnrolledInCourse = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+    if (!isEnrolledInCourse) {
       return res.status(403).json({
         error: 'You are not enrolled in this course',
         arabic: 'لست مسجلاً في هذه الدورة'
@@ -445,6 +460,44 @@ router.delete('/account', authenticate, [
 
   } catch (error) {
     console.error('Delete account error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
+// @desc    Check user enrollment in a specific course
+// @route   GET /api/users/enrollment/:courseId
+// @access  Private
+router.get('/enrollment/:courseId', authenticate, async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // Validate course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        error: 'Course not found',
+        arabic: 'الدورة غير موجودة'
+      });
+    }
+
+    // Check if user is enrolled
+    const user = await User.findById(req.user._id);
+    const isEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+
+    res.json({
+      success: true,
+      isEnrolled,
+      courseId,
+      userId: req.user._id
+    });
+
+  } catch (error) {
+    console.error('Check enrollment error:', error);
     res.status(500).json({
       error: 'Internal server error',
       arabic: 'خطأ داخلي في الخادم'

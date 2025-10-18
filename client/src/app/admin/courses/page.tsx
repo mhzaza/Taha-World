@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -12,42 +12,12 @@ import {
   CurrencyDollarIcon,
   UserGroupIcon,
   StarIcon,
-  CalendarIcon,
   GlobeAltIcon,
-  PhotoIcon,
-  VideoCameraIcon,
-  DocumentTextIcon,
   Bars3Icon,
 } from '@heroicons/react/24/outline';
-import { uploadToCloudinary, uploadPresets, getCloudinaryUrl } from '@/lib/cloudinary';
 import type { Course } from '@/lib/api';
 import LessonManager from '@/components/admin/LessonManager';
 
-interface CourseFormData {
-  title: string;
-  titleEn?: string;
-  description: string;
-  descriptionEn?: string;
-  price: number;
-  originalPrice?: number;
-  currency: string;
-  duration: number;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  category: string;
-  tags: string[];
-  requirements: string[];
-  whatYouWillLearn: string[];
-  language: 'ar' | 'en';
-  subtitles: string[];
-  isPublished: boolean;
-  isFeatured: boolean;
-  thumbnail: string;
-  instructor: {
-    name: string;
-    bio?: string;
-    credentials?: string[];
-  };
-}
 
 type SortField = 'createdAt' | 'title' | 'price' | 'enrollmentCount' | 'rating';
 type SortOrder = 'asc' | 'desc';
@@ -55,6 +25,7 @@ type StatusFilter = 'all' | 'published' | 'draft' | 'featured';
 
 export default function CoursesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,46 +36,9 @@ export default function CoursesPage() {
   const [itemsPerPage] = useState(12);
   
   // Modal states
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showLessonManager, setShowLessonManager] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  
-  // Form state
-  const [formData, setFormData] = useState<CourseFormData>({
-    title: '',
-    titleEn: '',
-    description: '',
-    descriptionEn: '',
-    price: 0,
-    originalPrice: 0,
-    currency: 'USD',
-    duration: 0,
-    level: 'beginner',
-    category: '',
-    tags: [],
-    requirements: [],
-    whatYouWillLearn: [],
-    language: 'ar',
-    subtitles: [],
-    isPublished: false,
-    isFeatured: false,
-    thumbnail: '',
-    instructor: {
-      name: '',
-      bio: '',
-      credentials: [],
-    },
-  });
-  
-  const [formLoading, setFormLoading] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [newTag, setNewTag] = useState('');
-  const [newRequirement, setNewRequirement] = useState('');
-  const [newLearningPoint, setNewLearningPoint] = useState('');
-  const [newCredential, setNewCredential] = useState('');
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [notifications, setNotifications] = useState<Array<{
     id: string;
     type: 'success' | 'error' | 'info' | 'warning';
@@ -128,45 +62,6 @@ export default function CoursesPage() {
     }, 5000);
   };
 
-  // Form validation
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.title.trim()) {
-      errors.title = 'عنوان الكورس مطلوب';
-    }
-
-    if (!formData.description.trim()) {
-      errors.description = 'وصف الكورس مطلوب';
-    }
-
-    if (formData.price <= 0) {
-      errors.price = 'السعر يجب أن يكون أكبر من صفر';
-    }
-
-    if (formData.duration <= 0) {
-      errors.duration = 'مدة الكورس يجب أن تكون أكبر من صفر';
-    }
-
-    if (!formData.category.trim()) {
-      errors.category = 'فئة الكورس مطلوبة';
-    }
-
-    if (!formData.instructor.name.trim()) {
-      errors.instructorName = 'اسم المدرب مطلوب';
-    }
-
-    if (formData.tags.length === 0) {
-      errors.tags = 'يجب إضافة علامة واحدة على الأقل';
-    }
-
-    if (formData.whatYouWillLearn.length === 0) {
-      errors.whatYouWillLearn = 'يجب إضافة نقطة تعلم واحدة على الأقل';
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   // Helper function to get auth token
   const getAuthToken = () => {
@@ -176,10 +71,24 @@ export default function CoursesPage() {
       ?.split('=')[1];
   };
 
-  // Fetch courses
+  // Fetch courses on mount
   useEffect(() => {
     fetchCourses();
   }, []);
+  
+  // Handle auto-open lesson manager when courses are loaded
+  useEffect(() => {
+    const openLessonsId = searchParams.get('openLessons');
+    if (openLessonsId && courses.length > 0) {
+      const course = courses.find(c => c._id === openLessonsId);
+      if (course) {
+        setSelectedCourse(course);
+        setShowLessonManager(true);
+        // Clean up URL
+        router.replace('/admin/courses');
+      }
+    }
+  }, [courses, searchParams, router]);
 
   const fetchCourses = async () => {
     try {
@@ -250,15 +159,25 @@ export default function CoursesPage() {
 
     // Sort courses
     filtered.sort((a, b) => {
-      let aValue: string | number = a[sortField as keyof Course];
-      let bValue: string | number = b[sortField as keyof Course];
+      let aValue: string | number;
+      let bValue: string | number;
       
       if (sortField === 'createdAt') {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
+        aValue = new Date(a.createdAt).getTime();
+        bValue = new Date(b.createdAt).getTime();
       } else if (sortField === 'rating') {
         aValue = a.rating.average;
         bValue = b.rating.average;
+      } else if (sortField === 'price') {
+        aValue = a.price;
+        bValue = b.price;
+      } else if (sortField === 'enrollmentCount') {
+        aValue = a.enrollmentCount;
+        bValue = b.enrollmentCount;
+      } else {
+        // For title sorting
+        aValue = a.title.toLowerCase();
+        bValue = b.title.toLowerCase();
       }
       
       if (sortOrder === 'asc') {
@@ -292,160 +211,6 @@ export default function CoursesPage() {
     };
   }, [courses]);
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      setUploadingImage(true);
-      const result = await uploadToCloudinary(file, 'courseThumbnail');
-      setFormData(prev => ({ ...prev, thumbnail: result.secure_url }));
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('خطأ في رفع الصورة');
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const addTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({ ...prev, tags: [...prev.tags, newTag.trim()] }));
-      setNewTag('');
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setFormData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
-  };
-
-  const addRequirement = () => {
-    if (newRequirement.trim() && !formData.requirements.includes(newRequirement.trim())) {
-      setFormData(prev => ({ ...prev, requirements: [...prev.requirements, newRequirement.trim()] }));
-      setNewRequirement('');
-    }
-  };
-
-  const removeRequirement = (requirement: string) => {
-    setFormData(prev => ({ ...prev, requirements: prev.requirements.filter(r => r !== requirement) }));
-  };
-
-  const addLearningPoint = () => {
-    if (newLearningPoint.trim() && !formData.whatYouWillLearn.includes(newLearningPoint.trim())) {
-      setFormData(prev => ({ ...prev, whatYouWillLearn: [...prev.whatYouWillLearn, newLearningPoint.trim()] }));
-      setNewLearningPoint('');
-    }
-  };
-
-  const removeLearningPoint = (point: string) => {
-    setFormData(prev => ({ ...prev, whatYouWillLearn: prev.whatYouWillLearn.filter(p => p !== point) }));
-  };
-
-  const addCredential = () => {
-    if (newCredential.trim() && !formData.instructor.credentials?.includes(newCredential.trim())) {
-      setFormData(prev => ({ 
-        ...prev, 
-        instructor: { 
-          ...prev.instructor, 
-          credentials: [...(prev.instructor.credentials || []), newCredential.trim()] 
-        } 
-      }));
-      setNewCredential('');
-    }
-  };
-
-  const removeCredential = (credential: string) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      instructor: { 
-        ...prev.instructor, 
-        credentials: prev.instructor.credentials?.filter(c => c !== credential) || [] 
-      } 
-    }));
-  };
-
-  const handleCreateCourse = async () => {
-    try {
-      setFormLoading(true);
-      
-      const token = getAuthToken();
-      if (!token) {
-        addNotification('error', 'يجب تسجيل الدخول أولاً');
-        return;
-      }
-      
-      const response = await fetch('http://localhost:5050/api/admin/courses', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          addNotification('success', 'تم إنشاء الكورس بنجاح!');
-          setShowCreateModal(false);
-          resetForm();
-          fetchCourses();
-        } else {
-          addNotification('error', data.arabic || data.error || 'خطأ في إنشاء الكورس');
-        }
-      } else {
-        const errorData = await response.json();
-        addNotification('error', errorData.arabic || errorData.error || 'خطأ في إنشاء الكورس');
-      }
-    } catch (error) {
-      console.error('Error creating course:', error);
-      addNotification('error', 'خطأ في إنشاء الكورس');
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  const handleEditCourse = async () => {
-    if (!selectedCourse) return;
-    
-    try {
-      setFormLoading(true);
-      
-      const token = getAuthToken();
-      if (!token) {
-        addNotification('error', 'يجب تسجيل الدخول أولاً');
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${selectedCourse._id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          addNotification('success', 'تم تحديث الكورس بنجاح!');
-          setShowEditModal(false);
-          resetForm();
-          fetchCourses();
-        } else {
-          addNotification('error', data.arabic || data.error || 'خطأ في تحديث الكورس');
-        }
-      } else {
-        const errorData = await response.json();
-        addNotification('error', errorData.arabic || errorData.error || 'خطأ في تحديث الكورس');
-      }
-    } catch (error) {
-      console.error('Error updating course:', error);
-      addNotification('error', 'خطأ في تحديث الكورس');
-    } finally {
-      setFormLoading(false);
-    }
-  };
 
   const handleDeleteCourse = async () => {
     if (!selectedCourse) return;
@@ -522,63 +287,6 @@ export default function CoursesPage() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      titleEn: '',
-      description: '',
-      descriptionEn: '',
-      price: 0,
-      originalPrice: 0,
-      currency: 'USD',
-      duration: 0,
-      level: 'beginner',
-      category: '',
-      tags: [],
-      requirements: [],
-      whatYouWillLearn: [],
-      language: 'ar',
-      subtitles: [],
-      isPublished: false,
-      isFeatured: false,
-      thumbnail: '',
-      instructor: {
-        name: '',
-        bio: '',
-        credentials: [],
-      },
-    });
-  };
-
-  const openEditModal = (course: Course) => {
-    setSelectedCourse(course);
-    setFormData({
-      title: course.title,
-      titleEn: course.titleEn || '',
-      description: course.description,
-      descriptionEn: course.descriptionEn || '',
-      price: course.price,
-      originalPrice: course.originalPrice || 0,
-      currency: course.currency,
-      duration: course.duration,
-      level: course.level,
-      category: course.category,
-      tags: course.tags,
-      requirements: course.requirements || [],
-      whatYouWillLearn: course.whatYouWillLearn,
-      language: course.language,
-      subtitles: course.subtitles || [],
-      isPublished: course.isPublished,
-      isFeatured: course.isFeatured,
-      thumbnail: course.thumbnail,
-      instructor: {
-        name: course.instructor.name,
-        bio: course.instructor.bio || '',
-        credentials: course.instructor.credentials || [],
-      },
-    });
-    setShowEditModal(true);
-  };
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toFixed(2)}`;
@@ -644,7 +352,7 @@ export default function CoursesPage() {
         </div>
         
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => router.push('/admin/courses/new')}
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <PlusIcon className="h-4 w-4 ml-2" />
@@ -653,7 +361,7 @@ export default function CoursesPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -686,18 +394,6 @@ export default function CoursesPage() {
             <div className="mr-4">
               <p className="text-sm font-medium text-gray-500">إجمالي التسجيلات</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalEnrollments}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <CurrencyDollarIcon className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="mr-4">
-              <p className="text-sm font-medium text-gray-500">إجمالي الإيرادات</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalRevenue)}</p>
             </div>
           </div>
         </div>
@@ -807,6 +503,15 @@ export default function CoursesPage() {
                   <span>{formatCurrency(course.price)}</span>
                 </div>
               </div>
+              
+              {/* Lesson reminder for unpublished courses */}
+              {!course.isPublished && (
+                <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-xs text-yellow-800">
+                    💡 لا تنس إضافة الدروس قبل نشر الكورس
+                  </p>
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex items-center justify-between">
@@ -819,7 +524,7 @@ export default function CoursesPage() {
                     <EyeIcon className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => openEditModal(course)}
+                    onClick={() => router.push(`/admin/courses/${course._id}/edit`)}
                     className="text-green-600 hover:text-green-700 p-1"
                     title="تعديل الكورس"
                   >
@@ -875,7 +580,7 @@ export default function CoursesPage() {
           </p>
           {!searchTerm && statusFilter === 'all' && (
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={() => router.push('/admin/courses/new')}
               className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <PlusIcon className="h-4 w-4 ml-2" />
@@ -885,67 +590,6 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* Create Course Modal */}
-      {showCreateModal && (
-        <CourseFormModal
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleCreateCourse}
-          onClose={() => setShowCreateModal(false)}
-          loading={formLoading}
-          uploadingImage={uploadingImage}
-          onImageUpload={handleImageUpload}
-          addTag={addTag}
-          removeTag={removeTag}
-          newTag={newTag}
-          setNewTag={setNewTag}
-          addRequirement={addRequirement}
-          removeRequirement={removeRequirement}
-          newRequirement={newRequirement}
-          setNewRequirement={setNewRequirement}
-          addLearningPoint={addLearningPoint}
-          removeLearningPoint={removeLearningPoint}
-          newLearningPoint={newLearningPoint}
-          setNewLearningPoint={setNewLearningPoint}
-          addCredential={addCredential}
-          removeCredential={removeCredential}
-          newCredential={newCredential}
-          setNewCredential={setNewCredential}
-          title="إنشاء كورس جديد"
-          submitText="إنشاء الكورس"
-        />
-      )}
-
-      {/* Edit Course Modal */}
-      {showEditModal && selectedCourse && (
-        <CourseFormModal
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleEditCourse}
-          onClose={() => setShowEditModal(false)}
-          loading={formLoading}
-          uploadingImage={uploadingImage}
-          onImageUpload={handleImageUpload}
-          addTag={addTag}
-          removeTag={removeTag}
-          newTag={newTag}
-          setNewTag={setNewTag}
-          addRequirement={addRequirement}
-          removeRequirement={removeRequirement}
-          newRequirement={newRequirement}
-          setNewRequirement={setNewRequirement}
-          addLearningPoint={addLearningPoint}
-          removeLearningPoint={removeLearningPoint}
-          newLearningPoint={newLearningPoint}
-          setNewLearningPoint={setNewLearningPoint}
-          addCredential={addCredential}
-          removeCredential={removeCredential}
-          newCredential={newCredential}
-          setNewCredential={setNewCredential}
-          title="تعديل الكورس"
-          submitText="حفظ التغييرات"
-        />
-      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedCourse && (
@@ -996,508 +640,3 @@ export default function CoursesPage() {
   );
 }
 
-// Course Form Modal Component
-interface CourseFormModalProps {
-  formData: CourseFormData;
-  setFormData: React.Dispatch<React.SetStateAction<CourseFormData>>;
-  onSubmit: () => void;
-  onClose: () => void;
-  loading: boolean;
-  uploadingImage: boolean;
-  onImageUpload: (file: File) => void;
-  addTag: () => void;
-  removeTag: (tag: string) => void;
-  newTag: string;
-  setNewTag: (tag: string) => void;
-  addRequirement: () => void;
-  removeRequirement: (requirement: string) => void;
-  newRequirement: string;
-  setNewRequirement: (requirement: string) => void;
-  addLearningPoint: () => void;
-  removeLearningPoint: (point: string) => void;
-  newLearningPoint: string;
-  setNewLearningPoint: (point: string) => void;
-  addCredential: () => void;
-  removeCredential: (credential: string) => void;
-  newCredential: string;
-  setNewCredential: (credential: string) => void;
-  title: string;
-  submitText: string;
-}
-
-function CourseFormModal({
-  formData,
-  setFormData,
-  onSubmit,
-  onClose,
-  loading,
-  uploadingImage,
-  onImageUpload,
-  addTag,
-  removeTag,
-  newTag,
-  setNewTag,
-  addRequirement,
-  removeRequirement,
-  newRequirement,
-  setNewRequirement,
-  addLearningPoint,
-  removeLearningPoint,
-  newLearningPoint,
-  setNewLearningPoint,
-  addCredential,
-  removeCredential,
-  newCredential,
-  setNewCredential,
-  title,
-  submitText,
-}: CourseFormModalProps) {
-  return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-4 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
-        <div className="mt-3">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
-          </div>
-          
-          <div className="max-h-96 overflow-y-auto space-y-6">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  عنوان الكورس (عربي) *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل عنوان الكورس"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  عنوان الكورس (إنجليزي)
-                </label>
-                <input
-                  type="text"
-                  value={formData.titleEn}
-                  onChange={(e) => setFormData(prev => ({ ...prev, titleEn: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter course title"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  الوصف (عربي) *
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل وصف الكورس"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  الوصف (إنجليزي)
-                </label>
-                <textarea
-                  value={formData.descriptionEn}
-                  onChange={(e) => setFormData(prev => ({ ...prev, descriptionEn: e.target.value }))}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter course description"
-                />
-              </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  السعر الحالي *
-                </label>
-                <input
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  السعر الأصلي
-                </label>
-                <input
-                  type="number"
-                  value={formData.originalPrice}
-                  onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  العملة
-                </label>
-                <select
-                  value={formData.currency}
-                  onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="USD">USD</option>
-                  <option value="SAR">SAR</option>
-                  <option value="EUR">EUR</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Course Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  المدة (ساعات) *
-                </label>
-                <input
-                  type="number"
-                  value={formData.duration}
-                  onChange={(e) => setFormData(prev => ({ ...prev, duration: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  المستوى *
-                </label>
-                <select
-                  value={formData.level}
-                  onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value as 'beginner' | 'intermediate' | 'advanced' }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="beginner">مبتدئ</option>
-                  <option value="intermediate">متوسط</option>
-                  <option value="advanced">متقدم</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  الفئة *
-                </label>
-                <input
-                  type="text"
-                  value={formData.category}
-                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل فئة الكورس"
-                />
-              </div>
-            </div>
-
-            {/* Language */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                اللغة
-              </label>
-              <select
-                value={formData.language}
-                onChange={(e) => setFormData(prev => ({ ...prev, language: e.target.value as 'ar' | 'en' }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-              </select>
-            </div>
-
-            {/* Thumbnail Upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                صورة الكورس
-              </label>
-              <div className="flex items-center space-x-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) onImageUpload(file);
-                  }}
-                  className="hidden"
-                  id="thumbnail-upload"
-                />
-                <label
-                  htmlFor="thumbnail-upload"
-                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  <PhotoIcon className="h-4 w-4 ml-2" />
-                  {uploadingImage ? 'جاري الرفع...' : 'رفع صورة'}
-                </label>
-                {formData.thumbnail && (
-                  <img
-                    src={formData.thumbnail}
-                    alt="Course thumbnail"
-                    className="h-20 w-32 object-cover rounded-md"
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Instructor Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  اسم المدرب *
-                </label>
-                <input
-                  type="text"
-                  value={formData.instructor.name}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    instructor: { ...prev.instructor, name: e.target.value }
-                  }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل اسم المدرب"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  نبذة عن المدرب
-                </label>
-                <textarea
-                  value={formData.instructor.bio}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    instructor: { ...prev.instructor, bio: e.target.value }
-                  }))}
-                  rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل نبذة عن المدرب"
-                />
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                العلامات
-              </label>
-              <div className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addTag()}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل علامة جديدة"
-                />
-                <button
-                  onClick={addTag}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  إضافة
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                  >
-                    {tag}
-                    <button
-                      onClick={() => removeTag(tag)}
-                      className="mr-1 text-blue-600 hover:text-blue-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Requirements */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                المتطلبات
-              </label>
-              <div className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={newRequirement}
-                  onChange={(e) => setNewRequirement(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addRequirement()}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل متطلب جديد"
-                />
-                <button
-                  onClick={addRequirement}
-                  className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                >
-                  إضافة
-                </button>
-              </div>
-              <div className="space-y-1">
-                {formData.requirements.map((requirement) => (
-                  <div
-                    key={requirement}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                  >
-                    <span className="text-sm">{requirement}</span>
-                    <button
-                      onClick={() => removeRequirement(requirement)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* What You Will Learn */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ما سوف تتعلمه
-              </label>
-              <div className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={newLearningPoint}
-                  onChange={(e) => setNewLearningPoint(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addLearningPoint()}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل نقطة تعلم جديدة"
-                />
-                <button
-                  onClick={addLearningPoint}
-                  className="px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
-                >
-                  إضافة
-                </button>
-              </div>
-              <div className="space-y-1">
-                {formData.whatYouWillLearn.map((point) => (
-                  <div
-                    key={point}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                  >
-                    <span className="text-sm">{point}</span>
-                    <button
-                      onClick={() => removeLearningPoint(point)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Instructor Credentials */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                مؤهلات المدرب
-              </label>
-              <div className="flex items-center space-x-2 mb-2">
-                <input
-                  type="text"
-                  value={newCredential}
-                  onChange={(e) => setNewCredential(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addCredential()}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="أدخل مؤهل جديد"
-                />
-                <button
-                  onClick={addCredential}
-                  className="px-3 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
-                >
-                  إضافة
-                </button>
-              </div>
-              <div className="space-y-1">
-                {formData.instructor.credentials?.map((credential) => (
-                  <div
-                    key={credential}
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded-md"
-                  >
-                    <span className="text-sm">{credential}</span>
-                    <button
-                      onClick={() => removeCredential(credential)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Status Options */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isPublished"
-                  checked={formData.isPublished}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="isPublished" className="mr-2 block text-sm text-gray-900">
-                  نشر الكورس
-                </label>
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="isFeatured"
-                  checked={formData.isFeatured}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="isFeatured" className="mr-2 block text-sm text-gray-900">
-                  كورس مميز
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-end space-x-4 mt-6">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-            >
-              إلغاء
-            </button>
-            <button
-              onClick={onSubmit}
-              disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'جاري الحفظ...' : submitText}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

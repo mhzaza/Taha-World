@@ -48,16 +48,77 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
     return `${remainingMinutes} دقيقة`;
   };
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'مبتدئ':
-        return 'bg-green-100 text-green-700';
-      case 'متوسط':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'متقدم':
-        return 'bg-red-100 text-red-700';
+  const translateLevel = (level: string) => {
+    switch (level.toLowerCase()) {
+      case 'beginner':
+        return 'مبتدئ';
+      case 'intermediate':
+        return 'متوسط';
+      case 'advanced':
+        return 'متقدم';
       default:
-        return 'bg-gray-100 text-gray-700';
+        return level; // Return as-is if already in Arabic or unknown
+    }
+  };
+
+  const translateCategory = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'fitness':
+        return 'اللياقة البدنية';
+      case 'bodybuilding':
+        return 'كمال الأجسام';
+      case 'cardio':
+        return 'التمارين القلبية';
+      case 'yoga':
+        return 'اليوجا';
+      case 'pilates':
+        return 'البيلاتس';
+      case 'martial arts':
+        return 'الرياضات القتالية';
+      case 'swimming':
+        return 'السباحة';
+      case 'running':
+        return 'الجري';
+      case 'cycling':
+        return 'ركوب الدراجات';
+      case 'dance':
+        return 'الرقص';
+      case 'sports':
+        return 'الرياضة';
+      case 'nutrition':
+        return 'التغذية';
+      case 'weight loss':
+        return 'فقدان الوزن';
+      case 'muscle building':
+        return 'بناء العضلات';
+      case 'flexibility':
+        return 'المرونة';
+      case 'strength training':
+        return 'تدريب القوة';
+      case 'endurance':
+        return 'التحمل';
+      case 'rehabilitation':
+        return 'إعادة التأهيل';
+      case 'sports medicine':
+        return 'الطب الرياضي';
+      case 'coaching':
+        return 'التدريب';
+      default:
+        return category; // Return as-is if already in Arabic or unknown
+    }
+  };
+
+  const getLevelColor = (level: string) => {
+    const arabicLevel = translateLevel(level);
+    switch (arabicLevel) {
+      case 'مبتدئ':
+        return 'bg-green-400 text-green-700';
+      case 'متوسط':
+        return 'bg-yellow-400 text-yellow-700';
+      case 'متقدم':
+        return 'bg-red-400 text-red-700';
+      default:
+        return 'bg-gray-400 text-black';
     }
   };
 
@@ -101,7 +162,7 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
 
               {/* Level */}
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${getLevelColor(course.level)}`}>
-                {course.level}
+                {translateLevel(course.level)}
               </span>
 
               {/* Duration */}
@@ -155,9 +216,6 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                 </button>
               ) : (
                 <>
-                  <button className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                    شراء الكورس - ${course.price}
-                  </button>
                   <button className="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-blue-900 transition-colors">
                     معاينة مجانية
                   </button>
@@ -196,12 +254,14 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                 </div>
               </div>
               
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-all cursor-pointer group">
-                <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <PlayIcon className="w-8 h-8 text-blue-900 mr-1" />
+              {/* Play Button Overlay - Only show if course has preview video */}
+              {course.previewVideo && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-20 transition-all cursor-pointer group">
+                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <PlayIcon className="w-8 h-8 text-blue-900 mr-1" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Course Stats Card */}
@@ -218,7 +278,11 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                 </div>
                 <div className="flex justify-between">
                   <span className="text-blue-200">المستوى</span>
-                  <span className="font-medium">{course.level}</span>
+                  <span className="font-medium">{translateLevel(course.level)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-200">التصنيف</span>
+                  <span className="font-medium">{translateCategory(course.category)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-blue-200">اللغة</span>

@@ -1,24 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Layout, Container } from '@/components/layout';
 import RequireAuth from '@/components/auth/RequireAuth';
 import { useAuth } from '@/contexts/AuthContext';
-import { dummyCourses as courses } from '@/data/courses';
-import { Course } from '@/types';
+import { userAPI, apiUtils, Course } from '@/lib/api';
 
-// Dummy purchased courses data (simulating user's enrolled courses)
-const getPurchasedCourses = (): Course[] => {
-  // For demo purposes, return first 3 courses as "purchased"
-  return courses.slice(0, 3);
-};
+interface UserProgress {
+  courseId: string;
+  completedLessons: string[];
+  totalLessons: number;
+  progressPercentage: number;
+  totalWatchTime: number;
+}
+
+interface DashboardStats {
+  totalCourses: number;
+  averageProgress: number;
+  totalWatchTime: number;
+  completedCourses: number;
+}
 
 const DashboardPage = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'courses' | 'progress' | 'certificates'>('courses');
-  
-  const purchasedCourses = getPurchasedCourses();
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
+    totalCourses: 0,
+    averageProgress: 0,
+    totalWatchTime: 0,
+    completedCourses: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -33,22 +49,85 @@ const DashboardPage = () => {
     return `${price} ${currency === 'USD' ? '$' : currency}`;
   };
 
-  // Simulate progress data
-  const getProgressData = (courseId: string) => {
-    const progressMap: { [key: string]: number } = {
-      '1': 75, // كورس مصارعة الذراعين
-      '2': 45, // تدريب القوة الأساسي
-      '3': 90, // فنون القتال المختلطة
-    };
-    return progressMap[courseId] || 0;
+  // Fetch user's enrolled courses and progress
+  const fetchDashboardData = async () => {
+    if (!user?._id) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch enrolled courses and user progress
+      const [coursesResponse, progressResponse] = await Promise.all([
+        userAPI.getCourses(),
+        userAPI.getProgress()
+      ]);
+
+
+      let courses: Course[] = [];
+      let progressData: UserProgress[] = [];
+
+      if (coursesResponse.data.success) {
+        courses = ((coursesResponse.data as any).courses || []) as Course[];
+        setEnrolledCourses(courses);
+      }
+
+      if (progressResponse.data.success) {
+        progressData = (progressResponse.data.data?.progress || []) as UserProgress[];
+        setUserProgress(progressData);
+      }
+      
+      // Calculate dashboard stats
+      const totalCourses = courses.length;
+      const averageProgress = totalCourses > 0 
+        ? Math.round(progressData.reduce((acc: number, p: UserProgress) => acc + (p.progressPercentage || 0), 0) / totalCourses)
+        : 0;
+      const totalWatchTime = progressData.reduce((acc: number, p: UserProgress) => acc + (p.totalWatchTime || 0), 0);
+      const completedCourses = progressData.filter((p: UserProgress) => (p.progressPercentage || 0) >= 100).length;
+
+      setDashboardStats({
+        totalCourses,
+        averageProgress,
+        totalWatchTime,
+        completedCourses
+      });
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError(apiUtils.handleApiError(err));
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Get progress for a specific course
+  const getProgressData = (courseId: string): number => {
+    const courseProgress = userProgress.find(p => p.courseId === courseId);
+    return courseProgress?.progressPercentage || 0;
+  };
+
+  // Load dashboard data when component mounts or user changes
+  useEffect(() => {
+    if (user?._id) {
+      fetchDashboardData();
+    }
+  }, [user?._id]);
+
+  // Auto-refresh dashboard data every 30 seconds to catch enrollment changes
+  useEffect(() => {
+    if (!user?._id) return;
+    
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [user?._id]);
 
   return (
     <RequireAuth>
       <Layout>
         {/* Welcome Section */}
-        <section className="bg-gradient-to-br from-blue-50 to-green-50 py-16">
-          <Container>
+        <section className="bg-gradient-to-br from-gray-400 to-gray-500 py-16">
             <div className="text-center mb-8">
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
                 مرحباً، {user?.displayName || 'المتدرب'}
@@ -59,25 +138,32 @@ const DashboardPage = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">{purchasedCourses.length}</div>
+                <div className="text-3xl font-bold text-blue-600 mb-2">
+                  {loading ? '...' : dashboardStats.totalCourses}
+                </div>
                 <div className="text-gray-600">الدورات المسجلة</div>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">
-                  {Math.round(purchasedCourses.reduce((acc, course) => acc + getProgressData(course.id), 0) / purchasedCourses.length)}%
+                  {loading ? '...' : `${dashboardStats.averageProgress}%`}
                 </div>
                 <div className="text-gray-600">متوسط التقدم</div>
               </div>
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
                 <div className="text-3xl font-bold text-yellow-600 mb-2">
-                  {purchasedCourses.reduce((acc, course) => acc + course.duration, 0)}
+                  {loading ? '...' : Math.round(dashboardStats.totalWatchTime / 60)}
                 </div>
-                <div className="text-gray-600">دقائق التدريب</div>
+                <div className="text-gray-600">ساعات التدريب</div>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-2">
+                  {loading ? '...' : dashboardStats.completedCourses}
+                </div>
+                <div className="text-gray-600">دورات مكتملة</div>
               </div>
             </div>
-          </Container>
         </section>
 
         {/* Dashboard Content */}
@@ -130,7 +216,24 @@ const DashboardPage = () => {
                   </Link>
                 </div>
 
-                {purchasedCourses.length === 0 ? (
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">جاري تحميل دوراتك...</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12">
+                    <div className="text-red-400 text-6xl mb-4">⚠️</div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">حدث خطأ في تحميل البيانات</h3>
+                    <p className="text-gray-600 mb-6">{error}</p>
+                    <button
+                      onClick={fetchDashboardData}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      إعادة المحاولة
+                    </button>
+                  </div>
+                ) : enrolledCourses.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="text-gray-400 text-6xl mb-4">📚</div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">لم تسجل في أي دورة بعد</h3>
@@ -144,16 +247,24 @@ const DashboardPage = () => {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {purchasedCourses.map((course) => {
-                      const progress = getProgressData(course.id);
+                    {enrolledCourses.map((course) => {
+                      const progress = getProgressData(course._id);
                       return (
-                        <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <div key={course._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                           <div className="relative">
-                            <div className="h-48 bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center">
-                              <div className="text-white text-6xl font-bold opacity-20">
-                                {course.title.charAt(0)}
+                            {course.thumbnail ? (
+                              <img 
+                                src={course.thumbnail} 
+                                alt={course.title}
+                                className="h-48 w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-48 bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center">
+                                <div className="text-white text-6xl font-bold opacity-20">
+                                  {course.title.charAt(0)}
+                                </div>
                               </div>
-                            </div>
+                            )}
                             <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
                               {formatDuration(course.duration)}
                             </div>
@@ -196,7 +307,7 @@ const DashboardPage = () => {
                                 {course.lessons?.length || 0} درس
                               </div>
                               <Link
-                                href={`/courses/${course.id}/learn`}
+                                href={`/courses/${course._id}`}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                               >
                                 {progress > 0 ? 'متابعة التعلم' : 'بدء التعلم'}
@@ -216,10 +327,10 @@ const DashboardPage = () => {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">تقدمي في التعلم</h2>
                 <div className="space-y-6">
-                  {purchasedCourses.map((course) => {
-                    const progress = getProgressData(course.id);
+                  {enrolledCourses.map((course) => {
+                    const progress = getProgressData(course._id);
                     return (
-                      <div key={course.id} className="bg-white rounded-lg shadow-md p-6">
+                      <div key={course._id} className="bg-white rounded-lg shadow-md p-6">
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">{course.title}</h3>

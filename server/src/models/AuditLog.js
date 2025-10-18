@@ -19,6 +19,7 @@ const auditLogSchema = new mongoose.Schema({
     enum: [
       // User actions
       'user.create', 'user.update', 'user.delete', 'user.suspend', 'user.activate', 'users.list',
+      'user.enroll', 'user.unenroll',
       // Course actions
       'course.create', 'course.update', 'course.delete', 'course.publish', 'course.unpublish',
       // Lesson actions
@@ -133,6 +134,8 @@ auditLogSchema.virtual('humanReadableAction').get(function() {
     'user.suspend': 'Suspend User',
     'user.activate': 'Activate User',
     'users.list': 'List Users',
+    'user.enroll': 'Enroll User in Course',
+    'user.unenroll': 'Unenroll User from Course',
     'course.create': 'Create Course',
     'course.update': 'Update Course',
     'course.delete': 'Delete Course',
@@ -167,8 +170,8 @@ auditLogSchema.pre('save', function(next) {
   ];
   
   const mediumSeverityActions = [
-    'user.suspend', 'user.activate', 'course.publish', 'course.unpublish',
-    'order.refund', 'order.cancel'
+    'user.suspend', 'user.activate', 'user.enroll', 'user.unenroll', 
+    'course.publish', 'course.unpublish', 'order.refund', 'order.cancel'
   ];
   
   if (highSeverityActions.includes(this.action)) {

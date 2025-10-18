@@ -23,6 +23,7 @@ import {
   InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import { adminAPI, apiUtils, Order } from '@/lib/api';
+import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 
 // Order interface is now imported from @/lib/api
 
@@ -159,6 +160,8 @@ export default function OrdersPage() {
   }>>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch orders data from API
   const fetchOrders = useCallback(async () => {
@@ -180,14 +183,14 @@ export default function OrdersPage() {
       const response = await adminAPI.getOrders(params);
       
       if (response.data.success) {
-        const newOrders = response.data.orders || [];
+        const newOrders = response.data.data?.orders || [];
         setOrders(newOrders);
-        setTotalOrders(response.data.pagination?.totalItems || 0);
-        setTotalPages(response.data.pagination?.totalPages || 0);
+        setTotalOrders(response.data.data?.pagination?.totalItems || 0);
+        setTotalPages(response.data.data?.pagination?.totalPages || 0);
         setLastUpdated(new Date());
         
         // Check for new orders (compare with previous data)
-        const newOrdersOnly = newOrders.filter(order => {
+        const newOrdersOnly = newOrders.filter((order: Order) => {
           const orderDate = new Date(order.createdAt);
           const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
           return orderDate > fiveMinutesAgo;
@@ -479,18 +482,24 @@ export default function OrdersPage() {
                   {notifications.length === 0 ? (
                     <p className="p-4 text-sm text-gray-500">لا توجد إشعارات جديدة</p>
                   ) : (
-                    notifications.map((order) => (
-                      <div key={order.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
+                    notifications.map((notification) => (
+                      <div key={notification.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
                         <div className="flex items-start justify-between">
                           <div>
                             <p className="text-sm font-medium text-gray-900">
-                              طلب جديد: {order.id}
+                              {notification.message}
                             </p>
-                            <p className="text-xs text-gray-500">{order.userName}</p>
-                            <p className="text-xs text-gray-500">{formatCurrency(order.amount)}</p>
+                            <p className="text-xs text-gray-500">{notification.timestamp.toLocaleString('ar-SA')}</p>
                           </div>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                            {getStatusText(order.status)}
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            notification.type === 'success' ? 'bg-green-100 text-green-800' :
+                            notification.type === 'error' ? 'bg-red-100 text-red-800' :
+                            notification.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                          }`}>
+                            {notification.type === 'success' ? 'نجح' :
+                             notification.type === 'error' ? 'خطأ' :
+                             notification.type === 'warning' ? 'تحذير' : 'معلومة'}
                           </span>
                         </div>
                       </div>
@@ -787,7 +796,10 @@ export default function OrdersPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       className="text-blue-600 hover:text-blue-900 flex items-center"
-                      onClick={() => alert(`عرض تفاصيل الطلب: ${order.id}`)}
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setIsModalOpen(true);
+                      }}
                     >
                       <EyeIcon className="h-4 w-4 ml-1" />
                       عرض
@@ -889,6 +901,34 @@ export default function OrdersPage() {
           )}
         </div>
       )}
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedOrder(null);
+        }}
+        order={selectedOrder}
+        onUpdateStatus={async (orderId: string, status: string, notes?: string) => {
+          try {
+            // Here you would call your API to update the order status
+            // await adminAPI.updateOrderStatus(orderId, { status, notes });
+            
+            // For now, just update the local state
+            setOrders(prev => prev.map(order => 
+              order.id === orderId 
+                ? { ...order, status: status as Order['status'], notes: notes || order.notes, updatedAt: new Date().toISOString() }
+                : order
+            ));
+            
+            addNotification('success', `تم تحديث حالة الطلب ${orderId} إلى ${getStatusText(status)}`);
+          } catch (error) {
+            console.error('Error updating order status:', error);
+            addNotification('error', 'حدث خطأ أثناء تحديث حالة الطلب');
+          }
+        }}
+      />
     </div>
   );
 }
