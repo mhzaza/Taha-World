@@ -122,18 +122,15 @@ export default function AdminDashboard() {
         const orders = ordersResponse.data.data?.orders || [];
         // Transform Order[] to RecentOrder[] format
         const transformedOrders: RecentOrder[] = orders.map(order => {
-          const userId = order.userId as any;
-          const courseId = order.courseId as any;
-          
           return {
             _id: order._id || '',
             userId: {
-              displayName: userId?.displayName || 'مستخدم غير معروف',
-              email: userId?.email || ''
+              displayName: order.userInfo?.displayName || order.userName || 'مستخدم غير معروف',
+              email: order.userInfo?.email || order.userEmail || ''
             },
             courseId: {
-              title: courseId?.title || 'كورس محذوف',
-              _id: courseId?._id || courseId || ''
+              title: order.courseInfo?.title || order.courseTitle || 'كورس محذوف',
+              _id: order.courseInfo?._id || order.courseId || ''
             },
             amount: order.amount || 0,
             status: (['completed', 'pending', 'failed', 'cancelled'].includes(order.status || '')) 

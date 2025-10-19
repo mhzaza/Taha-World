@@ -80,9 +80,9 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-center mb-6">
               <div className="w-20 h-20 rounded-full bg-gray-200 mx-auto mb-4 flex items-center justify-center">
-                {user.photoURL ? (
+                {user.avatar ? (
                   <img 
-                    src={user.photoURL} 
+                    src={user.avatar} 
                     alt={user.displayName || 'صورة المستخدم'} 
                     className="w-full h-full rounded-full object-cover"
                   />

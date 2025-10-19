@@ -18,7 +18,7 @@ interface User {
   goals?: string[];
   enrolledCourses: string[];
   completedLessons: string[];
-  certificates: any[];
+  certificates: unknown[];
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
@@ -37,7 +37,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string, additionalData?: any) => Promise<void>;
+  register: (email: string, password: string, displayName: string, additionalData?: Record<string, unknown>) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (token) {
         try {
           const response = await authAPI.getCurrentUser();
-          setUser(response.data.user);
+          setUser(response.data.data?.user || null);
         } catch (error) {
           console.error('Auth check failed:', error);
           Cookies.remove('token');
@@ -84,19 +84,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authAPI.login(email, password);
-      const { token, refreshToken, user } = response.data;
+      const { token, refreshToken, user } = response.data.data!;
 
       // Store tokens in cookies
       Cookies.set('token', token, { expires: 7 });
       Cookies.set('refreshToken', refreshToken, { expires: 30 });
 
       setUser(user);
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(apiUtils.handleApiError(error));
     }
   };
 
-  const register = async (email: string, password: string, displayName: string, additionalData?: any): Promise<void> => {
+  const register = async (email: string, password: string, displayName: string, additionalData?: Record<string, unknown>): Promise<void> => {
     try {
       const response = await authAPI.register({
         email,
@@ -104,14 +104,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         displayName,
         ...additionalData,
       });
-      const { token, refreshToken, user } = response.data;
+      const { token, refreshToken, user } = response.data.data!;
 
       // Store tokens in cookies
       Cookies.set('token', token, { expires: 7 });
       Cookies.set('refreshToken', refreshToken, { expires: 30 });
 
       setUser(user);
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(apiUtils.handleApiError(error));
     }
   };
@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resetPassword = async (email: string): Promise<void> => {
     try {
       await authAPI.forgotPassword(email);
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(apiUtils.handleApiError(error));
     }
   };
@@ -140,8 +140,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateProfile = async (data: Partial<User>): Promise<void> => {
     try {
       const response = await userAPI.updateProfile(data);
-      setUser(response.data.user);
-    } catch (error: any) {
+      setUser(response.data.data?.user || null);
+    } catch (error: unknown) {
       throw new Error(apiUtils.handleApiError(error));
     }
   };

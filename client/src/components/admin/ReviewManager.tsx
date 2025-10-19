@@ -36,7 +36,7 @@ interface ReviewManagerProps {
 }
 
 const AR = {
-  title: 'إدارة التقييمات',
+  pageTitle: 'إدارة التقييمات',
   loading: 'جاري التحميل...',
   noReviews: 'لا توجد تقييمات',
   course: 'الدورة',
@@ -230,7 +230,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900">{AR.title}</h2>
+        <h2 className="text-xl font-semibold text-gray-900">{AR.pageTitle}</h2>
         <p className="text-sm text-gray-600 mt-1">
           {AR.totalReviews}: {totalItems}
         </p>

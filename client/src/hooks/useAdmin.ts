@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { adminAPI, apiUtils } from '@/lib/api';
+import { adminAPI, apiUtils, type DashboardStats, type User, type Order, type PaginationInfo, type AnalyticsData, type AnalyticsResponse } from '@/lib/api';
 
 // Admin Dashboard Hook
 export const useAdminDashboard = () => {
-  const [dashboard, setDashboard] = useState<any>(null);
+  const [dashboard, setDashboard] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,8 +14,8 @@ export const useAdminDashboard = () => {
         setError(null);
         
         const response = await adminAPI.getDashboard();
-        setDashboard(response.data.dashboard);
-      } catch (err: any) {
+        setDashboard(response.data.data?.dashboard || null);
+      } catch (err: unknown) {
         setError(apiUtils.handleApiError(err));
       } finally {
         setLoading(false);
@@ -36,9 +36,9 @@ export const useAdminUsers = (filters: {
   status?: string;
   emailVerified?: boolean;
 } = {}) => {
-  const [users, setUsers] = useState<any[]>([]);
-  const [pagination, setPagination] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [stats, setStats] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,10 +49,10 @@ export const useAdminUsers = (filters: {
         setError(null);
         
         const response = await adminAPI.getUsers(filters);
-        setUsers(response.data.users || []);
-        setPagination(response.data.pagination || null);
-        setStats(response.data.stats || null);
-      } catch (err: any) {
+        setUsers(response.data.data?.users || []);
+        setPagination(response.data.data?.pagination || null);
+        setStats(response.data.data?.stats || null);
+      } catch (err: unknown) {
         setError(apiUtils.handleApiError(err));
       } finally {
         setLoading(false);
@@ -62,17 +62,24 @@ export const useAdminUsers = (filters: {
     fetchUsers();
   }, [JSON.stringify(filters)]);
 
-  const updateUser = async (userId: string, userData: any) => {
+  const updateUser = async (userId: string, userData: {
+    isActive?: boolean;
+    isAdmin?: boolean;
+    adminRole?: string;
+    adminPermissions?: string[];
+    totalSpent?: number;
+    notes?: string;
+  }) => {
     try {
       const response = await adminAPI.updateUser(userId, userData);
       
       // Update local state
       setUsers(prev => prev.map(user => 
-        user._id === userId ? { ...user, ...response.data.user } : user
+        user._id === userId ? { ...user, ...(response.data.data?.user || {}) } : user
       ));
       
-      return response.data;
-    } catch (err: any) {
+      return response.data.data;
+    } catch (err: unknown) {
       throw new Error(apiUtils.handleApiError(err));
     }
   };
@@ -89,9 +96,9 @@ export const useAdminOrders = (filters: {
   dateFrom?: string;
   dateTo?: string;
 } = {}) => {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [pagination, setPagination] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [stats, setStats] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,10 +109,10 @@ export const useAdminOrders = (filters: {
         setError(null);
         
         const response = await adminAPI.getOrders(filters);
-        setOrders(response.data.orders || []);
-        setPagination(response.data.pagination || null);
-        setStats(response.data.stats || null);
-      } catch (err: any) {
+        setOrders(response.data.data?.orders || []);
+        setPagination(response.data.data?.pagination || null);
+        setStats(response.data.data?.stats || null);
+      } catch (err: unknown) {
         setError(apiUtils.handleApiError(err));
       } finally {
         setLoading(false);
@@ -115,17 +122,17 @@ export const useAdminOrders = (filters: {
     fetchOrders();
   }, [JSON.stringify(filters)]);
 
-  const updateOrder = async (orderId: string, orderData: any) => {
+  const updateOrder = async (orderId: string, orderData: { status: string; notes?: string }) => {
     try {
       const response = await adminAPI.updateOrder(orderId, orderData);
       
       // Update local state
       setOrders(prev => prev.map(order => 
-        order._id === orderId ? { ...order, ...response.data.order } : order
+        order._id === orderId ? { ...order, ...(response.data.data?.order || {}) } : order
       ));
       
-      return response.data;
-    } catch (err: any) {
+      return response.data.data;
+    } catch (err: unknown) {
       throw new Error(apiUtils.handleApiError(err));
     }
   };
@@ -143,8 +150,8 @@ export const useAdminAuditLogs = (filters: {
   dateFrom?: string;
   dateTo?: string;
 } = {}) => {
-  const [logs, setLogs] = useState<any[]>([]);
-  const [pagination, setPagination] = useState<any>(null);
+  const [logs, setLogs] = useState<unknown[]>([]);
+  const [pagination, setPagination] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -155,9 +162,9 @@ export const useAdminAuditLogs = (filters: {
         setError(null);
         
         const response = await adminAPI.getAuditLogs(filters);
-        setLogs(response.data.logs || []);
+        setLogs(response.data.data || []);
         setPagination(response.data.pagination || null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError(apiUtils.handleApiError(err));
       } finally {
         setLoading(false);
@@ -172,7 +179,7 @@ export const useAdminAuditLogs = (filters: {
 
 // Admin Analytics Hook
 export const useAdminAnalytics = (period: string = '30d') => {
-  const [analytics, setAnalytics] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -183,8 +190,8 @@ export const useAdminAnalytics = (period: string = '30d') => {
         setError(null);
         
         const response = await adminAPI.getAnalytics({ period });
-        setAnalytics(response.data.analytics);
-      } catch (err: any) {
+        setAnalytics(response.data.analytics || null);
+      } catch (err: unknown) {
         setError(apiUtils.handleApiError(err));
       } finally {
         setLoading(false);

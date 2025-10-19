@@ -79,9 +79,19 @@ export interface Order {
   userEmail: string;
   userName: string;
   userPhone?: string;
+  userInfo?: {
+    _id: string;
+    displayName: string;
+    email: string;
+  };
   courseId: string;
   courseTitle: string;
   courseThumbnail?: string;
+  courseInfo?: {
+    _id: string;
+    title: string;
+    thumbnail?: string;
+  };
   amount: number;
   currency?: string;
   originalAmount?: number;
@@ -155,6 +165,54 @@ export interface DashboardStats {
     highSeverityActions: number;
     criticalActions: number;
     unauthorizedAttempts: number;
+  };
+}
+
+export interface AnalyticsData {
+  period: string;
+  userGrowth: unknown[];
+  revenue: {
+    totalRevenue?: number;
+  };
+  popularCourses?: Array<{
+    title: string;
+    revenue?: number;
+    enrollmentCount?: number;
+  }>;
+  adminActivity?: Array<{
+    action: string;
+    details: unknown;
+    createdAt: string;
+  }>;
+  weeklySalesData: Array<{
+    week: string;
+    sales: number;
+    orders: number;
+    students: number;
+  }>;
+  monthlyGrowthData: Array<{
+    month: string;
+    revenue: number;
+    students: number;
+    courses: number;
+  }>;
+  courseCompletionData: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  deviceData: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  quickStats: {
+    conversionRate: string;
+    avgSessionTime: string;
+    bounceRate: string;
+    newVisitors: string;
+    returningVisitors: string;
+    avgOrderValue: number;
   };
 }
 
@@ -235,6 +293,15 @@ api.interceptors.response.use(
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
+  message?: string;
+  error?: string;
+  arabic?: string;
+}
+
+// Special response type for analytics endpoint that returns data directly
+export interface AnalyticsResponse {
+  success: boolean;
+  analytics?: AnalyticsData;
   message?: string;
   error?: string;
   arabic?: string;
@@ -450,7 +517,7 @@ export const adminAPI = {
 
   getAnalytics: (params?: {
     period?: string;
-  }) => api.get<ApiResponse<{ analytics: unknown }>>('/admin/analytics', { params }),
+  }) => api.get<AnalyticsResponse>('/admin/analytics', { params }),
 };
 
 // Upload API

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Script from 'next/script';
+import { Suspense } from 'react';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import ClientAuthProvider from "@/components/ClientAuthProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -63,7 +64,9 @@ export default function RootLayout({
           <ClientAuthProvider>
             {children}
             <Toaster position="top-center" reverseOrder={false} />
-             <GoogleAnalytics />
+            <Suspense fallback={null}>
+              <GoogleAnalytics />
+            </Suspense>
           </ClientAuthProvider>
         </ThemeProvider>
       </body>

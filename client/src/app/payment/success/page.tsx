@@ -1,17 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
-export default function PaymentSuccessPage() {
+interface Order {
+  courseId: string;
+  courseTitle: string;
+  amount: number;
+  currency: string;
+}
+
+function PaymentSuccessContent() {
   const [loading, setLoading] = useState(true);
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
 
   useEffect(() => {
     const handlePaymentSuccess = async () => {
@@ -61,9 +66,10 @@ export default function PaymentSuccessPage() {
           router.push(`/courses/${data.order.courseId}`);
         }, 3000);
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Payment capture error:', error);
-        setError(error.message || 'حدث خطأ أثناء إتمام الدفع');
+        const errorMessage = error instanceof Error ? error.message : 'حدث خطأ أثناء إتمام الدفع';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -136,5 +142,20 @@ export default function PaymentSuccessPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

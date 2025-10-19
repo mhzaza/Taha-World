@@ -53,16 +53,17 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.isAdmin = user.isAdmin;
-        token.adminRole = user.adminRole;
+        token.isAdmin = (user as { isAdmin?: boolean; adminRole?: string }).isAdmin;
+        token.adminRole = (user as { isAdmin?: boolean; adminRole?: string }).adminRole;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.sub!;
-        session.user.isAdmin = token.isAdmin;
-        session.user.adminRole = token.adminRole;
+        const user = session.user as { id?: string; isAdmin?: boolean; adminRole?: string };
+        user.id = token.sub!;
+        user.isAdmin = token.isAdmin;
+        user.adminRole = token.adminRole;
       }
       return session;
     },

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { userAPI } from '@/lib/api';
+import { userAPI, type Course } from '@/lib/api';
 import { AcademicCapIcon, PlayIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 interface UserCourse {
@@ -35,10 +35,22 @@ export default function UserCourses() {
         setLoading(true);
         
         // Fetch user courses from API
-        const response = await userAPI.getUserCourses();
+        const response = await userAPI.getEnrolledCourses();
         
         if (response.data.success) {
-          setCourses(response.data.data || []);
+          const coursesData = response.data.data?.courses || [];
+          // Transform Course[] to UserCourse[]
+          const transformedCourses: UserCourse[] = coursesData.map((course: Course) => ({
+            _id: course._id,
+            id: course._id, // Use _id as id if no separate id field
+            title: course.title,
+            thumbnail: course.thumbnail,
+            duration: course.duration,
+            lessons: course.lessons || [],
+            enrolledAt: course.createdAt || new Date().toISOString(), // Use course creation date as fallback
+            progress: undefined
+          }));
+          setCourses(transformedCourses);
           setError(null);
         } else {
           throw new Error(response.data.error || 'فشل في تحميل الدورات');

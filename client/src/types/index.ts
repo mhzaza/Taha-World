@@ -217,6 +217,7 @@ export interface CourseFilters {
   rating?: number;
   language?: string;
   duration?: string;
+  featured?: boolean;
   sortBy?: 'newest' | 'oldest' | 'price-low' | 'price-high' | 'rating' | 'popular';
 }
 

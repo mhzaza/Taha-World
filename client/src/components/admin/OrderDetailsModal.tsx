@@ -28,9 +28,19 @@ interface OrderDetails {
   userEmail: string;
   userName: string;
   userPhone?: string;
+  userInfo?: {
+    _id: string;
+    displayName: string;
+    email: string;
+  };
   courseId: string;
   courseTitle: string;
   courseThumbnail?: string;
+  courseInfo?: {
+    _id: string;
+    title: string;
+    thumbnail?: string;
+  };
   amount: number;
   currency?: string;
   originalAmount?: number;
@@ -74,12 +84,12 @@ export default function OrderDetailsModal({
   // Ensure order data is properly structured (no nested objects)
   const sanitizedOrder = {
     ...order,
-    userId: typeof order.userId === 'object' ? order.userId._id || order.userId.id : order.userId,
-    courseId: typeof order.courseId === 'object' ? order.courseId._id || order.courseId.id : order.courseId,
-    userEmail: order.userEmail || (order.userId && typeof order.userId === 'object' ? order.userId.email : ''),
-    userName: order.userName || (order.userId && typeof order.userId === 'object' ? order.userId.displayName : ''),
-    courseTitle: order.courseTitle || (order.courseId && typeof order.courseId === 'object' ? order.courseId.title : ''),
-    courseThumbnail: order.courseThumbnail || (order.courseId && typeof order.courseId === 'object' ? order.courseId.thumbnail : '')
+    userId: order.userId,
+    courseId: order.courseId,
+    userEmail: order.userEmail || order.userInfo?.email || '',
+    userName: order.userName || order.userInfo?.displayName || '',
+    courseTitle: order.courseTitle || order.courseInfo?.title || '',
+    courseThumbnail: order.courseThumbnail || order.courseInfo?.thumbnail || ''
   };
 
   const getStatusColor = (status: string) => {

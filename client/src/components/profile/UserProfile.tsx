@@ -33,17 +33,17 @@ export default function UserProfile() {
         const response = await userAPI.getProfile();
         
         if (response.data.success) {
-          const userData = response.data.data?.user;
+          const userData = response.data.user;
           setProfileForm({
-            displayName: userData?.displayName || user.displayName || '',
-            email: userData?.email || user.email || '',
-            phone: userData?.phone || '',
-            location: userData?.location || '',
-            birthDate: userData?.birthDate || '',
-            bio: userData?.bio || '',
-            gender: userData?.gender || '',
-            fitnessLevel: userData?.fitnessLevel || '',
-            goals: userData?.goals || []
+            displayName: userData.displayName || user.displayName || '',
+            email: userData.email || user.email || '',
+            phone: userData.phone || '',
+            location: userData.location || '',
+            birthDate: userData.birthDate || '',
+            bio: userData.bio || '',
+            gender: userData.gender || '',
+            fitnessLevel: userData.fitnessLevel || '',
+            goals: userData.goals || []
           });
         }
       } catch (err) {
@@ -113,8 +113,8 @@ export default function UserProfile() {
           location: profileForm.location,
           birthDate: profileForm.birthDate,
           bio: profileForm.bio,
-          gender: profileForm.gender,
-          fitnessLevel: profileForm.fitnessLevel,
+          gender: profileForm.gender as 'male' | 'female' | 'other' | undefined,
+          fitnessLevel: profileForm.fitnessLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
           goals: profileForm.goals
         });
 

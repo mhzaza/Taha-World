@@ -686,13 +686,23 @@ router.get('/orders', async (req, res) => {
     const transformedOrders = orders.map(order => {
       const orderObj = order.toObject();
       
-      // Ensure userId is a string, not an object
+      // Preserve populated user data but also provide userId as string
       if (orderObj.userId && typeof orderObj.userId === 'object') {
+        orderObj.userInfo = {
+          _id: orderObj.userId._id || orderObj.userId.id,
+          displayName: orderObj.userId.displayName,
+          email: orderObj.userId.email
+        };
         orderObj.userId = orderObj.userId._id || orderObj.userId.id;
       }
       
-      // Ensure courseId is a string, not an object
+      // Preserve populated course data but also provide courseId as string
       if (orderObj.courseId && typeof orderObj.courseId === 'object') {
+        orderObj.courseInfo = {
+          _id: orderObj.courseId._id || orderObj.courseId.id,
+          title: orderObj.courseId.title,
+          thumbnail: orderObj.courseId.thumbnail
+        };
         orderObj.courseId = orderObj.courseId._id || orderObj.courseId.id;
       }
       
