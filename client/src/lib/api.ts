@@ -297,7 +297,7 @@ export const authAPI = {
 
 // User API
 export const userAPI = {
-  getProfile: () => api.get<ApiResponse<{ user: User }>>('/users/profile'),
+  getProfile: () => api.get<{ success: boolean; user: User }>('/users/profile'),
 
   updateProfile: (data: {
     displayName?: string;
@@ -310,7 +310,7 @@ export const userAPI = {
     goals?: string[];
   }) => api.put<ApiResponse<{ user: User }>>('/users/profile', data),
 
-  getCourses: () => api.get<ApiResponse<{ courses: Course[] }>>('/users/courses'),
+  getCourses: () => api.get<{ success: boolean; courses: Course[] }>('/users/courses'),
 
   getOrders: (params?: {
     page?: number;
@@ -361,7 +361,7 @@ export const courseAPI = {
     search?: string;
   }) => api.get<PaginatedResponse<Course>>('/courses', { params }),
 
-  getCourse: (id: string) => api.get<ApiResponse<{ course: Course }>>(`/courses/${id}`),
+  getCourse: (id: string) => api.get<{ success: boolean; course?: Course; error?: string; arabic?: string }>(`/courses/${id}`),
 
   getFeatured: () => api.get<ApiResponse<{ courses: Course[] }>>('/courses/featured/list'),
 
@@ -484,6 +484,7 @@ export const uploadAPI = {
     formData.append('video', file);
     return api.post<ApiResponse<{ video: unknown }>>('/upload/lesson-video', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 300000, // 5 minutes timeout for video uploads
     });
   },
 

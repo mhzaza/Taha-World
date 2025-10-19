@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   BarChart,
   Bar,
@@ -24,48 +24,35 @@ import {
   AcademicCapIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
-  CalendarIcon
+  CalendarIcon,
+  FunnelIcon,
+  ArrowPathIcon,
+  DocumentArrowDownIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline';
+import { useAdminAnalytics } from '@/hooks/useAdmin';
 
-// Mock data for analytics
-const weeklySalesData = [
-  { week: 'الأسبوع 1', sales: 1200, orders: 8, students: 12 },
-  { week: 'الأسبوع 2', sales: 1800, orders: 12, students: 18 },
-  { week: 'الأسبوع 3', sales: 2400, orders: 16, students: 24 },
-  { week: 'الأسبوع 4', sales: 1600, orders: 10, students: 15 },
-  { week: 'الأسبوع 5', sales: 2800, orders: 18, students: 28 },
-  { week: 'الأسبوع 6', sales: 3200, orders: 22, students: 32 },
-  { week: 'الأسبوع 7', sales: 2600, orders: 17, students: 26 },
-  { week: 'الأسبوع 8', sales: 3600, orders: 24, students: 36 }
-];
+// Color schemes for charts
+const CHART_COLORS = {
+  primary: '#3B82F6',
+  success: '#10B981',
+  warning: '#F59E0B',
+  danger: '#EF4444',
+  purple: '#8B5CF6',
+  indigo: '#6366F1',
+  pink: '#EC4899',
+  teal: '#14B8A6'
+};
 
-const topCoursesByRevenue = [
-  { name: 'كورس تدريب كمال الأجسام المتقدم', revenue: 8970, students: 30, color: '#3B82F6' },
-  { name: 'كورس تدريب الملاكمة', revenue: 7470, students: 30, color: '#10B981' },
-  { name: 'كورس تدريب المصارعة للمبتدئين', revenue: 5970, students: 30, color: '#F59E0B' },
-  { name: 'كورس التغذية الرياضية', revenue: 4470, students: 30, color: '#EF4444' },
-  { name: 'كورس تدريب اللياقة البدنية', revenue: 2985, students: 15, color: '#8B5CF6' }
-];
-
-const monthlyGrowthData = [
-  { month: 'يناير', revenue: 12000, students: 45, courses: 4 },
-  { month: 'فبراير', revenue: 15050, students: 62, courses: 5 },
-  { month: 'مارس', revenue: 18000, students: 78, courses: 5 },
-  { month: 'أبريل', revenue: 22000, students: 95, courses: 6 },
-  { month: 'مايو', revenue: 28000, students: 118, courses: 7 },
-  { month: 'يونيو', revenue: 32000, students: 142, courses: 8 }
-];
-
-const courseCompletionData = [
-  { name: 'مكتمل', value: 68, color: '#10B981' },
-  { name: 'قيد التقدم', value: 24, color: '#F59E0B' },
-  { name: 'لم يبدأ', value: 8, color: '#EF4444' }
-];
-
-const deviceData = [
-  { name: 'الهاتف المحمول', value: 52, color: '#3B82F6' },
-  { name: 'سطح المكتب', value: 35, color: '#10B981' },
-  { name: 'الجهاز اللوحي', value: 13, color: '#F59E0B' }
+const colorPalette = [
+  CHART_COLORS.primary,
+  CHART_COLORS.success,
+  CHART_COLORS.warning,
+  CHART_COLORS.danger,
+  CHART_COLORS.purple,
+  CHART_COLORS.indigo,
+  CHART_COLORS.pink,
+  CHART_COLORS.teal
 ];
 
 type TimeRange = '7d' | '30d' | '90d' | '1y';
@@ -73,20 +60,59 @@ type TimeRange = '7d' | '30d' | '90d' | '1y';
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const [selectedMetric, setSelectedMetric] = useState<'sales' | 'orders' | 'students'>('sales');
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Calculate key metrics
-  const metrics = useMemo(() => {
-    const totalRevenue = topCoursesByRevenue.reduce((sum, course) => sum + course.revenue, 0);
-    const totalStudents = topCoursesByRevenue.reduce((sum, course) => sum + course.students, 0);
-    const totalCourses = topCoursesByRevenue.length;
-    const avgRevenuePerStudent = totalRevenue / totalStudents;
-    
-    // Calculate growth rates (mock)
+  // Fetch analytics data
+  const { analytics, loading, error } = useAdminAnalytics(timeRange);
+
+  // Process analytics data
+  const processedData = useMemo(() => {
+    if (!analytics) return null;
+
+    // Use real data from backend
+    const userGrowthData = analytics.weeklySalesData || [];
+    const topCoursesData = analytics.popularCourses?.map((course: any, index: number) => ({
+      name: course.title || `كورس ${index + 1}`,
+      revenue: course.revenue || 0,
+      students: course.enrollmentCount || 0,
+      color: colorPalette[index % colorPalette.length]
+    })) || [];
+
+    // Use real monthly growth data
+    const monthlyGrowthData = analytics.monthlyGrowthData || [];
+
+    // Use real course completion data
+    const courseCompletionData = analytics.courseCompletionData || [];
+
+    // Use real device data
+    const deviceData = analytics.deviceData || [];
+
+    // Calculate real metrics from backend data
+    const revenueData = analytics.revenue || {};
+    const totalRevenue = revenueData.totalRevenue || 0;
+    const totalStudents = analytics.userGrowth?.reduce((sum: number, item: any) => sum + (item.count || 0), 0) || 0;
+    const totalCourses = analytics.popularCourses?.length || 0;
+    const avgRevenuePerStudent = totalStudents > 0 ? totalRevenue / totalStudents : 0;
+
+    // Calculate real growth rates from historical data
+    const calculateGrowthRate = (current: number, previous: number) => {
+      if (previous === 0) return 0;
+      return ((current - previous) / previous * 100).toFixed(1);
+    };
+
+    // Mock growth rates for now - can be enhanced with historical comparison
     const revenueGrowth = 15.2;
     const studentGrowth = 23.8;
     const courseGrowth = 8.5;
     
     return {
+      userGrowthData,
+      topCoursesData,
+      monthlyGrowthData,
+      courseCompletionData,
+      deviceData,
+      quickStats: analytics.quickStats || {},
+      metrics: {
       totalRevenue,
       totalStudents,
       totalCourses,
@@ -94,7 +120,22 @@ export default function AnalyticsPage() {
       revenueGrowth,
       studentGrowth,
       courseGrowth
+      }
     };
+  }, [analytics]);
+
+  // Refresh data
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleRefresh();
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
   }, []);
 
   const formatCurrency = (amount: number) => {
@@ -153,6 +194,81 @@ export default function AnalyticsPage() {
     return null;
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-48 mt-2 bg-gray-200 rounded animate-pulse" />
+          </div>
+          <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse" />
+                <div className="mr-4 flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-2 animate-pulse" />
+                  <div className="h-8 bg-gray-200 rounded w-32 mb-2 animate-pulse" />
+                  <div className="h-3 bg-gray-200 rounded w-20 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="bg-white rounded-lg shadow p-6">
+              <div className="h-6 bg-gray-200 rounded w-48 mb-6 animate-pulse" />
+              <div className="h-80 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div className="text-red-600 mb-2">
+            <ChartBarIcon className="h-12 w-12 mx-auto" />
+          </div>
+          <h3 className="text-lg font-medium text-red-900 mb-2">خطأ في تحميل البيانات</h3>
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={handleRefresh}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            إعادة المحاولة
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!processedData) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-lg shadow p-12 text-center">
+          <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-sm font-medium text-gray-900">لا توجد بيانات</h3>
+          <p className="mt-1 text-sm text-gray-500">
+            لا توجد بيانات تحليلية متاحة للفترة المحددة
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { userGrowthData, topCoursesData, monthlyGrowthData, courseCompletionData, deviceData, quickStats, metrics } = processedData;
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -162,7 +278,7 @@ export default function AnalyticsPage() {
           <p className="mt-2 text-gray-600">تتبع أداء المنصة والمبيعات</p>
         </div>
         
-        {/* Time Range Selector */}
+        {/* Controls */}
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <CalendarIcon className="h-5 w-5 text-gray-400" />
@@ -177,73 +293,106 @@ export default function AnalyticsPage() {
               <option value="1y">آخر سنة</option>
             </select>
           </div>
+          
+          <button
+            onClick={handleRefresh}
+            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <ArrowPathIcon className="h-4 w-4" />
+            <span>تحديث</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              // Export functionality
+              const dataStr = JSON.stringify(processedData, null, 2);
+              const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+              const exportFileDefaultName = `analytics-${timeRange}-${new Date().toISOString().split('T')[0]}.json`;
+              const linkElement = document.createElement('a');
+              linkElement.setAttribute('href', dataUri);
+              linkElement.setAttribute('download', exportFileDefaultName);
+              linkElement.click();
+            }}
+            className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <DocumentArrowDownIcon className="h-4 w-4" />
+            <span>تصدير</span>
+          </button>
         </div>
       </div>
 
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
+              <div className="p-3 bg-green-100 rounded-full">
               <CurrencyDollarIcon className="h-8 w-8 text-green-600" />
+              </div>
             </div>
             <div className="mr-4 flex-1">
               <p className="text-sm font-medium text-gray-500">إجمالي الإيرادات</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.totalRevenue)}</p>
               <div className="flex items-center mt-1">
                 <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
-                <span className="text-sm text-green-600">+{metrics.revenueGrowth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{metrics.revenueGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
+              <div className="p-3 bg-blue-100 rounded-full">
               <UserGroupIcon className="h-8 w-8 text-blue-600" />
+              </div>
             </div>
             <div className="mr-4 flex-1">
               <p className="text-sm font-medium text-gray-500">إجمالي الطلاب</p>
               <p className="text-2xl font-bold text-gray-900">{metrics.totalStudents.toLocaleString()}</p>
               <div className="flex items-center mt-1">
                 <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
-                <span className="text-sm text-green-600">+{metrics.studentGrowth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{metrics.studentGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
+              <div className="p-3 bg-purple-100 rounded-full">
               <AcademicCapIcon className="h-8 w-8 text-purple-600" />
+              </div>
             </div>
             <div className="mr-4 flex-1">
               <p className="text-sm font-medium text-gray-500">عدد الكورسات</p>
               <p className="text-2xl font-bold text-gray-900">{metrics.totalCourses}</p>
               <div className="flex items-center mt-1">
                 <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 ml-1" />
-                <span className="text-sm text-green-600">+{metrics.courseGrowth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{metrics.courseGrowth}%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
+              <div className="p-3 bg-orange-100 rounded-full">
               <ChartBarIcon className="h-8 w-8 text-orange-600" />
+              </div>
             </div>
             <div className="mr-4 flex-1">
               <p className="text-sm font-medium text-gray-500">متوسط الإيراد لكل طالب</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.avgRevenuePerStudent)}</p>
               <div className="flex items-center mt-1">
                 <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 ml-1" />
-                <span className="text-sm text-red-600">-2.1%</span>
+                <span className="text-sm text-red-600 font-medium">-2.1%</span>
                 <span className="text-sm text-gray-500 mr-2">من الشهر الماضي</span>
               </div>
             </div>
@@ -254,14 +403,15 @@ export default function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Weekly Sales Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-medium text-gray-900">المبيعات الأسبوعية</h3>
             <div className="flex items-center space-x-2">
+              <FunnelIcon className="h-4 w-4 text-gray-400" />
               <select
                 value={selectedMetric}
                 onChange={(e) => setSelectedMetric(e.target.value as any)}
-                className="text-sm border border-gray-300 rounded-md px-2 py-1"
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="sales">المبيعات</option>
                 <option value="orders">الطلبات</option>
@@ -271,7 +421,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weeklySalesData}>
+              <AreaChart data={userGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
                   dataKey="week" 
@@ -298,11 +448,11 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top Courses by Revenue */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">أفضل الكورسات حسب الإيرادات</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={topCoursesByRevenue} layout="horizontal">
+              <BarChart data={topCoursesData} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
                   type="number" 
@@ -326,7 +476,7 @@ export default function AnalyticsPage() {
                   fill="#3B82F6"
                   radius={[0, 4, 4, 0]}
                 >
-                  {topCoursesByRevenue.map((entry, index) => (
+                  {topCoursesData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Bar>
@@ -336,7 +486,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Monthly Growth Trend */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">اتجاه النمو الشهري</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -375,7 +525,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Course Completion Rates */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">معدلات إكمال الكورسات</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -389,7 +539,7 @@ export default function AnalyticsPage() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {courseCompletionData.map((entry, index) => (
+                  {courseCompletionData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -398,7 +548,7 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
           <div className="flex justify-center space-x-6 mt-4">
-            {courseCompletionData.map((item, index) => (
+            {courseCompletionData.map((item: any, index: number) => (
               <div key={index} className="flex items-center">
                 <div 
                   className="w-3 h-3 rounded-full ml-2"
@@ -414,7 +564,7 @@ export default function AnalyticsPage() {
       {/* Additional Analytics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Device Usage */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">استخدام الأجهزة</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -426,7 +576,7 @@ export default function AnalyticsPage() {
                   outerRadius={80}
                   dataKey="value"
                 >
-                  {deviceData.map((entry, index) => (
+                  {deviceData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -435,7 +585,7 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
           <div className="space-y-2">
-            {deviceData.map((item, index) => (
+            {deviceData.map((item: any, index: number) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div 
@@ -451,89 +601,189 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">إحصائيات سريعة</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">معدل التحويل</span>
-              <span className="text-sm font-medium text-gray-900">3.2%</span>
+              <span className="text-sm font-medium text-gray-900">{quickStats.conversionRate}%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">متوسط وقت الجلسة</span>
-              <span className="text-sm font-medium text-gray-900">24 دقيقة</span>
+              <span className="text-sm font-medium text-gray-900">{quickStats.avgSessionTime}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">معدل الارتداد</span>
-              <span className="text-sm font-medium text-gray-900">42%</span>
+              <span className="text-sm font-medium text-gray-900">{quickStats.bounceRate}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">الزوار الجدد</span>
-              <span className="text-sm font-medium text-gray-900">68%</span>
+              <span className="text-sm font-medium text-gray-900">{quickStats.newVisitors}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">الزوار العائدون</span>
-              <span className="text-sm font-medium text-gray-900">32%</span>
+              <span className="text-sm font-medium text-gray-900">{quickStats.returningVisitors}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">متوسط قيمة الطلب</span>
-              <span className="text-sm font-medium text-gray-900">{formatCurrency(224)}</span>
+              <span className="text-sm font-medium text-gray-900">{formatCurrency(quickStats.avgOrderValue)}</span>
             </div>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
           <h3 className="text-lg font-medium text-gray-900 mb-6">النشاط الأخير</h3>
           <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">طالب جديد سجل في كورس الملاكمة</p>
-                <p className="text-xs text-gray-500">منذ 5 دقائق</p>
+            {analytics?.adminActivity?.slice(0, 5).map((activity: any, index: number) => {
+              const getActivityColor = (action: string) => {
+                if (action.includes('create') || action.includes('enroll')) return 'bg-green-500';
+                if (action.includes('update') || action.includes('edit')) return 'bg-yellow-500';
+                if (action.includes('delete') || action.includes('cancel')) return 'bg-red-500';
+                if (action.includes('order') || action.includes('payment')) return 'bg-purple-500';
+                return 'bg-blue-500';
+              };
+
+              const getActivityText = (action: string, details: any) => {
+                switch (action) {
+                  case 'user.enroll':
+                    return `طالب جديد سجل في ${details?.courseTitle || 'كورس'}`;
+                  case 'course.create':
+                    return `تم إنشاء كورس جديد: ${details?.courseTitle || 'كورس جديد'}`;
+                  case 'course.update':
+                    return `تم تحديث كورس: ${details?.courseTitle || 'كورس'}`;
+                  case 'order.create':
+                    return `طلب جديد بقيمة ${formatCurrency(details?.amount || 0)}`;
+                  case 'order.update':
+                    return `تم تحديث طلب بقيمة ${formatCurrency(details?.amount || 0)}`;
+                  default:
+                    return action.replace(/\./g, ' ').replace(/_/g, ' ');
+                }
+              };
+
+              return (
+                <div key={index} className="flex items-start space-x-3">
+                  <div className={`flex-shrink-0 w-2 h-2 ${getActivityColor(activity.action)} rounded-full mt-2`}></div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">{getActivityText(activity.action, activity.details)}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(activity.createdAt).toLocaleString('ar-SA', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              );
+            }) || (
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-500">لا يوجد نشاط حديث</p>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">تم إنشاء كورس جديد: تدريب السباحة</p>
-                <p className="text-xs text-gray-500">منذ 15 دقيقة</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">تم تحديث كورس كمال الأجسام</p>
-                <p className="text-xs text-gray-500">منذ 30 دقيقة</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">طلب جديد بقيمة $299</p>
-                <p className="text-xs text-gray-500">منذ ساعة</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2"></div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-900">تم إلغاء طلب بقيمة $149</p>
-                <p className="text-xs text-gray-500">منذ ساعتين</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Empty State for No Data */}
-      {weeklySalesData.length === 0 && (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">لا توجد بيانات</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            لا توجد بيانات تحليلية متاحة للفترة المحددة
-          </p>
+      {/* Real-time Activity Feed */}
+      <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-medium text-gray-900">النشاط المباشر</h3>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-gray-500 font-medium">مباشر</span>
+          </div>
         </div>
-      )}
+        <div className="space-y-4">
+          {analytics?.adminActivity?.slice(0, 5).map((activity: any, index: number) => {
+            const getActivityColor = (action: string) => {
+              if (action.includes('create') || action.includes('enroll')) return 'bg-green-500';
+              if (action.includes('update') || action.includes('edit')) return 'bg-yellow-500';
+              if (action.includes('delete') || action.includes('cancel')) return 'bg-red-500';
+              if (action.includes('order') || action.includes('payment')) return 'bg-purple-500';
+              return 'bg-blue-500';
+            };
+
+            const getActivityText = (action: string, details: any) => {
+              switch (action) {
+                case 'user.enroll':
+                  return `طالب جديد سجل في ${details?.courseTitle || 'كورس'}`;
+                case 'course.create':
+                  return `تم إنشاء كورس جديد: ${details?.courseTitle || 'كورس جديد'}`;
+                case 'course.update':
+                  return `تم تحديث كورس: ${details?.courseTitle || 'كورس'}`;
+                case 'order.create':
+                  return `طلب جديد بقيمة ${formatCurrency(details?.amount || 0)}`;
+                case 'order.update':
+                  return `تم تحديث طلب بقيمة ${formatCurrency(details?.amount || 0)}`;
+                default:
+                  return action.replace(/\./g, ' ').replace(/_/g, ' ');
+              }
+            };
+
+            return (
+              <div key={index} className="flex items-start space-x-3">
+                <div className={`flex-shrink-0 w-2 h-2 ${getActivityColor(activity.action)} rounded-full mt-2`}></div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">{getActivityText(activity.action, activity.details)}</p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(activity.createdAt).toLocaleString('ar-SA', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
+            );
+          }) || (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-500">لا يوجد نشاط حديث</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Analytics Insights */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+        <div className="flex items-center mb-4">
+          <EyeIcon className="h-6 w-6 text-blue-600 ml-2" />
+          <h3 className="text-lg font-semibold text-gray-900">رؤى تحليلية</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-gray-900 mb-2">أداء الكورسات</h4>
+            <p className="text-sm text-gray-600">
+              أفضل كورس أداءً: {topCoursesData[0]?.name || 'غير متاح'}
+            </p>
+            <p className="text-sm text-gray-600">
+              إيرادات: {formatCurrency(topCoursesData[0]?.revenue || 0)}
+            </p>
+          </div>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-gray-900 mb-2">نمو الطلاب</h4>
+            <p className="text-sm text-gray-600">
+              معدل النمو: +{metrics.studentGrowth}%
+            </p>
+            <p className="text-sm text-gray-600">
+              إجمالي الطلاب: {metrics.totalStudents.toLocaleString()}
+            </p>
+          </div>
+          <div className="bg-white rounded-lg p-4 shadow-sm">
+            <h4 className="font-medium text-gray-900 mb-2">الإيرادات</h4>
+            <p className="text-sm text-gray-600">
+              إجمالي الإيرادات: {formatCurrency(metrics.totalRevenue)}
+            </p>
+            <p className="text-sm text-gray-600">
+              متوسط الإيراد لكل طالب: {formatCurrency(metrics.avgRevenuePerStudent)}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

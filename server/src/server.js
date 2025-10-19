@@ -22,6 +22,16 @@ const { connectDB } = require('./config/database');
 
 const app = express();
 
+// Set server timeout for large file uploads (10 minutes)
+app.use((req, res, next) => {
+  // Set longer timeout for upload endpoints
+  if (req.path.includes('/upload/')) {
+    req.setTimeout(10 * 60 * 1000); // 10 minutes for uploads
+    res.setTimeout(10 * 60 * 1000);
+  }
+  next();
+});
+
 // Security middleware
 app.use(helmet());
 app.use(compression());

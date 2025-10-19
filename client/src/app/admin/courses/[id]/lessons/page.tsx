@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import CourseForm, { CourseFormData } from '@/components/admin/CourseForm';
+import LessonManagerContent from '@/components/admin/LessonManagerContent';
 import { courseAPI, apiUtils, type Course } from '@/lib/api';
 
-export default function EditCoursePage() {
+export default function CourseLessonsPage() {
   const router = useRouter();
   const params = useParams();
   const courseId = params.id as string;
@@ -60,22 +60,21 @@ export default function EditCoursePage() {
       const response = await courseAPI.getCourse(courseId);
       console.log('Course API response:', response.data);
       
-      if (response.data.success) {
-        // The API returns { success: true, course: {...} } directly
+      if (response.data.success && 'course' in response.data) {
         console.log('Course data:', response.data.course);
-        setCourse(response.data.course || null);
+        setCourse((response.data as { success: boolean; course: Course }).course || null);
       } else {
-        addNotification('error', response.data.arabic || response.data.error || 'فشل في جلب بيانات الكورس');
+        addNotification('error', 'فشل في جلب بيانات الكورس');
         router.push('/admin/courses');
       }
-    } catch (error) {
-      console.error('Error fetching course:', error);
-      console.error('Error details:', error);
+    } catch (err: unknown) {
+      console.error('Error loading course:', err);
+      console.error('Error details:', err);
       
       let errorMessage = 'حدث خطأ أثناء جلب بيانات الكورس';
       
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as any;
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as any;
         if (axiosError.response?.status === 404) {
           errorMessage = 'الكورس غير موجود';
         } else if (axiosError.response?.data?.arabic) {
@@ -86,63 +85,9 @@ export default function EditCoursePage() {
       }
       
       addNotification('error', errorMessage);
-      // Don't redirect immediately, let the user see the error
     } finally {
       setFetchLoading(false);
     }
-  };
-
-  const handleSubmit = async (formData: CourseFormData) => {
-    try {
-      setLoading(true);
-      
-      const response = await courseAPI.updateCourse(courseId, formData as any);
-      
-      if (response.data.success) {
-        addNotification('success', 'تم تحديث الكورس بنجاح!');
-        // Redirect to courses list after a short delay
-        setTimeout(() => {
-          router.push('/admin/courses');
-        }, 1500);
-      } else {
-        addNotification('error', response.data.arabic || response.data.error || 'خطأ في تحديث الكورس');
-      }
-    } catch (error) {
-      console.error('Error updating course:', error);
-      const errorMessage = apiUtils.handleApiError(error);
-      addNotification('error', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Convert course data to form data format
-  const getInitialFormData = (course: Course): Partial<CourseFormData> => {
-    return {
-      title: course.title,
-      titleEn: course.titleEn || '',
-      description: course.description,
-      descriptionEn: course.descriptionEn || '',
-      price: course.price,
-      originalPrice: course.originalPrice || 0,
-      currency: course.currency,
-      duration: course.duration,
-      level: course.level,
-      category: course.category,
-      tags: course.tags,
-      requirements: course.requirements || [],
-      whatYouWillLearn: course.whatYouWillLearn,
-      language: course.language,
-      subtitles: course.subtitles || [],
-      isPublished: course.isPublished,
-      isFeatured: course.isFeatured,
-      thumbnail: course.thumbnail,
-      instructor: {
-        name: course.instructor.name,
-        bio: course.instructor.bio || '',
-        credentials: course.instructor.credentials || [],
-      },
-    };
   };
 
   if (fetchLoading) {
@@ -201,7 +146,7 @@ export default function EditCoursePage() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
@@ -215,17 +160,16 @@ export default function EditCoursePage() {
           </div>
           
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">تعديل الكورس</h1>
-            <p className="mt-2 text-gray-600">تعديل تفاصيل الكورس: {course.title}</p>
+            <h1 className="text-3xl font-bold text-gray-900">إدارة دروس الكورس</h1>
+            <p className="mt-2 text-gray-600">{course.title}</p>
           </div>
         </div>
 
-        {/* Course Form */}
-        <CourseForm
-          initialData={getInitialFormData(course)}
-          onSubmit={handleSubmit}
-          submitText="حفظ التغييرات"
-          loading={loading}
+        {/* Lesson Manager Content */}
+        <LessonManagerContent
+          courseId={courseId}
+          courseTitle={course.title}
+          onBack={() => router.push('/admin/courses')}
         />
       </div>
     </div>

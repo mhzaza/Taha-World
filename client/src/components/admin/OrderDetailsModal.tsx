@@ -22,6 +22,7 @@ import {
 
 // Extended Order interface for the modal
 interface OrderDetails {
+  _id?: string;
   id: string;
   userId: string;
   userEmail: string;
@@ -69,6 +70,17 @@ export default function OrderDetailsModal({
   const [showStatusUpdate, setShowStatusUpdate] = useState(false);
 
   if (!order) return null;
+
+  // Ensure order data is properly structured (no nested objects)
+  const sanitizedOrder = {
+    ...order,
+    userId: typeof order.userId === 'object' ? order.userId._id || order.userId.id : order.userId,
+    courseId: typeof order.courseId === 'object' ? order.courseId._id || order.courseId.id : order.courseId,
+    userEmail: order.userEmail || (order.userId && typeof order.userId === 'object' ? order.userId.email : ''),
+    userName: order.userName || (order.userId && typeof order.userId === 'object' ? order.userId.displayName : ''),
+    courseTitle: order.courseTitle || (order.courseId && typeof order.courseId === 'object' ? order.courseId.title : ''),
+    courseThumbnail: order.courseThumbnail || (order.courseId && typeof order.courseId === 'object' ? order.courseId.thumbnail : '')
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -141,7 +153,7 @@ export default function OrderDetailsModal({
     
     setIsUpdatingStatus(true);
     try {
-      await onUpdateStatus(order.id, newStatus, statusNotes);
+      await onUpdateStatus(sanitizedOrder.id, newStatus, statusNotes);
       setShowStatusUpdate(false);
       setNewStatus('');
       setStatusNotes('');
@@ -158,15 +170,15 @@ export default function OrderDetailsModal({
 
   const handleExportOrder = () => {
     const orderData = {
-      orderId: order.id,
-      customer: order.userName,
-      email: order.userEmail,
-      course: order.courseTitle,
-      amount: order.amount,
-      status: order.status,
-      paymentMethod: order.paymentMethod,
-      createdAt: order.createdAt,
-      transactionId: order.transactionId
+      orderId: sanitizedOrder.id,
+      customer: sanitizedOrder.userName,
+      email: sanitizedOrder.userEmail,
+      course: sanitizedOrder.courseTitle,
+      amount: sanitizedOrder.amount,
+      status: sanitizedOrder.status,
+      paymentMethod: sanitizedOrder.paymentMethod,
+      createdAt: sanitizedOrder.createdAt,
+      transactionId: sanitizedOrder.transactionId
     };
     
     const dataStr = JSON.stringify(orderData, null, 2);
@@ -174,7 +186,7 @@ export default function OrderDetailsModal({
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `order-${order.id}.json`;
+    link.download = `order-${sanitizedOrder.id}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -228,13 +240,13 @@ export default function OrderDetailsModal({
                   <div className="flex items-center space-x-4">
                     <div>
                       <Dialog.Title className="text-xl font-bold text-gray-900">
-                        تفاصيل الطلب {order.id}
+                        تفاصيل الطلب {sanitizedOrder.id}
                       </Dialog.Title>
                       <p className="text-sm text-gray-500 mt-1">
-                        تم الإنشاء في {formatDate(order.createdAt)}
+                        تم الإنشاء في {formatDate(sanitizedOrder.createdAt)}
                       </p>
                     </div>
-                    {order.isNew && (
+                    {sanitizedOrder.isNew && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                         جديد
                       </span>
@@ -265,14 +277,14 @@ export default function OrderDetailsModal({
                     </div>
                     
                     <div className="flex items-center space-x-3">
-                      <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(order.status)}`}>
-                        {getStatusIcon(order.status)}
-                        <span className="mr-2">{getStatusText(order.status)}</span>
+                      <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(sanitizedOrder.status)}`}>
+                        {getStatusIcon(sanitizedOrder.status)}
+                        <span className="mr-2">{getStatusText(sanitizedOrder.status)}</span>
                       </div>
                       
-                      {order.processingTime && (
+                      {sanitizedOrder.processingTime && (
                         <span className="text-sm text-gray-500">
-                          وقت المعالجة: {order.processingTime} دقيقة
+                          وقت المعالجة: {sanitizedOrder.processingTime} دقيقة
                         </span>
                       )}
                     </div>
@@ -343,21 +355,21 @@ export default function OrderDetailsModal({
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-gray-500">الاسم</label>
-                          <p className="text-gray-900">{order.userName}</p>
+                          <p className="text-gray-900">{sanitizedOrder.userName}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">البريد الإلكتروني</label>
-                          <p className="text-gray-900">{order.userEmail}</p>
+                          <p className="text-gray-900">{sanitizedOrder.userEmail}</p>
                         </div>
-                        {order.userPhone && (
+                        {sanitizedOrder.userPhone && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">رقم الهاتف</label>
-                            <p className="text-gray-900">{order.userPhone}</p>
+                            <p className="text-gray-900">{sanitizedOrder.userPhone}</p>
                           </div>
                         )}
                         <div>
                           <label className="text-sm font-medium text-gray-500">معرف المستخدم</label>
-                          <p className="text-gray-900 font-mono text-sm">{order.userId}</p>
+                          <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.userId}</p>
                         </div>
                       </div>
                     </div>
@@ -370,22 +382,22 @@ export default function OrderDetailsModal({
                       </div>
                       
                       <div className="space-y-3">
-                        {order.courseThumbnail && (
+                        {sanitizedOrder.courseThumbnail && (
                           <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
                             <img 
-                              src={order.courseThumbnail} 
-                              alt={order.courseTitle}
+                              src={sanitizedOrder.courseThumbnail} 
+                              alt={sanitizedOrder.courseTitle}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         )}
                         <div>
                           <label className="text-sm font-medium text-gray-500">عنوان الكورس</label>
-                          <p className="text-gray-900">{order.courseTitle}</p>
+                          <p className="text-gray-900">{sanitizedOrder.courseTitle}</p>
                         </div>
                         <div>
                           <label className="text-sm font-medium text-gray-500">معرف الكورس</label>
-                          <p className="text-gray-900 font-mono text-sm">{order.courseId}</p>
+                          <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.courseId}</p>
                         </div>
                       </div>
                     </div>
@@ -402,20 +414,20 @@ export default function OrderDetailsModal({
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-gray-500">المبلغ الإجمالي</label>
-                          <p className="text-2xl font-bold text-gray-900">{formatCurrency(order.amount)}</p>
+                          <p className="text-2xl font-bold text-gray-900">{formatCurrency(sanitizedOrder.amount)}</p>
                         </div>
                         
-                        {order.originalAmount && order.originalAmount !== order.amount && (
+                        {sanitizedOrder.originalAmount && sanitizedOrder.originalAmount !== sanitizedOrder.amount && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">المبلغ الأصلي</label>
-                            <p className="text-gray-500 line-through">{formatCurrency(order.originalAmount)}</p>
+                            <p className="text-gray-500 line-through">{formatCurrency(sanitizedOrder.originalAmount)}</p>
                           </div>
                         )}
                         
-                        {order.discountAmount && (
+                        {sanitizedOrder.discountAmount && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">مبلغ الخصم</label>
-                            <p className="text-green-600">-{formatCurrency(order.discountAmount)}</p>
+                            <p className="text-green-600">-{formatCurrency(sanitizedOrder.discountAmount)}</p>
                           </div>
                         )}
                       </div>
@@ -423,42 +435,42 @@ export default function OrderDetailsModal({
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-gray-500">طريقة الدفع</label>
-                          <p className="text-gray-900 capitalize">{order.paymentMethod}</p>
+                          <p className="text-gray-900 capitalize">{sanitizedOrder.paymentMethod}</p>
                         </div>
                         
-                        {order.transactionId && (
+                        {sanitizedOrder.transactionId && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">رقم المعاملة</label>
-                            <p className="text-gray-900 font-mono text-sm">{order.transactionId}</p>
+                            <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.transactionId}</p>
                           </div>
                         )}
                         
-                        {order.paymentIntentId && (
+                        {sanitizedOrder.paymentIntentId && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">معرف الدفع</label>
-                            <p className="text-gray-900 font-mono text-sm">{order.paymentIntentId}</p>
+                            <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.paymentIntentId}</p>
                           </div>
                         )}
                       </div>
                       
                       <div className="space-y-3">
-                        {order.couponCode && (
+                        {sanitizedOrder.couponCode && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">كود الخصم</label>
-                            <p className="text-gray-900 font-mono">{order.couponCode}</p>
+                            <p className="text-gray-900 font-mono">{sanitizedOrder.couponCode}</p>
                           </div>
                         )}
                         
-                        {order.taxAmount && (
+                        {sanitizedOrder.taxAmount && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">الضرائب</label>
-                            <p className="text-gray-900">{formatCurrency(order.taxAmount)}</p>
+                            <p className="text-gray-900">{formatCurrency(sanitizedOrder.taxAmount)}</p>
                           </div>
                         )}
                         
                         <div>
                           <label className="text-sm font-medium text-gray-500">العملة</label>
-                          <p className="text-gray-900">{order.currency || 'USD'}</p>
+                          <p className="text-gray-900">{sanitizedOrder.currency || 'USD'}</p>
                         </div>
                       </div>
                     </div>
@@ -476,36 +488,36 @@ export default function OrderDetailsModal({
                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">تم إنشاء الطلب</p>
-                          <p className="text-xs text-gray-500">{formatDate(order.createdAt)}</p>
+                          <p className="text-xs text-gray-500">{formatDate(sanitizedOrder.createdAt)}</p>
                         </div>
                       </div>
                       
-                      {order.updatedAt !== order.createdAt && (
+                      {sanitizedOrder.updatedAt !== sanitizedOrder.createdAt && (
                         <div className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">آخر تحديث</p>
-                            <p className="text-xs text-gray-500">{formatDate(order.updatedAt)}</p>
+                            <p className="text-xs text-gray-500">{formatDate(sanitizedOrder.updatedAt)}</p>
                           </div>
                         </div>
                       )}
                       
-                      {order.completedAt && (
+                      {sanitizedOrder.completedAt && (
                         <div className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">تم إكمال الطلب</p>
-                            <p className="text-xs text-gray-500">{formatDate(order.completedAt)}</p>
+                            <p className="text-xs text-gray-500">{formatDate(sanitizedOrder.completedAt)}</p>
                           </div>
                         </div>
                       )}
                       
-                      {order.refundedAt && (
+                      {sanitizedOrder.refundedAt && (
                         <div className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-red-500 rounded-full"></div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">تم استرداد الطلب</p>
-                            <p className="text-xs text-gray-500">{formatDate(order.refundedAt)}</p>
+                            <p className="text-xs text-gray-500">{formatDate(sanitizedOrder.refundedAt)}</p>
                           </div>
                         </div>
                       )}
@@ -513,7 +525,7 @@ export default function OrderDetailsModal({
                   </div>
 
                   {/* Notes */}
-                  {(order.notes || order.refundReason) && (
+                  {(sanitizedOrder.notes || sanitizedOrder.refundReason) && (
                     <div className="bg-white border border-gray-200 rounded-lg p-6">
                       <div className="flex items-center mb-4">
                         <DocumentTextIcon className="h-5 w-5 text-gray-400 ml-2" />
@@ -521,17 +533,17 @@ export default function OrderDetailsModal({
                       </div>
                       
                       <div className="space-y-3">
-                        {order.notes && (
+                        {sanitizedOrder.notes && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">ملاحظات عامة</label>
-                            <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{order.notes}</p>
+                            <p className="text-gray-900 bg-gray-50 p-3 rounded-lg">{sanitizedOrder.notes}</p>
                           </div>
                         )}
                         
-                        {order.refundReason && (
+                        {sanitizedOrder.refundReason && (
                           <div>
                             <label className="text-sm font-medium text-gray-500">سبب الاسترداد</label>
-                            <p className="text-gray-900 bg-red-50 p-3 rounded-lg">{order.refundReason}</p>
+                            <p className="text-gray-900 bg-red-50 p-3 rounded-lg">{sanitizedOrder.refundReason}</p>
                           </div>
                         )}
                       </div>

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-// Firebase imports removed - using API calls instead
+import { userAPI } from '@/lib/api';
 import { KeyIcon, EyeIcon, EyeSlashIcon, BellIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 export default function UserSettings() {
@@ -29,6 +29,29 @@ export default function UserSettings() {
     emailNotifications: true,
     marketingEmails: false
   });
+
+  // Load user settings on component mount
+  useEffect(() => {
+    const loadUserSettings = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await userAPI.getProfile();
+        if (response.data.success && response.data.data?.user) {
+          const userData = response.data.data.user;
+          setNotificationSettings({
+            emailNotifications: userData.emailNotifications ?? true,
+            marketingEmails: userData.marketingEmails ?? false
+          });
+        }
+      } catch (err) {
+        console.error('Error loading user settings:', err);
+        // Keep default values
+      }
+    };
+
+    loadUserSettings();
+  }, [user]);
 
   const handlePasswordInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,35 +89,34 @@ export default function UserSettings() {
     }
 
     try {
-      if (!user || !user.email) throw new Error('يجب تسجيل الدخول لتغيير كلمة المرور');
+      if (!user) throw new Error('يجب تسجيل الدخول لتغيير كلمة المرور');
 
-      // Re-authenticate user before changing password
-      const credential = EmailAuthProvider.credential(
-        user.email,
-        passwordForm.currentPassword
-      );
-      
-      await reauthenticateWithCredential(user, credential);
-      
-      // Update password
-      await updatePassword(user, passwordForm.newPassword);
-
-      // Reset form
-      setPasswordForm({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      // Update password via API
+      const response = await userAPI.changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
       });
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      if (response.data.success) {
+        // Reset form
+        setPasswordForm({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        throw new Error(response.data.error || 'فشل في تغيير كلمة المرور');
+      }
     } catch (err: any) {
       console.error('Error updating password:', err);
       
-      // Handle specific Firebase auth errors
-      if (err.code === 'auth/wrong-password') {
+      // Handle specific error messages
+      if (err.message?.includes('current password') || err.message?.includes('كلمة المرور الحالية')) {
         setError('كلمة المرور الحالية غير صحيحة');
-      } else if (err.code === 'auth/too-many-requests') {
+      } else if (err.message?.includes('too many requests') || err.message?.includes('كثير من المحاولات')) {
         setError('تم تجاوز عدد المحاولات المسموح بها. يرجى المحاولة لاحقًا');
       } else {
         setError(err.message || 'حدث خطأ أثناء تحديث كلمة المرور');
@@ -112,17 +134,19 @@ export default function UserSettings() {
 
     try {
       if (!user) throw new Error('يجب تسجيل الدخول لتحديث الإعدادات');
-      if (!db) throw new Error('قاعدة البيانات غير متاحة');
 
-      // Update notification settings in Firestore
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        notificationSettings,
-        updatedAt: new Date()
+      // Update notification settings via API
+      const response = await userAPI.updateProfile({
+        emailNotifications: notificationSettings.emailNotifications,
+        marketingEmails: notificationSettings.marketingEmails
       });
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      if (response.data.success) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        throw new Error(response.data.error || 'فشل في تحديث إعدادات الإشعارات');
+      }
     } catch (err: any) {
       console.error('Error updating notification settings:', err);
       setError(err.message || 'حدث خطأ أثناء تحديث إعدادات الإشعارات');

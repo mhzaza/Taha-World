@@ -13,11 +13,11 @@ const reviewSchema = new mongoose.Schema({
   },
   userEmail: {
     type: String,
-    required: true
+    required: false
   },
   userName: {
     type: String,
-    required: true
+    required: false
   },
   userAvatar: {
     type: String,

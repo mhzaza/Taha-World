@@ -131,7 +131,10 @@ router.post('/', authenticate, [
 
     // Check if user is enrolled to mark as verified
     const user = await User.findById(req.user._id);
-    if (user.enrolledCourses.includes(courseId)) {
+    const isEnrolled = user.enrolledCourses.some(enrolledCourseId => 
+      enrolledCourseId.toString() === courseId
+    );
+    if (isEnrolled) {
       review.isVerified = true;
     }
 
@@ -149,9 +152,15 @@ router.post('/', authenticate, [
 
   } catch (error) {
     console.error('Add review error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).json({
       error: 'Internal server error',
-      arabic: 'خطأ داخلي في الخادم'
+      arabic: 'خطأ داخلي في الخادم',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

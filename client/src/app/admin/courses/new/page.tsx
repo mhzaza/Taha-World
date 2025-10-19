@@ -39,12 +39,13 @@ export default function NewCoursePage() {
       const response = await courseAPI.createCourse(formData as any);
       
       if (response.data.success) {
+        // Backend returns { success: true, data: course } directly
         const courseId = response.data.data?.course._id;
         addNotification('success', 'تم إنشاء الكورس بنجاح! سيتم توجيهك لإضافة الدروس...');
-        // Redirect to lesson management after a short delay
+        // Redirect to lesson management page directly
         setTimeout(() => {
-          router.push(`/admin/courses?openLessons=${courseId}`);
-        }, 2000);
+          router.push(`/admin/courses/${courseId}/lessons`);
+        }, 1500);
       } else {
         addNotification('error', response.data.arabic || response.data.error || 'خطأ في إنشاء الكورس');
       }

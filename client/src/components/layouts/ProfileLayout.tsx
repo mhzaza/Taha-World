@@ -103,7 +103,7 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
                     href={item.href}
                     className="flex items-center p-3 rounded-md hover:bg-gray-100 transition duration-300"
                   >
-                    <Icon className="h-5 w-5 ml-3 text-gray-600" />
+                    <Icon className="h-5 w-5 ml-3 text-balck" />
                     <span>{item.name}</span>
                   </Link>
                 );

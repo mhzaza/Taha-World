@@ -3,13 +3,22 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-// Firebase imports removed - using API calls instead
+import { userAPI } from '@/lib/api';
 import { AcademicCapIcon, PlayIcon, ClockIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Course, Progress } from '@/types';
 
-interface UserCourse extends Course {
-  progress?: any;
-  enrolledAt?: Date;
+interface UserCourse {
+  _id: string;
+  id: string;
+  title: string;
+  thumbnail: string;
+  duration: number;
+  lessons: any[];
+  enrolledAt: string;
+  progress?: {
+    completedLessons: string[];
+    status: 'not_started' | 'in_progress' | 'completed';
+    lastAccessed?: string;
+  };
 }
 
 export default function UserCourses() {
@@ -20,67 +29,20 @@ export default function UserCourses() {
 
   useEffect(() => {
     const fetchUserCourses = async () => {
-      if (!user || !db) return;
+      if (!user) return;
       
       try {
         setLoading(true);
         
-        // Fetch user enrollments
-        const enrollmentsRef = collection(db, 'enrollments');
-        const enrollmentsQuery = query(enrollmentsRef, where('userId', '==', user.uid));
-        const enrollmentsSnapshot = await getDocs(enrollmentsQuery);
+        // Fetch user courses from API
+        const response = await userAPI.getUserCourses();
         
-        const enrollments = enrollmentsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          enrolledAt: doc.data().enrolledAt?.toDate() || new Date(),
-        })) as Array<{id: string; courseId: string; enrolledAt: Date; [key: string]: any}>;
-        
-        if (enrollments.length === 0) {
-          setCourses([]);
-          setLoading(false);
-          return;
+        if (response.data.success) {
+          setCourses(response.data.data || []);
+          setError(null);
+        } else {
+          throw new Error(response.data.error || 'فشل في تحميل الدورات');
         }
-        
-        // Fetch course details for each enrollment
-        const courseIds = enrollments.map(enrollment => enrollment.courseId);
-        const coursesRef = collection(db, 'courses');
-        const coursesQuery = query(coursesRef, where('id', 'in', courseIds));
-        const coursesSnapshot = await getDocs(coursesQuery);
-        
-        const coursesData = coursesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Course[];
-        
-        // Fetch progress for each course
-        const progressRef = collection(db, 'progress');
-        const progressQuery = query(
-          progressRef, 
-          where('userId', '==', user.uid),
-          where('courseId', 'in', courseIds)
-        );
-        const progressSnapshot = await getDocs(progressQuery);
-        
-        const progressData = progressSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Array<{id: string; courseId: string; [key: string]: any}>;
-        
-        // Combine course data with enrollment and progress data
-        const userCourses = coursesData.map(course => {
-          const enrollment = enrollments.find(e => e.courseId === course.id);
-          const progress = progressData.find(p => p.courseId === course.id);
-          
-          return {
-            ...course,
-            enrolledAt: enrollment?.enrolledAt,
-            progress,
-          };
-        });
-        
-        setCourses(userCourses);
-        setError(null);
       } catch (err: any) {
         console.error('Error fetching user courses:', err);
         setError('حدث خطأ أثناء تحميل الدورات. يرجى المحاولة مرة أخرى.');
@@ -111,6 +73,20 @@ export default function UserCourses() {
     const totalLessons = course.lessons.length;
     
     return Math.round((completedLessons / totalLessons) * 100);
+  };
+
+  // Get status text in Arabic
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'مكتمل';
+      case 'in_progress':
+        return 'قيد التقدم';
+      case 'not_started':
+        return 'لم يبدأ';
+      default:
+        return 'غير محدد';
+    }
   };
 
   return (
@@ -194,7 +170,13 @@ export default function UserCourses() {
                   
                   {course.enrolledAt && (
                     <div className="text-sm text-gray-600 mb-4">
-                      <span>تاريخ الاشتراك: {formatDate(course.enrolledAt)}</span>
+                      <span>تاريخ الاشتراك: {formatDate(new Date(course.enrolledAt))}</span>
+                    </div>
+                  )}
+
+                  {course.progress?.status && (
+                    <div className="text-sm text-gray-600 mb-4">
+                      <span>الحالة: {getStatusText(course.progress.status)}</span>
                     </div>
                   )}
                   
@@ -203,7 +185,7 @@ export default function UserCourses() {
                       href={`/courses/${course.id}`}
                       className="text-primary hover:text-primary-dark transition duration-300 text-sm font-medium"
                     >
-                      متابعة الدورة
+                      {progressPercentage === 100 ? 'مراجعة الدورة' : 'متابعة الدورة'}
                     </Link>
                     
                     {progressPercentage === 100 && (

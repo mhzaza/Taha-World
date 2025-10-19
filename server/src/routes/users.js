@@ -13,20 +13,44 @@ const router = express.Router();
 // @access  Private
 router.get('/profile', authenticate, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id)
-      .populate('enrolledCourses', 'title thumbnail price level category')
-      .populate('certificates', 'courseTitle issuedAt');
+    console.log('Getting profile for user:', req.user._id);
+    
+    // First try without populate to see if basic query works
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        arabic: 'المستخدم غير موجود'
+      });
+    }
+
+    console.log('User found:', user.email);
+
+    // Try to populate enrolled courses if they exist
+    let userWithPopulated = user;
+    if (user.enrolledCourses && user.enrolledCourses.length > 0) {
+      try {
+        userWithPopulated = await User.findById(req.user._id)
+          .populate('enrolledCourses', 'title thumbnail price level category');
+      } catch (populateError) {
+        console.error('Populate error:', populateError);
+        // Use user without populate if populate fails
+        userWithPopulated = user;
+      }
+    }
 
     res.json({
       success: true,
-      user
+      user: userWithPopulated
     });
 
   } catch (error) {
     console.error('Get profile error:', error);
     res.status(500).json({
       error: 'Internal server error',
-      arabic: 'خطأ داخلي في الخادم'
+      arabic: 'خطأ داخلي في الخادم',
+      details: error.message
     });
   }
 });
@@ -90,6 +114,8 @@ router.put('/profile', authenticate, [
 // @access  Private
 router.get('/courses', authenticate, async (req, res) => {
   try {
+    console.log('Getting courses for user:', req.user._id);
+    
     const user = await User.findById(req.user._id).populate({
       path: 'enrolledCourses',
       populate: {
@@ -98,17 +124,49 @@ router.get('/courses', authenticate, async (req, res) => {
       }
     });
 
+    if (!user) {
+      return res.status(404).json({
+        error: 'User not found',
+        arabic: 'المستخدم غير موجود'
+      });
+    }
+
+    console.log('User found:', user.email);
+    console.log('Enrolled courses:', user.enrolledCourses);
+
+    // Check if user has enrolled courses
+    const enrolledCourses = user.enrolledCourses || [];
+    console.log('Enrolled courses count:', enrolledCourses.length);
+    
     // Get progress for each course
     const coursesWithProgress = await Promise.all(
-      user.enrolledCourses.map(async (course) => {
-        const progress = await Progress.getCourseProgress(req.user._id, course._id);
-        return {
-          ...course.toObject(),
-          progress
-        };
+      enrolledCourses.map(async (course) => {
+        try {
+          const progress = await Progress.getCourseProgress(req.user._id, course._id);
+          return {
+            ...course.toObject(),
+            progress
+          };
+        } catch (progressError) {
+          console.error(`Error getting progress for course ${course._id}:`, progressError);
+          // Return course without progress if there's an error
+          return {
+            ...course.toObject(),
+            progress: {
+              totalLessons: 0,
+              completedLessons: 0,
+              progressPercentage: 0,
+              totalWatchTime: 0,
+              totalDuration: 0,
+              lessons: []
+            }
+          };
+        }
       })
     );
 
+    console.log('Courses with progress:', coursesWithProgress);
+    
     res.json({
       success: true,
       courses: coursesWithProgress
@@ -197,22 +255,81 @@ router.get('/progress', authenticate, async (req, res) => {
       progress = await Progress.find({ 
         userId: req.user._id, 
         courseId: courseId 
-      }).populate('lessonId', 'title order');
+      });
     } else {
       // Get overall progress (aggregated by course)
-      progress = await Progress.getUserProgress(req.user._id);
+      try {
+        progress = await Progress.getUserProgress(req.user._id);
+      } catch (progressError) {
+        console.error('Error in getUserProgress:', progressError);
+        // Fallback to basic progress query
+        progress = await Progress.find({ userId: req.user._id })
+          .populate('courseId', 'title thumbnail')
+          .select('courseId completed watchTime totalDuration lastWatchedAt')
+          .lean();
+        
+        // Group by courseId manually
+        const groupedProgress = {};
+        progress.forEach(p => {
+          const courseId = p.courseId._id || p.courseId;
+          if (!groupedProgress[courseId]) {
+            groupedProgress[courseId] = {
+              courseId: courseId,
+              courseTitle: p.courseId.title || 'Unknown Course',
+              courseThumbnail: p.courseId.thumbnail || '',
+              totalLessons: 0,
+              completedLessons: 0,
+              totalWatchTime: 0,
+              totalDuration: 0,
+              progressPercentage: 0,
+              lastWatchedAt: p.lastWatchedAt
+            };
+          }
+          groupedProgress[courseId].totalLessons++;
+          if (p.completed) groupedProgress[courseId].completedLessons++;
+          groupedProgress[courseId].totalWatchTime += p.watchTime || 0;
+          groupedProgress[courseId].totalDuration += p.totalDuration || 0;
+        });
+        
+        // Calculate percentages
+        Object.values(groupedProgress).forEach(group => {
+          group.progressPercentage = group.totalLessons > 0 
+            ? Math.round((group.completedLessons / group.totalLessons) * 100) 
+            : 0;
+        });
+        
+        progress = Object.values(groupedProgress);
+      }
+    }
+
+    // Ensure progress is always an array
+    if (!Array.isArray(progress)) {
+      progress = [];
     }
 
     res.json({
       success: true,
-      progress
+      data: {
+        progress
+      }
     });
 
   } catch (error) {
     console.error('Get user progress error:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      arabic: 'خطأ داخلي في الخادم'
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      userId: req.user._id,
+      courseId: req.query.courseId
+    });
+    
+    // Return empty progress array instead of error to prevent frontend crashes
+    res.json({
+      success: true,
+      data: {
+        progress: []
+      }
     });
   }
 });

@@ -104,8 +104,21 @@ router.get('/', [
 // @access  Public
 router.get('/:id', optionalAuth, async (req, res) => {
   try {
+    console.log('Getting course with ID:', req.params.id);
+    
+    // Validate ObjectId format
+    if (!/^[0-9a-fA-F]{24}$/.test(req.params.id)) {
+      return res.status(400).json({
+        error: 'Invalid course ID format',
+        arabic: 'معرف الكورس غير صحيح'
+      });
+    }
+    
     const course = await Course.findById(req.params.id)
       .populate('instructor.id', 'displayName avatar bio credentials');
+    
+    console.log('Course found:', !!course);
+    console.log('Course data:', course ? { id: course._id, title: course.title } : null);
 
     if (!course) {
       return res.status(404).json({

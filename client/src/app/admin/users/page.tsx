@@ -85,9 +85,9 @@ export default function UsersPage() {
       const response = await adminAPI.getUsers(params);
       
       if (response.data.success) {
-        setUsers(response.data.users || []);
-        setTotalUsers(response.data.pagination?.totalItems || 0);
-        setTotalPages(response.data.pagination?.totalPages || 0);
+        setUsers(response.data.data?.users || []);
+        setTotalUsers(response.data.data?.pagination?.totalItems || 0);
+        setTotalPages(response.data.data?.pagination?.totalPages || 0);
         setLastUpdated(new Date());
       } else {
         throw new Error(response.data.error || 'Failed to fetch users');

@@ -12,8 +12,7 @@ const progressSchema = new mongoose.Schema({
     required: true
   },
   lessonId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course.lessons',
+    type: String,
     required: true
   },
   completed: {
@@ -116,18 +115,25 @@ progressSchema.pre('save', function(next) {
 // Static method to get user's course progress
 progressSchema.statics.getCourseProgress = async function(userId, courseId) {
   const progress = await this.find({ userId, courseId })
-    .populate('lessonId', 'title duration order')
-    .sort({ 'lessonId.order': 1 });
+    .sort({ lastWatchedAt: -1 });
   
-  const totalLessons = progress.length;
+  // Get the actual course to get the correct total lesson count
+  const Course = mongoose.model('Course');
+  const course = await Course.findById(courseId).select('lessons');
+  const actualTotalLessons = course?.lessons?.length || 0;
+  
+  // Count completed lessons from progress records
   const completedLessons = progress.filter(p => p.completed).length;
-  const totalWatchTime = progress.reduce((sum, p) => sum + p.watchTime, 0);
-  const totalDuration = progress.reduce((sum, p) => sum + p.totalDuration, 0);
+  const totalWatchTime = progress.reduce((sum, p) => sum + (p.watchTime || 0), 0);
+  const totalDuration = progress.reduce((sum, p) => sum + (p.totalDuration || 0), 0);
+  
+  // Calculate percentage based on actual course lessons, not progress records
+  const progressPercentage = actualTotalLessons > 0 ? Math.round((completedLessons / actualTotalLessons) * 100) : 0;
   
   return {
-    totalLessons,
+    totalLessons: actualTotalLessons,
     completedLessons,
-    progressPercentage: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
+    progressPercentage,
     totalWatchTime,
     totalDuration,
     lessons: progress
@@ -156,19 +162,30 @@ progressSchema.statics.getUserProgress = async function(userId) {
         as: 'course'
       }
     },
-    { $unwind: '$course' },
+    { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
     {
       $project: {
         courseId: '$_id',
-        courseTitle: '$course.title',
-        courseThumbnail: '$course.thumbnail',
-        totalLessons: 1,
+        courseTitle: { $ifNull: ['$course.title', 'Unknown Course'] },
+        courseThumbnail: { $ifNull: ['$course.thumbnail', ''] },
+        totalLessons: { $size: { $ifNull: ['$course.lessons', []] } },
         completedLessons: 1,
         progressPercentage: {
-          $round: [
-            { $multiply: [{ $divide: ['$completedLessons', '$totalLessons'] }, 100] },
-            2
-          ]
+          $cond: {
+            if: { $gt: [{ $size: { $ifNull: ['$course.lessons', []] } }, 0] },
+            then: {
+              $round: [
+                { 
+                  $multiply: [
+                    { $divide: ['$completedLessons', { $size: { $ifNull: ['$course.lessons', []] } }] }, 
+                    100
+                  ] 
+                },
+                2
+              ]
+            },
+            else: 0
+          }
         },
         totalWatchTime: 1,
         totalDuration: 1,

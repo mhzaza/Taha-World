@@ -54,6 +54,11 @@ const uploadOptions = {
       quality: 'auto',
       format: 'mp4',
     },
+    // Security settings for video files
+    secure: true,
+    use_filename: false,
+    unique_filename: true,
+    // Additional security transformations can be added here
   },
   generalUpload: {
     folder: 'general',

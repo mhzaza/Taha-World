@@ -16,7 +16,6 @@ import {
   Bars3Icon,
 } from '@heroicons/react/24/outline';
 import type { Course } from '@/lib/api';
-import LessonManager from '@/components/admin/LessonManager';
 
 
 type SortField = 'createdAt' | 'title' | 'price' | 'enrollmentCount' | 'rating';
@@ -37,7 +36,6 @@ export default function CoursesPage() {
   
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showLessonManager, setShowLessonManager] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [notifications, setNotifications] = useState<Array<{
     id: string;
@@ -76,19 +74,6 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
   
-  // Handle auto-open lesson manager when courses are loaded
-  useEffect(() => {
-    const openLessonsId = searchParams.get('openLessons');
-    if (openLessonsId && courses.length > 0) {
-      const course = courses.find(c => c._id === openLessonsId);
-      if (course) {
-        setSelectedCourse(course);
-        setShowLessonManager(true);
-        // Clean up URL
-        router.replace('/admin/courses');
-      }
-    }
-  }, [courses, searchParams, router]);
 
   const fetchCourses = async () => {
     try {
@@ -531,9 +516,13 @@ export default function CoursesPage() {
                     <PencilIcon className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => {
-                      setSelectedCourse(course);
-                      setShowLessonManager(true);
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Navigating to lessons page for course:', course._id);
+                      // Navigate to lessons page
+                      router.push(`/admin/courses/${course._id}/lessons`);
                     }}
                     className="text-purple-600 hover:text-purple-700 p-1"
                     title="إدارة الدروس"
@@ -625,17 +614,6 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* Lesson Manager Modal */}
-      {showLessonManager && selectedCourse && (
-        <LessonManager
-          courseId={selectedCourse._id}
-          courseTitle={selectedCourse.title}
-          onClose={() => {
-            setShowLessonManager(false);
-            setSelectedCourse(null);
-          }}
-        />
-      )}
     </div>
   );
 }

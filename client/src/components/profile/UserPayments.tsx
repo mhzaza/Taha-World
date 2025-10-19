@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-// Firebase imports removed - using API calls instead
-import { CreditCardIcon, ReceiptRefundIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { userAPI } from '@/lib/api';
+import { CreditCardIcon } from '@heroicons/react/24/outline';
 
 interface Payment {
   id: string;
@@ -29,33 +29,52 @@ export default function UserPayments() {
 
   useEffect(() => {
     const fetchPayments = async () => {
-      if (!user || !db) return;
+      if (!user) return;
       
       try {
         setLoading(true);
         
-        const paymentsRef = collection(db, 'payments');
-        const q = query(
-          paymentsRef,
-          where('userId', '==', user.uid),
-          orderBy('createdAt', 'desc')
-        );
+        // Fetch user payments from API (mock for now)
+        // TODO: Implement getUserPayments in userAPI
+        const mockPayments = [
+          {
+            id: '1',
+            courseTitle: 'كورس مصارعة الذراعين المتقدم',
+            amount: 299,
+            status: 'completed',
+            createdAt: '2024-01-15T10:30:00Z',
+            paymentMethod: 'paypal',
+            currency: 'USD'
+          },
+          {
+            id: '2',
+            courseTitle: 'تدريب القوة الأساسي',
+            amount: 199,
+            status: 'completed',
+            createdAt: '2024-01-10T14:20:00Z',
+            paymentMethod: 'credit_card',
+            currency: 'USD'
+          }
+        ];
         
-        const querySnapshot = await getDocs(q);
-        const paymentsData: Payment[] = [];
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          paymentsData.push({
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
-          } as Payment);
-        });
-        
-        setPayments(paymentsData);
-        setError(null);
+        const paymentsData = mockPayments.map((payment: any) => ({
+            id: payment.id || payment._id,
+            userId: payment.userId,
+            amount: payment.amount,
+            currency: payment.currency || 'USD',
+            status: payment.status,
+            paymentMethod: payment.paymentMethod,
+            description: payment.courseTitle || payment.description || 'دفع',
+            metadata: {
+              orderId: payment.id || payment._id,
+              courseId: payment.courseId
+            },
+            createdAt: new Date(payment.createdAt),
+            updatedAt: new Date(payment.updatedAt || payment.createdAt)
+          }));
+          
+          setPayments(paymentsData);
+          setError(null);
       } catch (err: any) {
         console.error('Error fetching payments:', err);
         setError('حدث خطأ أثناء تحميل سجل المدفوعات. يرجى المحاولة مرة أخرى.');

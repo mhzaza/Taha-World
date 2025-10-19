@@ -159,18 +159,22 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
       
       const method = editingReview ? 'PUT' : 'POST';
 
+      const requestBody = {
+        courseId,
+        rating: formData.rating,
+        title: formData.title,
+        comment: formData.comment,
+      };
+      
+      console.log('Submitting review:', requestBody);
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          courseId,
-          rating: formData.rating,
-          title: formData.title,
-          comment: formData.comment,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
@@ -183,6 +187,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
         }
       } else {
         const errorData = await response.json();
+        console.error('Review submission error:', errorData);
         setError(errorData.arabic || errorData.error || AR.error);
       }
     } catch (err) {

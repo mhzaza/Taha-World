@@ -184,7 +184,19 @@ export default function OrdersPage() {
       
       if (response.data.success) {
         const newOrders = response.data.data?.orders || [];
-        setOrders(newOrders);
+        
+        // Ensure all order data is properly structured (no nested objects)
+        const sanitizedOrders = newOrders.map((order: any) => ({
+          ...order,
+          userId: typeof order.userId === 'object' ? order.userId._id || order.userId.id : order.userId,
+          courseId: typeof order.courseId === 'object' ? order.courseId._id || order.courseId.id : order.courseId,
+          userEmail: order.userEmail || (order.userId && typeof order.userId === 'object' ? order.userId.email : ''),
+          userName: order.userName || (order.userId && typeof order.userId === 'object' ? order.userId.displayName : ''),
+          courseTitle: order.courseTitle || (order.courseId && typeof order.courseId === 'object' ? order.courseId.title : ''),
+          courseThumbnail: order.courseThumbnail || (order.courseId && typeof order.courseId === 'object' ? order.courseId.thumbnail : '')
+        }));
+        
+        setOrders(sanitizedOrders);
         setTotalOrders(response.data.data?.pagination?.totalItems || 0);
         setTotalPages(response.data.data?.pagination?.totalPages || 0);
         setLastUpdated(new Date());

@@ -46,22 +46,57 @@ export default function EnhancedMediaPlayer({
     return null;
   };
 
-  const videoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
-  const hasValidVideo = Boolean(videoId);
+  // Check if URL is a Cloudinary video URL
+  const isCloudinaryVideo = (url: string): boolean => {
+    if (!url) return false;
+    return url.includes('res.cloudinary.com') && 
+           (url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('.avi'));
+  };
 
-  // Disable right-click context menu
+  // Generate secure Cloudinary URL (Note: for now, we'll use the original URL
+  // as fl_attachment might interfere with video playback in browsers)
+  const getSecureCloudinaryUrl = (url: string): string => {
+    if (!isCloudinaryVideo(url)) return url;
+    
+    // For now, return the original URL but we can add security via server-side
+    // Cloudinary settings and CORS policies
+    return url;
+  };
+
+  const videoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
+  const isCloudinaryVideoUrl = videoUrl ? isCloudinaryVideo(videoUrl) : false;
+  const hasValidVideo = Boolean(videoId) || isCloudinaryVideoUrl;
+
+  // Disable right-click context menu and other security measures
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       return false;
     };
 
+    const handleDragStart = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleSelectStart = (e: Event) => {
+      e.preventDefault();
+    };
+
     const playerElement = playerRef.current;
     if (playerElement) {
       playerElement.addEventListener('contextmenu', handleContextMenu);
+      playerElement.addEventListener('dragstart', handleDragStart);
+      playerElement.addEventListener('selectstart', handleSelectStart);
+      
+      // Additional security: disable text selection and dragging
+      playerElement.style.webkitUserSelect = 'none';
+      playerElement.style.userSelect = 'none';
+      playerElement.setAttribute('draggable', 'false');
       
       return () => {
         playerElement.removeEventListener('contextmenu', handleContextMenu);
+        playerElement.removeEventListener('dragstart', handleDragStart);
+        playerElement.removeEventListener('selectstart', handleSelectStart);
       };
     }
   }, []);
@@ -77,12 +112,36 @@ export default function EnhancedMediaPlayer({
     setHasError(true);
   };
 
+  // Handle video element events
+  const handleVideoLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  const handleVideoError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+
+  // Security handler for video element
+  const handleVideoContextMenu = (e: React.MouseEvent<HTMLVideoElement>) => {
+    e.preventDefault();
+    return false;
+  };
+
+  const handleVideoDragStart = (e: React.DragEvent<HTMLVideoElement>) => {
+    e.preventDefault();
+    return false;
+  };
+
   // Auto-show video if available and not locked
   useEffect(() => {
     if (hasValidVideo && !isLocked) {
+      // For Cloudinary videos, show immediately
+      // For YouTube videos, we can still show immediately or require click based on preference
       setShowVideo(true);
     }
-  }, [hasValidVideo, isLocked]);
+  }, [hasValidVideo, isLocked, isCloudinaryVideoUrl]);
 
   // Disable keyboard shortcuts and developer tools
   useEffect(() => {
@@ -200,8 +259,8 @@ export default function EnhancedMediaPlayer({
     );
   }
 
-  // Render video player
-  if (!videoId) {
+  // Render video player - now handles both YouTube and Cloudinary videos
+  if (!hasValidVideo || (!videoId && !isCloudinaryVideoUrl)) {
     return (
       <div className="aspect-video bg-gray-900 flex items-center justify-center rounded-xl">
         <div className="text-center text-white">
@@ -241,20 +300,6 @@ export default function EnhancedMediaPlayer({
     );
   }
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?` + new URLSearchParams({
-    autoplay: autoplay ? '1' : '0',
-    controls: '1',
-    disablekb: '1',
-    fs: '0',
-    modestbranding: '1',
-    rel: '0',
-    showinfo: '0',
-    iv_load_policy: '3',
-    cc_load_policy: '0',
-    playsinline: '1',
-    origin: typeof window !== 'undefined' ? window.location.origin : '',
-  }).toString();
-
   return (
     <div 
       ref={playerRef}
@@ -268,7 +313,7 @@ export default function EnhancedMediaPlayer({
     >
       {/* Loading State */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
           <div className="text-center text-white">
             <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
               <PlayIcon className="w-8 h-8" />
@@ -281,40 +326,91 @@ export default function EnhancedMediaPlayer({
         </div>
       )}
 
-      {/* YouTube Iframe */}
-      <iframe
-        ref={iframeRef}
-        src={embedUrl}
-        title={title}
-        className="absolute inset-0 w-full h-full rounded-xl"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen={false}
-        onLoad={handleIframeLoad}
-        onError={handleIframeError}
-        style={{
-          pointerEvents: 'auto',
-          border: 'none',
-          outline: 'none'
-        }}
-      />
+      {/* YouTube Video */}
+      {videoId && (
+        <>
+          {(() => {
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?` + new URLSearchParams({
+              autoplay: autoplay ? '1' : '0',
+              controls: '1',
+              disablekb: '1',
+              fs: '0',
+              modestbranding: '1',
+              rel: '0',
+              showinfo: '0',
+              iv_load_policy: '3',
+              cc_load_policy: '0',
+              playsinline: '1',
+              origin: typeof window !== 'undefined' ? window.location.origin : '',
+            }).toString();
+
+            return (
+              <iframe
+                ref={iframeRef}
+                src={embedUrl}
+                title={title}
+                className="absolute inset-0 w-full h-full rounded-xl"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen={false}
+                onLoad={handleIframeLoad}
+                onError={handleIframeError}
+                style={{
+                  pointerEvents: 'auto',
+                  border: 'none',
+                  outline: 'none'
+                }}
+              />
+            );
+          })()}
+        </>
+      )}
+
+      {/* Cloudinary Video */}
+      {isCloudinaryVideoUrl && videoUrl && (
+        <video
+          className="absolute inset-0 w-full h-full rounded-xl"
+          controls
+          playsInline
+          preload="metadata"
+          onLoadedData={handleVideoLoad}
+          onError={handleVideoError}
+          onContextMenu={handleVideoContextMenu}
+          onDragStart={handleVideoDragStart}
+          style={{
+            pointerEvents: 'auto',
+            border: 'none',
+            outline: 'none',
+            backgroundColor: 'black'
+          }}
+          controlsList="nodownload nofullscreen noremoteplayback"
+          disablePictureInPicture
+          crossOrigin="anonymous"
+        >
+          <source src={getSecureCloudinaryUrl(videoUrl)} type="video/mp4" />
+          <source src={getSecureCloudinaryUrl(videoUrl)} type="video/webm" />
+          <source src={getSecureCloudinaryUrl(videoUrl)} type="video/mov" />
+          <source src={getSecureCloudinaryUrl(videoUrl)} type="video/avi" />
+          المتصفح لا يدعم تشغيل الفيديو.
+        </video>
+      )}
 
       {/* Back to Image Button */}
       {thumbnailUrl && (
         <button
           onClick={() => setShowVideo(false)}
-          className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-2 rounded-lg text-sm transition-all duration-200 backdrop-blur-sm"
+          className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white px-3 py-2 rounded-lg text-sm transition-all duration-200 backdrop-blur-sm z-20"
         >
           عرض الصورة
         </button>
       )}
 
-      {/* Overlay to prevent right-click */}
+      {/* Security Overlay */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
           background: 'transparent',
-          zIndex: 1
+          zIndex: 5
         }}
         onContextMenu={(e) => {
           e.preventDefault();
@@ -322,10 +418,23 @@ export default function EnhancedMediaPlayer({
         }}
       />
 
+      {/* Additional Security for Video Element */}
+      {isCloudinaryVideoUrl && (
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'transparent',
+            zIndex: 6
+          }}
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
+        />
+      )}
+
       {/* Security Notice (for development) */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-          🔒 محمي
+        <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-20">
+          🔒 محمي {isCloudinaryVideoUrl ? '(Cloudinary)' : '(YouTube)'}
         </div>
       )}
     </div>
