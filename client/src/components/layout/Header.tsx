@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,10 +40,16 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center ml-3">
-                <span className="text-white font-bold text-xl">ط</span>
+              <div className="w-10 h-10 ml-3 relative">
+                <Image 
+                  src="/Asset 1.png" 
+                  alt="طه صباغ" 
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
-              <span className="text-xl font-bold text-gray-900">طه صباغ</span>
+              <span className="text-xl font-bold text-gray-900">عالم الكابتن طه الصباغ</span>
             </Link>
           </div>
 
@@ -59,6 +66,12 @@ export default function Header() {
               className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
               الدورات
+            </Link>
+            <Link
+              href="/consultations"
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              الاستشارات
             </Link>
 
             {user && (
@@ -210,6 +223,13 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 الدورات
+              </Link>
+              <Link
+                href="/consultations"
+                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                الاستشارات
               </Link>
 
               {user && (

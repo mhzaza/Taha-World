@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useTheme } from '@/contexts/ThemeContext';
-import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
+
 
 /**
  * Footer Component - Main footer for the Arabic sports training platform
@@ -10,7 +9,6 @@ import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
  */
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -180,20 +178,6 @@ export default function Footer() {
               <Link href="/terms" className="text-gray-300 hover:text-white text-sm transition-colors">
                 شروط الاستخدام
               </Link>
-              
-              {/* Theme Toggle Button */}
-              <button
-                onClick={toggleTheme}
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-300 hover:text-white transition-all duration-200 group"
-                aria-label={theme === 'light' ? 'تبديل إلى الوضع الليلي' : 'تبديل إلى الوضع النهاري'}
-                title={theme === 'light' ? 'الوضع الليلي' : 'الوضع النهاري'}
-              >
-                {theme === 'light' ? (
-                  <MoonIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                ) : (
-                  <SunIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                )}
-              </button>
             </div>
           </div>
         </div>
