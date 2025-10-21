@@ -7,27 +7,12 @@ const { authenticate } = require('../middleware/auth');
 
 const router = express.Router();
 
-// PayPal SDK configuration
-const paypal = require('@paypal/paypal-server-sdk');
-const isPayPalEnabled = process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET;
+// PayPal SDK configuration - DISABLED (using stub/mock mode only)
+// const paypal = require('@paypal/paypal-server-sdk');
+const isPayPalEnabled = false; // Disabled - using mock mode only
+const paypalClient = null;
 
-// Initialize PayPal client
-let paypalClient;
-if (isPayPalEnabled) {
-  const environment = process.env.PAYPAL_MODE === 'live' 
-    ? paypal.Environment.Production 
-    : paypal.Environment.Sandbox;
-  
-  paypalClient = new paypal.core.PayPalHttpClient(
-    new environment(
-      process.env.PAYPAL_CLIENT_ID,
-      process.env.PAYPAL_CLIENT_SECRET
-    )
-  );
-  console.log(`✅ PayPal initialized in ${process.env.PAYPAL_MODE || 'sandbox'} mode`);
-} else {
-  console.log('⚠️  PayPal credentials not found. Running in mock mode.');
-}
+console.log('⚠️  PayPal integration disabled. Running in mock/stub mode only.');
 
 // @desc    Create PayPal order
 // @route   POST /api/payment/paypal/create-order
@@ -80,68 +65,16 @@ router.post('/paypal/create-order', authenticate, [
       // In real implementation, validate coupon and calculate discount
     }
 
-    let order;
-    
-    if (isPayPalEnabled && paypalClient) {
-      // Real PayPal integration
-      try {
-        const request = new paypal.orders.OrdersCreateRequest();
-        request.prefer("return=representation");
-        request.requestBody({
-          intent: 'CAPTURE',
-          purchase_units: [{
-            reference_id: courseId,
-            description: course.title,
-            custom_id: userId.toString(),
-            amount: {
-              currency_code: course.currency || 'USD',
-              value: amount.toFixed(2),
-              breakdown: {
-                item_total: {
-                  currency_code: course.currency || 'USD',
-                  value: amount.toFixed(2)
-                }
-              }
-            },
-            items: [{
-              name: course.title,
-              description: course.description?.substring(0, 127) || 'Online Course',
-              unit_amount: {
-                currency_code: course.currency || 'USD',
-                value: amount.toFixed(2)
-              },
-              quantity: '1',
-              category: 'DIGITAL_GOODS'
-            }]
-          }],
-          application_context: {
-            brand_name: 'Taha World Training',
-            landing_page: 'BILLING',
-            user_action: 'PAY_NOW',
-            return_url: `${process.env.CLIENT_URL}/payment/success`,
-            cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
-          }
-        });
-
-        const response = await paypalClient.execute(request);
-        order = response.result;
-        console.log('✅ PayPal order created:', order.id);
-      } catch (error) {
-        console.error('❌ PayPal order creation failed:', error);
-        throw new Error('Failed to create PayPal order');
-      }
-    } else {
-      // Mock mode for testing without PayPal credentials
-      const mockOrderId = `mock_order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      order = {
-        id: mockOrderId,
-        links: [{
-          rel: 'approve',
-          href: `${process.env.CLIENT_URL}/payment/success?paymentId=${mockOrderId}&PayerID=mock_payer`
-        }]
-      };
-      console.log('⚠️  Mock PayPal order created:', mockOrderId);
-    }
+    // Mock mode for testing without PayPal credentials
+    const mockOrderId = `mock_order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const order = {
+      id: mockOrderId,
+      links: [{
+        rel: 'approve',
+        href: `${process.env.CLIENT_URL}/payment/success?paymentId=${mockOrderId}&PayerID=mock_payer`
+      }]
+    };
+    console.log('⚠️  Mock PayPal order created:', mockOrderId);
 
     // Create order record in database
     const orderRecord = new Order({
@@ -210,36 +143,12 @@ router.post('/paypal/capture', authenticate, [
       });
     }
 
-    let capture;
-    
-    if (isPayPalEnabled && paypalClient && !orderId.startsWith('mock_')) {
-      // Real PayPal capture
-      try {
-        const request = new paypal.orders.OrdersCaptureRequest(orderId);
-        request.requestBody({});
-        const response = await paypalClient.execute(request);
-        capture = response.result;
-        console.log('✅ PayPal payment captured:', capture.id);
-      } catch (error) {
-        console.error('❌ PayPal capture failed:', error);
-        orderRecord.status = 'failed';
-        orderRecord.failureReason = error.message || 'PayPal capture failed';
-        await orderRecord.save();
-        
-        return res.status(400).json({
-          error: 'Payment capture failed',
-          arabic: 'فشل في إتمام الدفع',
-          details: error.message
-        });
-      }
-    } else {
-      // Mock mode
-      capture = {
-        status: 'COMPLETED',
-        id: `capture_${orderId}`
-      };
-      console.log('⚠️  Mock PayPal capture:', capture.id);
-    }
+    // Mock mode
+    const capture = {
+      status: 'COMPLETED',
+      id: `capture_${orderId}`
+    };
+    console.log('⚠️  Mock PayPal capture:', capture.id);
 
     if (capture.status === 'COMPLETED') {
       // Update order status
