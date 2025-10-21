@@ -3,7 +3,7 @@ import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import Script from 'next/script';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import ClientAuthProvider from "@/components/ClientAuthProvider";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" className="dark">
       <head>
         {process.env.NODE_ENV === 'production' && (
           <>
@@ -59,13 +59,11 @@ export default function RootLayout({
       <body
         className={`${ibmPlexArabic.variable} antialiased font-sans`}
       >
-        <ThemeProvider>
-          <ClientAuthProvider>
-            {children}
-            <Toaster position="top-center" reverseOrder={false} />
-             <GoogleAnalytics />
-          </ClientAuthProvider>
-        </ThemeProvider>
+        <ClientAuthProvider>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+           <GoogleAnalytics />
+        </ClientAuthProvider>
       </body>
     </html>
   );
