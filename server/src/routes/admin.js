@@ -141,12 +141,14 @@ router.get('/users', requirePermission('users.manage'), [
 
     res.json({
       success: true,
-      users,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        itemsPerPage: limit
+      data: {
+        users,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          itemsPerPage: limit
+        }
       },
       stats
     });
