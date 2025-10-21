@@ -625,7 +625,7 @@ const ProfilePage = () => {
                                 {getStatusBadge(subscription.status)}
                               </div>
                               <div className="text-sm text-gray-600 space-y-1">
-                                  <p>تاريخ الاشتراك: {new Date(subscription.startDate).toLocaleDateString('ar-SA')}</p>
+                                  <p>تاريخ الاشتراك: {new Date(subscription.startDate).toLocaleDateString('ar-EG', { calendar: 'gregory' })}</p>
                                   <p>السعر: ${subscription.price}</p>
                                   <div className="flex items-center gap-4 text-xs">
                                     <span className="flex items-center">
@@ -691,7 +691,7 @@ const ProfilePage = () => {
                               <div className="mt-4 pt-4 border-t border-gray-100">
                                 <div className="flex items-center justify-between text-xs text-gray-500">
                                   <span>آخر نشاط</span>
-                                  <span>{new Date(subscription.startDate).toLocaleDateString('ar-SA')}</span>
+                                  <span>{new Date(subscription.startDate).toLocaleDateString('ar-EG', { calendar: 'gregory' })}</span>
                                 </div>
                             </div>
                           </div>

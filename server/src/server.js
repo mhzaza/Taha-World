@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const paymentRoutes = require('./routes/payment');
 const reviewRoutes = require('./routes/reviews');
+const consultationRoutes = require('./routes/consultations');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -83,6 +84,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/consultations', consultationRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

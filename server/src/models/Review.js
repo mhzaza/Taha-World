@@ -182,4 +182,63 @@ reviewSchema.pre('save', async function(next) {
   next();
 });
 
+// Function to update course rating
+async function updateCourseRating(courseId) {
+  try {
+    const Course = mongoose.model('Course');
+    const Review = mongoose.model('Review');
+    
+    // Convert to ObjectId properly
+    const courseObjectId = typeof courseId === 'string' 
+      ? new mongoose.Types.ObjectId(courseId) 
+      : courseId;
+    
+    const stats = await Review.aggregate([
+      {
+        $match: {
+          courseId: courseObjectId,
+          isVisible: true
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const averageRating = stats.length > 0 ? Math.round(stats[0].averageRating * 10) / 10 : 0;
+    const count = stats.length > 0 ? stats[0].totalReviews : 0;
+
+    await Course.findByIdAndUpdate(courseObjectId, {
+      'rating.average': averageRating,
+      'rating.count': count
+    });
+
+    console.log(`Updated course ${courseObjectId} rating: ${averageRating} (${count} reviews)`);
+  } catch (error) {
+    console.error('Error updating course rating:', error);
+    console.error('Error details:', error.message);
+  }
+}
+
+// Post-save hook to update course rating
+reviewSchema.post('save', async function(doc) {
+  await updateCourseRating(doc.courseId);
+});
+
+// Post-remove hook to update course rating
+reviewSchema.post('remove', async function(doc) {
+  await updateCourseRating(doc.courseId);
+});
+
+// Post-findOneAndDelete hook to update course rating
+reviewSchema.post('findOneAndDelete', async function(doc) {
+  if (doc) {
+    await updateCourseRating(doc.courseId);
+  }
+});
+
 module.exports = mongoose.model('Review', reviewSchema);

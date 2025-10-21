@@ -30,7 +30,8 @@ export default function ConfirmationPage() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('ar-SA', {
+    return date.toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       weekday: 'long',
       year: 'numeric',
       month: 'long',

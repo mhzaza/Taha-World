@@ -362,7 +362,8 @@ export default function OrdersPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -457,7 +458,7 @@ export default function OrdersPage() {
           <h1 className="text-2xl font-bold text-gray-900">إدارة الطلبات</h1>
           <p className="mt-2 text-gray-600">عرض وإدارة جميع طلبات الشراء</p>
           <p className="mt-1 text-sm text-gray-500">
-            آخر تحديث: {lastUpdated.toLocaleString('ar-SA')}
+            آخر تحديث: {lastUpdated.toLocaleString('ar-EG', { calendar: 'gregory' })}
           </p>
         </div>
         
@@ -501,7 +502,7 @@ export default function OrdersPage() {
                             <p className="text-sm font-medium text-gray-900">
                               {notification.message}
                             </p>
-                            <p className="text-xs text-gray-500">{notification.timestamp.toLocaleString('ar-SA')}</p>
+                            <p className="text-xs text-gray-500">{notification.timestamp.toLocaleString('ar-EG', { calendar: 'gregory' })}</p>
                           </div>
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             notification.type === 'success' ? 'bg-green-100 text-green-800' :
@@ -938,6 +939,39 @@ export default function OrdersPage() {
           } catch (error) {
             console.error('Error updating order status:', error);
             addNotification('error', 'حدث خطأ أثناء تحديث حالة الطلب');
+          }
+        }}
+        onVerifyBankTransfer={async (orderId: string, status: 'verified' | 'rejected', reason?: string) => {
+          try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+            const response = await fetch(`${API_BASE_URL}/payment/bank-transfer/verify/${orderId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({ status, rejectionReason: reason })
+            });
+
+            if (!response.ok) {
+              throw new Error('فشل في التحقق من التحويل البنكي');
+            }
+
+            const data = await response.json();
+            
+            // Update local state with the verified order
+            await fetchOrders();
+            setIsModalOpen(false);
+            setSelectedOrder(null);
+            
+            if (status === 'verified') {
+              addNotification('success', 'تم قبول التحويل البنكي وتفعيل الطلب بنجاح!');
+            } else {
+              addNotification('success', 'تم رفض التحويل البنكي');
+            }
+          } catch (error) {
+            console.error('Error verifying bank transfer:', error);
+            addNotification('error', 'حدث خطأ أثناء التحقق من التحويل البنكي');
           }
         }}
       />

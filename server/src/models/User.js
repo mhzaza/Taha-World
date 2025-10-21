@@ -71,6 +71,14 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Certificate'
   }],
+  consultationBookings: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ConsultationBooking'
+  }],
+  totalConsultations: {
+    type: Number,
+    default: 0
+  },
   subscription: {
     type: {
       type: String,
@@ -129,7 +137,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: [
       'courses.create', 'courses.edit', 'courses.delete',
-      'users.manage', 'orders.view', 'analytics.view'
+      'users.manage', 'orders.view', 'analytics.view',
+      'consultations.view', 'consultations.manage', 'consultations.create', 'consultations.delete'
     ]
   }],
   totalSpent: {

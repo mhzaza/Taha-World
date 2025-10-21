@@ -655,6 +655,49 @@ export const uploadAPI = {
   getUploadStats: () => api.get<ApiResponse<{ stats: unknown }>>('/upload/stats'),
 };
 
+// Consultations API
+export const consultationsAPI = {
+  // Get all consultation types
+  getAll: (category?: string) => {
+    const params = category ? { category } : {};
+    return api.get<ApiResponse<{ consultations: unknown[]; count: number }>>('/consultations', { params });
+  },
+
+  // Get specific consultation
+  getById: (id: string) => 
+    api.get<ApiResponse<{ consultation: unknown }>>(`/consultations/${id}`),
+
+  // Get popular consultations
+  getPopular: (limit?: number) => {
+    const params = limit ? { limit } : {};
+    return api.get<ApiResponse<{ consultations: unknown[] }>>('/consultations/popular', { params });
+  },
+
+  // Create booking
+  createBooking: (data: unknown) =>
+    api.post<ApiResponse<{ booking: unknown; order: unknown; nextStep: string; paymentRequired: boolean }>>('/consultations/book', data),
+
+  // Get user's bookings
+  getMyBookings: (params?: { status?: string; upcoming?: boolean; page?: number; limit?: number }) =>
+    api.get<ApiResponse<{ bookings: unknown[]; pagination: unknown }>>('/consultations/my-bookings', { params }),
+
+  // Get specific booking
+  getBooking: (bookingId: string) =>
+    api.get<ApiResponse<{ booking: unknown }>>(`/consultations/booking/${bookingId}`),
+
+  // Cancel booking
+  cancelBooking: (bookingId: string, reason?: string) =>
+    api.delete<ApiResponse<{ booking: unknown }>>(`/consultations/booking/${bookingId}/cancel`, { data: { reason } }),
+
+  // Reschedule booking
+  rescheduleBooking: (bookingId: string, data: { newDate: string; newTime: string; reason?: string }) =>
+    api.put<ApiResponse<{ booking: unknown }>>(`/consultations/booking/${bookingId}/reschedule`, data),
+
+  // Submit feedback
+  submitFeedback: (bookingId: string, feedback: { rating: number; comment?: string }) =>
+    api.post<ApiResponse<{ feedback: unknown }>>(`/consultations/booking/${bookingId}/feedback`, feedback),
+};
+
 // Utility functions
 export const apiUtils = {
   handleApiError: (error: unknown) => {

@@ -96,7 +96,14 @@ const courseSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: [true, 'Course price is required'],
-    min: [0, 'Price cannot be negative']
+    min: [0, 'Price cannot be negative'],
+    validate: {
+      validator: function(value) {
+        // Allow up to 2 decimal places
+        return Number.isFinite(value) && /^\d+(\.\d{1,2})?$/.test(value.toFixed(2));
+      },
+      message: 'Price must be a valid number with up to 2 decimal places'
+    }
   },
   originalPrice: {
     type: Number,

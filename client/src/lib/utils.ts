@@ -46,18 +46,34 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
 }
 
 /**
- * Format date for Arabic locale
+ * Format date for Arabic locale with Gregorian calendar
  * @param date Date object or string
- * @returns Formatted date string
+ * @returns Formatted date string in Gregorian calendar
  */
 export function formatDate(date: Date | string): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('ar-SA', {
+  return new Intl.DateTimeFormat('ar-EG', {
+    calendar: 'gregory',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
+  }).format(dateObj);
+}
+
+/**
+ * Format date (short version) for Arabic locale with Gregorian calendar
+ * @param date Date object or string
+ * @returns Formatted short date string in Gregorian calendar
+ */
+export function formatDateShort(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat('ar-EG', {
+    calendar: 'gregory',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
   }).format(dateObj);
 }
 

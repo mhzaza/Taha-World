@@ -667,7 +667,8 @@ export default function AnalyticsPage() {
                   <div className="flex-1">
                     <p className="text-sm text-gray-900">{getActivityText(activity.action, activity.details)}</p>
                     <p className="text-xs text-gray-500">
-                      {new Date(activity.createdAt).toLocaleString('ar-SA', {
+                      {new Date(activity.createdAt).toLocaleString('ar-EG', {
+                        calendar: 'gregory',
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -729,7 +730,8 @@ export default function AnalyticsPage() {
                 <div className="flex-1">
                   <p className="text-sm text-gray-900">{getActivityText(activity.action, activity.details)}</p>
                   <p className="text-xs text-gray-500">
-                    {new Date(activity.createdAt).toLocaleString('ar-SA', {
+                    {new Date(activity.createdAt).toLocaleString('ar-EG', {
+                      calendar: 'gregory',
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric',

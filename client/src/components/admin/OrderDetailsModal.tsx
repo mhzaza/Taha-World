@@ -59,6 +59,18 @@ interface OrderDetails {
   notes?: string;
   refundReason?: string;
   isNew?: boolean;
+  bankTransfer?: {
+    receiptImage?: string;
+    receiptImagePublicId?: string;
+    transferDate?: string;
+    transferReference?: string;
+    bankName?: string;
+    accountHolderName?: string;
+    verificationStatus?: 'pending' | 'verified' | 'rejected';
+    verifiedBy?: string;
+    verifiedAt?: string;
+    rejectionReason?: string;
+  };
 }
 
 interface OrderDetailsModalProps {
@@ -66,18 +78,23 @@ interface OrderDetailsModalProps {
   onClose: () => void;
   order: OrderDetails | null;
   onUpdateStatus?: (orderId: string, status: string, notes?: string) => void;
+  onVerifyBankTransfer?: (orderId: string, status: 'verified' | 'rejected', reason?: string) => void;
 }
 
 export default function OrderDetailsModal({ 
   isOpen, 
   onClose, 
   order, 
-  onUpdateStatus 
+  onUpdateStatus,
+  onVerifyBankTransfer 
 }: OrderDetailsModalProps) {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [newStatus, setNewStatus] = useState<string>('');
   const [statusNotes, setStatusNotes] = useState('');
   const [showStatusUpdate, setShowStatusUpdate] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
 
   if (!order) return null;
 
@@ -144,7 +161,8 @@ export default function OrderDetailsModal({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -199,6 +217,25 @@ export default function OrderDetailsModal({
     link.download = `order-${sanitizedOrder.id}.json`;
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleVerifyBankTransfer = async (verificationStatus: 'verified' | 'rejected') => {
+    if (!onVerifyBankTransfer) return;
+    
+    if (verificationStatus === 'rejected' && !rejectionReason) {
+      alert('يرجى إدخال سبب الرفض');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      await onVerifyBankTransfer(sanitizedOrder._id || sanitizedOrder.id, verificationStatus, rejectionReason);
+      setRejectionReason('');
+    } catch (error) {
+      console.error('Error verifying bank transfer:', error);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   return (
@@ -534,6 +571,146 @@ export default function OrderDetailsModal({
                     </div>
                   </div>
 
+                  {/* Bank Transfer Details */}
+                  {sanitizedOrder.paymentMethod === 'bank_transfer' && sanitizedOrder.bankTransfer && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center">
+                          <CreditCardIcon className="h-5 w-5 text-gray-400 ml-2" />
+                          <h3 className="text-lg font-semibold text-gray-900">تفاصيل التحويل البنكي</h3>
+                        </div>
+                        {sanitizedOrder.bankTransfer.verificationStatus === 'pending' && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            <ClockIcon className="h-4 w-4 ml-1" />
+                            في انتظار التحقق
+                          </span>
+                        )}
+                        {sanitizedOrder.bankTransfer.verificationStatus === 'verified' && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                            <CheckCircleIcon className="h-4 w-4 ml-1" />
+                            تم التحقق
+                          </span>
+                        )}
+                        {sanitizedOrder.bankTransfer.verificationStatus === 'rejected' && (
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                            <XCircleIcon className="h-4 w-4 ml-1" />
+                            مرفوض
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        {sanitizedOrder.bankTransfer.transferReference && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">رقم مرجع التحويل</label>
+                            <p className="text-gray-900 font-mono">{sanitizedOrder.bankTransfer.transferReference}</p>
+                          </div>
+                        )}
+                        
+                        {sanitizedOrder.bankTransfer.bankName && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">اسم البنك</label>
+                            <p className="text-gray-900">{sanitizedOrder.bankTransfer.bankName}</p>
+                          </div>
+                        )}
+                        
+                        {sanitizedOrder.bankTransfer.accountHolderName && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">اسم صاحب الحساب</label>
+                            <p className="text-gray-900">{sanitizedOrder.bankTransfer.accountHolderName}</p>
+                          </div>
+                        )}
+                        
+                        {sanitizedOrder.bankTransfer.transferDate && (
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">تاريخ التحويل</label>
+                            <p className="text-gray-900">{formatDate(sanitizedOrder.bankTransfer.transferDate)}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Receipt Image */}
+                      {sanitizedOrder.bankTransfer.receiptImage && (
+                        <div className="mb-6">
+                          <label className="text-sm font-medium text-gray-500 block mb-2">صورة الإيصال</label>
+                          <div className="relative border-2 border-gray-300 rounded-lg overflow-hidden">
+                            <img 
+                              src={sanitizedOrder.bankTransfer.receiptImage} 
+                              alt="Receipt"
+                              className="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => setShowReceiptModal(true)}
+                            />
+                            <button
+                              onClick={() => setShowReceiptModal(true)}
+                              className="absolute top-2 right-2 bg-white/90 hover:bg-white p-2 rounded-lg shadow-md transition-colors"
+                            >
+                              <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-700" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Verification Actions */}
+                      {sanitizedOrder.bankTransfer.verificationStatus === 'pending' && onVerifyBankTransfer && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-3">إجراءات التحقق</h4>
+                          
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              سبب الرفض (في حالة الرفض)
+                            </label>
+                            <input
+                              type="text"
+                              value={rejectionReason}
+                              onChange={(e) => setRejectionReason(e.target.value)}
+                              placeholder="اختياري - أدخل سبب الرفض"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                          
+                          <div className="flex items-center space-x-3">
+                            <button
+                              onClick={() => handleVerifyBankTransfer('verified')}
+                              disabled={isVerifying}
+                              className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              <CheckCircleIcon className="h-5 w-5 ml-2" />
+                              {isVerifying ? 'جاري التحقق...' : 'الموافقة والتفعيل'}
+                            </button>
+                            <button
+                              onClick={() => handleVerifyBankTransfer('rejected')}
+                              disabled={isVerifying}
+                              className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              <XCircleIcon className="h-5 w-5 ml-2" />
+                              {isVerifying ? 'جاري الرفض...' : 'رفض'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Verification Info */}
+                      {sanitizedOrder.bankTransfer.verificationStatus !== 'pending' && (
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                          <div className="space-y-2">
+                            {sanitizedOrder.bankTransfer.verifiedAt && (
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">تاريخ التحقق</label>
+                                <p className="text-gray-900">{formatDate(sanitizedOrder.bankTransfer.verifiedAt)}</p>
+                              </div>
+                            )}
+                            {sanitizedOrder.bankTransfer.rejectionReason && (
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">سبب الرفض</label>
+                                <p className="text-red-700 bg-red-50 p-3 rounded-lg">{sanitizedOrder.bankTransfer.rejectionReason}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Notes */}
                   {(sanitizedOrder.notes || sanitizedOrder.refundReason) && (
                     <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -574,6 +751,75 @@ export default function OrderDetailsModal({
             </Transition.Child>
           </div>
         </div>
+
+        {/* Receipt Modal */}
+        {showReceiptModal && sanitizedOrder.bankTransfer?.receiptImage && (
+          <Transition appear show={showReceiptModal} as={Fragment}>
+            <Dialog as="div" className="relative z-[60]" onClose={() => setShowReceiptModal(false)}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="fixed inset-0 bg-black bg-opacity-75" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 overflow-y-auto">
+                <div className="flex min-h-full items-center justify-center p-4">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+                      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900">صورة الإيصال</h3>
+                        <button
+                          onClick={() => setShowReceiptModal(false)}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <XMarkIcon className="h-6 w-6" />
+                        </button>
+                      </div>
+                      <div className="p-4">
+                        <img 
+                          src={sanitizedOrder.bankTransfer.receiptImage} 
+                          alt="Receipt Full View"
+                          className="w-full h-auto"
+                        />
+                      </div>
+                      <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">
+                        <a
+                          href={sanitizedOrder.bankTransfer.receiptImage}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          تحميل الصورة
+                        </a>
+                        <button
+                          onClick={() => setShowReceiptModal(false)}
+                          className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          إغلاق
+                        </button>
+                      </div>
+                    </Dialog.Panel>
+                  </Transition.Child>
+                </div>
+              </div>
+            </Dialog>
+          </Transition>
+        )}
       </Dialog>
     </Transition>
   );

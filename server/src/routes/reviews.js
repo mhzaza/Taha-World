@@ -426,6 +426,7 @@ router.patch('/:reviewId/visibility', authenticateAdmin, async (req, res) => {
 
     review.isVisible = !review.isVisible;
     await review.save();
+    // Note: Course rating is automatically updated via post-save hook in Review model
 
     res.json({
       success: true,

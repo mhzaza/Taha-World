@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Course, Lesson } from '@/types';
@@ -13,7 +13,6 @@ import CourseReviews from '@/components/course/CourseReviews';
 import CongratulationsPopup from '@/components/course/CongratulationsPopup';
 import CertifiedUserReviewPopup from '@/components/course/CertifiedUserReviewPopup';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
-import PayPalButton from '@/components/payment/PayPalButton';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -104,6 +103,39 @@ export default function CoursePage() {
     console.log('canAccessCourse computed:', { isEnrolled, isAdmin, result });
     return result;
   }, [isEnrolled, isAdmin]);
+
+  // Function to refresh course rating after review changes
+  const refreshCourseRating = useCallback(async () => {
+    if (!courseId || !course) return;
+    
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
+      
+      const response = await fetch(`${backendUrl}/api/courses/${courseId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+      });
+
+      if (response.ok) {
+        const responseData: any = await response.json();
+        const courseData = responseData.course || responseData;
+        
+        // Update only the rating
+        setCourse(prev => prev ? {
+          ...prev,
+          rating: courseData.rating || { average: 0, count: 0 },
+          enrollmentCount: courseData.enrollmentCount || prev.enrollmentCount
+        } : null);
+        
+        console.log('Course rating refreshed:', courseData.rating);
+      }
+    } catch (error) {
+      console.error('Error refreshing course rating:', error);
+    }
+  }, [courseId, course]);
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -906,20 +938,12 @@ export default function CoursePage() {
                               <span className="font-medium text-black">دفعة واحدة – وصول دائم</span>
                             </div>
                           </div>
-                          <PayPalButton
-                            courseId={course.id}
-                            courseTitle={course.title}
-                            amount={course.price}
-                            currency={course.currency}
-                            onSuccess={(order) => {
-                              console.log('Payment successful:', order);
-                              window.location.reload();
-                            }}
-                            onError={(error) => {
-                              console.error('Payment error:', error);
-                              alert(error);
-                            }}
-                          />
+                          <button
+                            onClick={() => router.push(`/checkout?courseId=${courseMongoId}`)}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors"
+                          >
+                            {AR.buyNow}
+                          </button>
                         </div>
                       </>
                     )}
@@ -947,7 +971,12 @@ export default function CoursePage() {
 
       {/* Reviews Section */}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <CourseReviews courseId={courseId} isEnrolled={canAccessCourse} />
+        <CourseReviews 
+          courseId={courseId} 
+          isEnrolled={canAccessCourse}
+          courseRating={course.rating}
+          onReviewChange={refreshCourseRating}
+        />
       </div>
       
       {/* Congratulations Popup */}

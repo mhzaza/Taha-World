@@ -88,7 +88,8 @@ export default function UserPayments() {
 
   // Format date for display
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ar-SA', {
+    return new Intl.DateTimeFormat('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'long',
       day: 'numeric',

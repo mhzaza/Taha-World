@@ -54,7 +54,8 @@ export default function UserCertificates() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'long',
       day: 'numeric',

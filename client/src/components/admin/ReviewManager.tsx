@@ -198,7 +198,8 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'short',
       day: 'numeric',

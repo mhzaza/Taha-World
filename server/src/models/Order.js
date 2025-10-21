@@ -17,20 +17,41 @@ const orderSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  orderType: {
+    type: String,
+    enum: ['course', 'consultation', 'subscription'],
+    default: 'course',
+    required: true
+  },
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course',
-    required: true
+    required: function() {
+      return this.orderType === 'course';
+    }
   },
   courseTitle: {
     type: String,
-    required: true,
+    required: function() {
+      return this.orderType === 'course';
+    },
     trim: true
+  },
+  consultationBookingId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ConsultationBooking'
   },
   amount: {
     type: Number,
     required: [true, 'Order amount is required'],
-    min: [0, 'Amount cannot be negative']
+    min: [0, 'Amount cannot be negative'],
+    validate: {
+      validator: function(value) {
+        // Allow up to 2 decimal places
+        return Number.isFinite(value) && /^\d+(\.\d{1,2})?$/.test(value.toFixed(2));
+      },
+      message: 'Amount must be a valid number with up to 2 decimal places'
+    }
   },
   originalAmount: {
     type: Number,
@@ -108,6 +129,51 @@ const orderSchema = new mongoose.Schema({
   paymentData: {
     type: mongoose.Schema.Types.Mixed,
     default: {}
+  },
+  // Bank Transfer specific fields
+  bankTransfer: {
+    receiptImage: {
+      type: String,
+      default: null
+    },
+    receiptImagePublicId: {
+      type: String,
+      default: null
+    },
+    transferDate: {
+      type: Date,
+      default: null
+    },
+    transferReference: {
+      type: String,
+      default: null
+    },
+    bankName: {
+      type: String,
+      default: null
+    },
+    accountHolderName: {
+      type: String,
+      default: null
+    },
+    verificationStatus: {
+      type: String,
+      enum: ['pending', 'verified', 'rejected'],
+      default: 'pending'
+    },
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
+    },
+    verifiedAt: {
+      type: Date,
+      default: null
+    },
+    rejectionReason: {
+      type: String,
+      default: null
+    }
   },
   // Shipping information (if applicable)
   shippingAddress: {

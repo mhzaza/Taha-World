@@ -89,6 +89,14 @@ export default function AdminDashboard() {
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
+      id: 'manage-consultations',
+      title: 'إدارة الاستشارات',
+      description: 'عرض وإدارة حجوزات الاستشارات',
+      icon: ClockIcon,
+      href: '/admin/consultations',
+      color: 'bg-indigo-500 hover:bg-indigo-600'
+    },
+    {
       id: 'manage-users',
       title: 'إدارة المستخدمين',
       description: 'عرض وإدارة حسابات المستخدمين',
@@ -201,7 +209,8 @@ export default function AdminDashboard() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ar-SA', {
+    return new Intl.DateTimeFormat('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'short',
       day: 'numeric',

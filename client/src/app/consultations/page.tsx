@@ -1,18 +1,64 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { consultationTypes, consultationCategories } from '@/data/consultations'
+import { consultationCategories } from '@/data/consultations'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import { consultationsAPI } from '@/lib/api'
+import toast from 'react-hot-toast'
+
+interface Consultation {
+  _id: string
+  consultationId: number
+  title: string
+  description: string
+  duration: string
+  durationMinutes: number
+  price: number
+  currency: string
+  category: string
+  features: string[]
+  consultationType: string
+  image?: string
+  isActive: boolean
+}
 
 export default function ConsultationsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [consultations, setConsultations] = useState<Consultation[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadConsultations()
+  }, [])
+
+  const loadConsultations = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await consultationsAPI.getAll()
+      if (response.data && 'consultations' in response.data) {
+        setConsultations((response.data as unknown as { consultations: Consultation[] }).consultations || [])
+      }
+    } catch (err) {
+      console.error('Error loading consultations:', err)
+      setError('فشل في تحميل الاستشارات')
+      toast.error('فشل في تحميل الاستشارات')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredConsultations = selectedCategory === 'all' 
-    ? consultationTypes 
-    : consultationTypes.filter(consultation => consultation.category === selectedCategory)
+    ? consultations 
+    : consultations.filter(consultation => consultation.category === selectedCategory)
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen">
+      <Header />
+      <div className="">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
@@ -67,47 +113,99 @@ export default function ConsultationsPage() {
         </div>
 
         {/* Consultations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredConsultations.map((consultation) => (
-            <div key={consultation.id} className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-              <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                <div className="absolute inset-0 bg-black/20"></div>
-                <div className="absolute bottom-4 left-4">
-                  <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
-                    {consultation.duration}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2">{consultation.title}</h3>
-                <p className="text-gray-300 mb-4">{consultation.description}</p>
-                
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-blue-400 mb-2">ما يشمله:</h4>
-                  <ul className="space-y-1">
-                    {consultation.features.map((feature, index) => (
-                      <li key={index} className="text-sm text-gray-300 flex items-center gap-2">
-                        <span className="text-green-400">✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-2xl font-bold text-blue-400">{consultation.price}</div>
-                  <Link 
-                    href={`/consultations/book?type=${consultation.id}`}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-                  >
-                    احجز الآن
-                  </Link>
-                </div>
-              </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-400">جاري تحميل الاستشارات...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4">
+              <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-xl font-semibold mb-2">{error}</p>
+              <button 
+                onClick={loadConsultations}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                إعادة المحاولة
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : filteredConsultations.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-xl mb-4">
+              {selectedCategory === 'all' 
+                ? 'لا توجد استشارات متاحة حالياً'
+                : 'لا توجد استشارات في هذه الفئة'}
+            </p>
+            {selectedCategory !== 'all' && (
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="text-blue-500 hover:text-blue-400 underline"
+              >
+                عرض جميع الاستشارات
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredConsultations.map((consultation) => (
+              <div key={consultation._id} className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                      {consultation.duration}
+                    </span>
+                  </div>
+                  {consultation.category === 'vip' && (
+                    <div className="absolute top-4 right-4">
+                      <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold">
+                        ⭐ VIP
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2">{consultation.title}</h3>
+                  <p className="text-gray-300 mb-4 line-clamp-3">{consultation.description}</p>
+                  
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-blue-400 mb-2">ما يشمله:</h4>
+                    <ul className="space-y-1">
+                      {consultation.features.slice(0, 3).map((feature, index) => (
+                        <li key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                          <span className="text-green-400 mt-0.5">✓</span>
+                          <span className="line-clamp-2">{feature}</span>
+                        </li>
+                      ))}
+                      {consultation.features.length > 3 && (
+                        <li className="text-sm text-blue-400">
+                          + {consultation.features.length - 3} ميزة أخرى
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="text-2xl font-bold text-blue-400">
+                      {consultation.price}{consultation.currency === 'USD' ? '$' : ' ' + consultation.currency}
+                    </div>
+                    <Link 
+                      href={`/consultations/book?type=${consultation._id}`}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                    >
+                      احجز الآن
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Why Choose Us Section */}
@@ -166,6 +264,8 @@ export default function ConsultationsPage() {
           </Link>
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   )
 }

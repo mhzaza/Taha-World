@@ -215,7 +215,8 @@ export const adminUtils = {
   },
 
   formatDate: (date: string) => {
-    return new Date(date).toLocaleDateString('ar-SA', {
+    return new Date(date).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'long',
       day: 'numeric',

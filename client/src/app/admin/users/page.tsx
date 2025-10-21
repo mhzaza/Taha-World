@@ -246,7 +246,8 @@ export default function UsersPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+    return new Date(dateString).toLocaleDateString('ar-EG', {
+      calendar: 'gregory',
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -472,7 +473,7 @@ export default function UsersPage() {
           <h1 className="text-2xl font-bold text-gray-900">إدارة المستخدمين</h1>
           <p className="mt-2 text-gray-600">عرض وإدارة جميع المستخدمين المسجلين</p>
           <p className="mt-1 text-sm text-gray-500">
-            آخر تحديث: {lastUpdated.toLocaleString('ar-SA')}
+            آخر تحديث: {lastUpdated.toLocaleString('ar-EG', { calendar: 'gregory' })}
             {refreshing && <span className="text-blue-600 mr-2">(جاري التحديث...)</span>}
           </p>
         </div>
