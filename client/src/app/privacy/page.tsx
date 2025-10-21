@@ -78,7 +78,7 @@ const PrivacyPage = () => {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-300"
+                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-blue-300"
                   >
                     <div className="flex items-center">
                       <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg ml-3">
@@ -98,7 +98,7 @@ const PrivacyPage = () => {
       </section>
 
       {/* Privacy Policy Content */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-800">
         <Container>
           <div className="max-w-4xl mx-auto prose prose-lg prose-gray max-w-none">
             
@@ -109,14 +109,14 @@ const PrivacyPage = () => {
                 <h2 className="text-3xl font-bold text-gray-900 m-0">1. مقدمة</h2>
               </div>
               <div className="bg-blue-50 border-r-4 border-blue-600 p-6 rounded-lg mb-6">
-                <p className="text-gray-700 leading-relaxed m-0">
+                <p className="text-gray-200 leading-relaxed m-0">
                   مرحباً بك في منصة التدريب الرياضي. نحن نقدر ثقتك بنا ونلتزم بحماية خصوصيتك وبياناتك الشخصية. تشرح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك الشخصية عند استخدام خدماتنا.
                 </p>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 من خلال استخدام منصتنا، فإنك توافق على جمع واستخدام المعلومات وفقاً لهذه السياسة. إذا كان لديك أي أسئلة أو مخاوف بشأن سياسة الخصوصية هذه، يرجى التواصل معنا.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 تنطبق هذه السياسة على جميع المستخدمين لموقعنا الإلكتروني وتطبيقاتنا المحمولة وخدماتنا ذات الصلة.
               </p>
             </div>
@@ -129,13 +129,13 @@ const PrivacyPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">2.1 المعلومات التي نجمعها</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 نجمع أنواعاً مختلفة من المعلومات لتقديم وتحسين خدماتنا:
               </p>
               
               <div className="bg-gray-50 rounded-lg p-6 mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">المعلومات الشخصية:</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-700">
+                <ul className="list-disc list-inside space-y-2 text-gray-200">
                   <li>الاسم الكامل وتاريخ الميلاد</li>
                   <li>عنوان البريد الإلكتروني</li>
                   <li>رقم الهاتف</li>
@@ -146,7 +146,7 @@ const PrivacyPage = () => {
               
               <div className="bg-gray-50 rounded-lg p-6 mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">معلومات الاستخدام:</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-700">
+                <ul className="list-disc list-inside space-y-2 text-gray-200">
                   <li>سجل تصفح الموقع والتطبيق</li>
                   <li>تقدم الدورات والإنجازات</li>
                   <li>تفضيلات التعلم والاهتمامات</li>
@@ -156,7 +156,7 @@ const PrivacyPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">2.2 كيفية جمع البيانات</h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 نجمع المعلومات بطرق مختلفة: عند التسجيل في الحساب، شراء الدورات، التفاعل مع المحتوى، استخدام ملفات تعريف الارتباط، والتواصل مع خدمة العملاء.
               </p>
             </div>
@@ -168,7 +168,7 @@ const PrivacyPage = () => {
                 <h2 className="text-3xl font-bold text-gray-900 m-0">3. استخدام البيانات</h2>
               </div>
               
-              <p className="text-gray-700 leading-relaxed mb-6">
+              <p className="text-gray-200 leading-relaxed mb-6">
                 نستخدم المعلومات التي نجمعها للأغراض التالية:
               </p>
               
@@ -267,10 +267,10 @@ const PrivacyPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">4.2 مشاركة البيانات</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 لا نبيع أو نؤجر أو نشارك معلوماتك الشخصية مع أطراف ثالثة إلا في الحالات التالية:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>بموافقتك الصريحة</li>
                 <li>مع مقدمي الخدمات الموثوقين الذين يساعدوننا في تشغيل المنصة</li>
                 <li>عند الطلب من السلطات القانونية المختصة</li>
@@ -285,7 +285,7 @@ const PrivacyPage = () => {
                 <h2 className="text-3xl font-bold text-gray-900 m-0">5. حقوق المستخدم</h2>
               </div>
               
-              <p className="text-gray-700 leading-relaxed mb-6">
+              <p className="text-gray-200 leading-relaxed mb-6">
                 لديك حقوق معينة فيما يتعلق ببياناتك الشخصية. يمكنك ممارسة هذه الحقوق من خلال التواصل معنا:
               </p>
               
@@ -353,10 +353,10 @@ const PrivacyPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">6.1 إشعار التغييرات</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 عند إجراء تغييرات جوهرية على هذه السياسة، سنقوم بما يلي:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>نشر السياسة المحدثة على موقعنا الإلكتروني</li>
                 <li>إرسال إشعار عبر البريد الإلكتروني للمستخدمين المسجلين</li>
                 <li>عرض إشعار بارز على المنصة لفترة معقولة</li>
@@ -364,7 +364,7 @@ const PrivacyPage = () => {
               </ul>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">6.2 الموافقة على التغييرات</h3>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 استمرارك في استخدام خدماتنا بعد نشر التغييرات يعني موافقتك على السياسة المحدثة. إذا كنت لا توافق على التغييرات، يمكنك إلغاء حسابك والتوقف عن استخدام خدماتنا.
               </p>
             </div>
@@ -372,7 +372,7 @@ const PrivacyPage = () => {
             {/* Contact Information */}
             <div className="bg-gray-50 rounded-xl p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">تواصل معنا</h2>
-              <p className="text-gray-700 leading-relaxed mb-6 text-center">
+              <p className="text-gray-200 leading-relaxed mb-6 text-center">
                 إذا كان لديك أي أسئلة أو مخاوف حول سياسة الخصوصية هذه أو ممارسات البيانات الخاصة بنا، يرجى التواصل معنا:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">

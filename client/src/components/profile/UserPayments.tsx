@@ -183,7 +183,7 @@ export default function UserPayments() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-6">سجل المدفوعات</h2>
       
       {loading ? (
@@ -202,7 +202,7 @@ export default function UserPayments() {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-gray-600">
             <thead className="bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -222,7 +222,7 @@ export default function UserPayments() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-gray-800 divide-y divide-gray-600">
               {payments.map((payment) => (
                 <tr key={payment.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -90,7 +90,7 @@ const TermsPage = () => {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-300"
+                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-blue-300"
                   >
                     <div className="text-center">
                       <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-3">
@@ -108,7 +108,7 @@ const TermsPage = () => {
       </section>
 
       {/* Terms Content */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-gray-800">
         <Container>
           <div className="max-w-4xl mx-auto prose prose-lg prose-gray max-w-none">
             
@@ -119,14 +119,14 @@ const TermsPage = () => {
                 <h2 className="text-3xl font-bold text-gray-900 m-0">1. مقدمة</h2>
               </div>
               <div className="bg-blue-50 border-r-4 border-blue-600 p-6 rounded-lg mb-6">
-                <p className="text-gray-700 leading-relaxed m-0">
+                <p className="text-gray-200 leading-relaxed m-0">
                   مرحباً بك في منصة التدريب الرياضي. هذه الشروط والأحكام تحكم استخدامك لموقعنا الإلكتروني وخدماتنا. من خلال الوصول إلى منصتنا أو استخدامها، فإنك توافق على الالتزام بهذه الشروط.
                 </p>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 تشكل هذه الشروط اتفاقية قانونية ملزمة بينك وبين منصة التدريب الرياضي. إذا كنت لا توافق على أي من هذه الشروط، يجب عليك عدم استخدام خدماتنا.
               </p>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 نحتفظ بالحق في تعديل هذه الشروط في أي وقت، وسيتم إشعارك بأي تغييرات جوهرية.
               </p>
             </div>
@@ -139,10 +139,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">2.1 الموافقة على الشروط</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 باستخدام منصتنا، فإنك تؤكد أنك:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>تبلغ من العمر 18 عاماً على الأقل أو لديك موافقة والديك/الوصي القانوني</li>
                 <li>تمتلك الأهلية القانونية للدخول في هذه الاتفاقية</li>
                 <li>قرأت وفهمت هذه الشروط والأحكام</li>
@@ -165,7 +165,7 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">3.1 وصف الخدمات</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 نقدم منصة تعليمية عبر الإنترنت تتضمن:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -190,10 +190,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">3.2 توفر الخدمة</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 نسعى لضمان توفر خدماتنا على مدار الساعة، ولكن قد تحدث انقطاعات مؤقتة للصيانة أو التحديثات. نحتفظ بالحق في:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
+              <ul className="list-disc list-inside space-y-2 text-gray-200">
                 <li>تعديل أو إيقاف أي جزء من خدماتنا مؤقتاً أو دائماً</li>
                 <li>تحديث المحتوى والميزات دون إشعار مسبق</li>
                 <li>فرض قيود على الاستخدام لضمان الأداء الأمثل</li>
@@ -208,7 +208,7 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">4.1 إنشاء الحساب</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 لاستخدام معظم ميزات منصتنا، يجب عليك إنشاء حساب. عند إنشاء حسابك، يجب عليك:
               </p>
               <div className="bg-indigo-50 rounded-lg p-6 mb-6">
@@ -221,10 +221,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">4.2 مسؤولية الحساب</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 أنت مسؤول بالكامل عن:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>جميع الأنشطة التي تحدث تحت حسابك</li>
                 <li>الحفاظ على سرية معلومات تسجيل الدخول</li>
                 <li>إخطارنا فوراً بأي انتهاك أمني</li>
@@ -247,10 +247,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">5.1 الأسعار والرسوم</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 أسعار دوراتنا وخدماتنا محددة بوضوح على المنصة. جميع الأسعار:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>مذكورة بالريال السعودي ما لم يُذكر خلاف ذلك</li>
                 <li>تشمل ضريبة القيمة المضافة حسب القانون</li>
                 <li>قابلة للتغيير دون إشعار مسبق</li>
@@ -366,10 +366,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">7.2 حدود المسؤولية</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 في أقصى حد يسمح به القانون، لن نكون مسؤولين عن:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>أي أضرار غير مباشرة أو عرضية أو خاصة</li>
                 <li>فقدان الأرباح أو البيانات أو الفرص</li>
                 <li>انقطاع الأعمال أو الخدمات</li>
@@ -378,7 +378,7 @@ const TermsPage = () => {
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">7.3 التعويض</h3>
               <div className="bg-gray-50 rounded-lg p-6">
-                <p className="text-gray-700 leading-relaxed m-0">
+                <p className="text-gray-200 leading-relaxed m-0">
                   توافق على تعويضنا وحمايتنا من أي مطالبات أو أضرار أو خسائر تنشأ عن استخدامك للمنصة أو انتهاكك لهذه الشروط أو انتهاكك لحقوق أي طرف ثالث.
                 </p>
               </div>
@@ -392,10 +392,10 @@ const TermsPage = () => {
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">8.1 تعديل الشروط</h3>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-200 leading-relaxed mb-4">
                 نحتفظ بالحق في تعديل هذه الشروط في أي وقت. عند إجراء تغييرات جوهرية:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 mb-6">
+              <ul className="list-disc list-inside space-y-2 text-gray-200 mb-6">
                 <li>سنرسل إشعاراً عبر البريد الإلكتروني</li>
                 <li>سننشر إشعاراً على المنصة</li>
                 <li>سنحدث تاريخ "آخر تحديث"</li>
@@ -417,19 +417,19 @@ const TermsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">القانون الحاكم</h3>
-                  <p className="text-gray-700 leading-relaxed mb-4">
+                  <p className="text-gray-200 leading-relaxed mb-4">
                     تخضع هذه الشروط وتفسر وفقاً لقوانين المملكة العربية السعودية. أي نزاعات ستخضع للاختصاص الحصري للمحاكم السعودية.
                   </p>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">قابلية الفصل</h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-gray-200 leading-relaxed">
                     إذا تبين أن أي بند من هذه الشروط غير قابل للتنفيذ، فإن باقي البنود تبقى سارية المفعول.
                   </p>
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">تواصل معنا</h3>
-                  <p className="text-gray-700 leading-relaxed mb-4">
+                  <p className="text-gray-200 leading-relaxed mb-4">
                     إذا كان لديك أي أسئلة حول هذه الشروط:
                   </p>
                   <div className="space-y-2 text-sm">

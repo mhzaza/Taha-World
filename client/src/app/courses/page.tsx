@@ -180,7 +180,7 @@ const CoursesPage = () => {
                             onChange={(e) => handleFilterChange('category', e.target.value)}
                             className="ml-2"
                           />
-                          <span className="text-gray-700">
+                          <span className="text-gray-200">
                             {category.name} ({category.courseCount})
                           </span>
                         </label>
@@ -201,7 +201,7 @@ const CoursesPage = () => {
                             onChange={(e) => handleFilterChange('level', e.target.value)}
                             className="ml-2"
                           />
-                          <span className="text-gray-700">
+                          <span className="text-gray-200">
                             {level === 'beginner' ? 'مبتدئ' : 
                              level === 'intermediate' ? 'متوسط' : 'متقدم'}
                           </span>
@@ -221,7 +221,7 @@ const CoursesPage = () => {
                           onChange={() => handleFilterChange('priceRange', [0, 50])}
                           className="ml-2"
                         />
-                        <span className="text-gray-700">أقل من 50$</span>
+                        <span className="text-gray-200">أقل من 50$</span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -231,7 +231,7 @@ const CoursesPage = () => {
                           onChange={() => handleFilterChange('priceRange', [50, 100])}
                           className="ml-2"
                         />
-                        <span className="text-gray-700">50$ - 100$</span>
+                        <span className="text-gray-200">50$ - 100$</span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -241,7 +241,7 @@ const CoursesPage = () => {
                           onChange={() => handleFilterChange('priceRange', [100, 1000])}
                           className="ml-2"
                         />
-                        <span className="text-gray-700">أكثر من 100$</span>
+                        <span className="text-gray-200">أكثر من 100$</span>
                       </label>
                     </div>
                   </div>
@@ -420,7 +420,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                             className={`px-4 py-2 rounded-md ${
                               page === pagination.page
                                 ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                : 'bg-gray-200 text-gray-200 hover:bg-gray-300'
                             }`}
                           >
                             {page}

@@ -59,7 +59,7 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
                   البريد الإلكتروني
                 </label>
                 <input
@@ -76,7 +76,7 @@ const LoginPage = () => {
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
                   كلمة المرور
                 </label>
                 <div className="relative">
@@ -152,7 +152,7 @@ const LoginPage = () => {
             <div className="mt-6 text-center">
               <Link
                 href="/"
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                className="text-gray-500 hover:text-gray-200 text-sm"
               >
                 ← العودة إلى الصفحة الرئيسية
               </Link>

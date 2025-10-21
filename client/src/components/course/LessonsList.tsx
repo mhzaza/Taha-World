@@ -47,12 +47,12 @@ export default function LessonsList({
       {/* Sidebar */}
       <div className={`
         fixed lg:static inset-y-0 right-0 z-50 lg:z-auto
-        w-80 lg:w-full bg-white shadow-xl lg:shadow-lg rounded-lg
+        w-80 lg:w-full bg-gray-800 shadow-xl lg:shadow-lg rounded-lg
         transform transition-transform duration-300 ease-in-out lg:transform-none
         ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
       `}>
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-600">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900">محتوى الكورس</h3>
             <button
@@ -79,11 +79,11 @@ export default function LessonsList({
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="bg-gray-50 rounded-lg p-3">
+            <div className="bg-gray-700 rounded-lg p-3">
               <div className="text-lg font-bold text-gray-900">{completedCount}</div>
               <div className="text-xs text-gray-600">مكتمل</div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
+            <div className="bg-gray-700 rounded-lg p-3">
               <div className="text-lg font-bold text-gray-900">{totalLessons}</div>
               <div className="text-xs text-gray-600">إجمالي</div>
             </div>
@@ -106,7 +106,7 @@ export default function LessonsList({
                     relative rounded-lg border transition-all duration-200 cursor-pointer
                     ${isCurrent 
                       ? 'border-blue-500 bg-blue-50 shadow-md' 
-                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                      : 'border-gray-600 bg-gray-800 hover:border-gray-500 hover:shadow-sm'
                     }
                     ${isLocked ? 'opacity-60' : ''}
                   `}
@@ -173,7 +173,7 @@ export default function LessonsList({
 
         {/* Footer */}
         {!isEnrolled && (
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="p-4 border-t border-gray-600 bg-gray-700">
             <div className="text-center">
               <div className="mb-2">
                 <LockClosedIcon className="w-8 h-8 text-gray-400 mx-auto" />

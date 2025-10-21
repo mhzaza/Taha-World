@@ -65,7 +65,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     key={item.href}
                     href={item.href}
                     className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-200 hover:bg-gray-100 hover:text-gray-900'
                     }`}
                     onClick={() => setSidebarOpen(false)}
                   >
@@ -110,7 +110,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           <Link
                             href={item.href}
                             className={`group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 ${
-                              isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-[#777] hover:text-blue-700'
+                              isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-200 hover:bg-[#777] hover:text-blue-700'
                             }`}
                           >
                             <item.icon className="h-6 w-6 shrink-0" />
@@ -148,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="sticky top-0 z-30 flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6 lg:px-8">
             <button
               type="button"
-              className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+              className="-m-2.5 p-2.5 text-gray-200 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <Bars3Icon className="h-6 w-6" />
@@ -156,7 +156,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             <div className="flex flex-1 items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">{'\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0646\u0635\u0629'}</h2>
-              <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+              <Link href="/" className="text-sm font-medium text-gray-200 hover:text-blue-600">
                 العودة للموقع
               </Link>
             </div>

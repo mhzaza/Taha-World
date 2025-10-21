@@ -133,7 +133,7 @@ export default function UserProfile() {
 
   if (initialLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-gray-800 rounded-lg shadow-md p-6">
         <h2 className="text-xl font-bold mb-6">معلومات الملف الشخصي</h2>
         <div className="flex justify-center items-center h-40">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
@@ -143,13 +143,13 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-6">معلومات الملف الشخصي</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Display Name */}
         <div>
-          <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="displayName" className="block text-sm font-medium text-gray-200 mb-1">
             الاسم
           </label>
           <div className="relative">
@@ -170,7 +170,7 @@ export default function UserProfile() {
 
         {/* Email (Read Only) */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-1">
             البريد الإلكتروني
           </label>
           <input
@@ -186,7 +186,7 @@ export default function UserProfile() {
 
         {/* Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-200 mb-1">
             رقم الهاتف
           </label>
           <div className="relative">
@@ -208,7 +208,7 @@ export default function UserProfile() {
 
         {/* Location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="location" className="block text-sm font-medium text-gray-200 mb-1">
             الموقع
           </label>
           <div className="relative">
@@ -229,7 +229,7 @@ export default function UserProfile() {
 
         {/* Birth Date */}
         <div>
-          <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="birthDate" className="block text-sm font-medium text-gray-200 mb-1">
             تاريخ الميلاد
           </label>
           <div className="relative">
@@ -249,7 +249,7 @@ export default function UserProfile() {
 
         {/* Bio */}
         <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="bio" className="block text-sm font-medium text-gray-200 mb-1">
             نبذة شخصية
           </label>
           <textarea
@@ -265,7 +265,7 @@ export default function UserProfile() {
 
         {/* Gender */}
         <div>
-          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="gender" className="block text-sm font-medium text-gray-200 mb-1">
             الجنس
           </label>
           <select
@@ -284,7 +284,7 @@ export default function UserProfile() {
 
         {/* Fitness Level */}
         <div>
-          <label htmlFor="fitnessLevel" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="fitnessLevel" className="block text-sm font-medium text-gray-200 mb-1">
             مستوى اللياقة البدنية
           </label>
           <select
@@ -303,7 +303,7 @@ export default function UserProfile() {
 
         {/* Goals */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-200 mb-2">
             الأهداف التدريبية
           </label>
           <div className="space-y-2">
@@ -327,7 +327,7 @@ export default function UserProfile() {
                   }}
                   className="ml-2 rounded border-gray-300 text-primary focus:ring-primary"
                 />
-                <span className="text-sm text-gray-700">{goal}</span>
+                <span className="text-sm text-gray-200">{goal}</span>
               </label>
             ))}
           </div>

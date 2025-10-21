@@ -281,12 +281,12 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
 
   if (loading && reviews.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-600">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="border-b border-gray-100 pb-4">
+              <div key={i} className="border-b border-gray-600 pb-4">
                 <div className="flex items-center space-x-3 space-x-reverse mb-2">
                   <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
                   <div className="h-4 bg-gray-200 rounded w-1/3"></div>
@@ -302,7 +302,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-600">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-gray-900">{AR.reviews}</h3>
         {user && !userReview && (
@@ -321,12 +321,12 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
           <div className="flex items-center justify-between mb-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-gray-900">{ratingStats.averageRating}</div>
-              <div className="text-sm text-gray-600">{AR.averageRating}</div>
+              <div className="text-sm text-gray-400">{AR.averageRating}</div>
               {renderStars(ratingStats.averageRating)}
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-900">{ratingStats.totalReviews}</div>
-              <div className="text-sm text-gray-600">{AR.totalReviews}</div>
+              <div className="text-sm text-gray-400">{AR.totalReviews}</div>
             </div>
           </div>
           
@@ -346,7 +346,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="text-sm text-gray-600 w-8">{count}</span>
+                  <span className="text-sm text-gray-400 w-8">{count}</span>
                 </div>
               );
             })}
@@ -438,7 +438,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
       ) : (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review._id} className="border-b border-gray-100 pb-6 last:border-b-0">
+            <div key={review._id} className="border-b border-gray-600 pb-6 last:border-b-0">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3 space-x-reverse">
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -489,7 +489,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
               </div>
               
               <h4 className="font-semibold text-gray-900 mb-2">{review.title}</h4>
-              <p className="text-gray-700 leading-relaxed mb-3">{review.comment}</p>
+              <p className="text-gray-200 leading-relaxed mb-3">{review.comment}</p>
               
               {review.totalVotes > 0 && (
                 <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-500">
@@ -508,7 +508,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
                   </button>
                   <button
                     onClick={() => handleVote(review._id, false)}
-                    className="text-sm text-gray-600 hover:text-gray-700"
+                    className="text-sm text-gray-400 hover:text-gray-200"
                   >
                     {AR.notHelpful}
                   </button>
@@ -525,7 +525,7 @@ export default function CourseReviews({ courseId, isEnrolled }: CourseReviewsPro
                   setPage(nextPage);
                   loadReviews(nextPage, true);
                 }}
-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                className="bg-gray-700 text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
               >
                 {AR.showMore}
               </button>

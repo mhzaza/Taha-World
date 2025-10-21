@@ -24,7 +24,7 @@ const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full mx-auto shadow-2xl transform transition-all">
+      <div className="bg-gray-800 rounded-2xl max-w-md w-full mx-auto shadow-2xl transform transition-all">
         {/* Header */}
         <div className="text-center p-8 pb-6">
           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
@@ -63,7 +63,7 @@ const CongratulationsPopup: React.FC<CongratulationsPopupProps> = ({
                     تم إصدار شهادة إنجاز معتمدة لإتمامك الدورة بنجاح
                   </p>
                   
-                  <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                  <div className="bg-gray-800 rounded-lg p-4 border border-gray-600 shadow-sm">
                     <div className="text-xs text-gray-500 mb-1">رقم التحقق</div>
                     <div className="font-mono text-sm font-bold text-blue-700 bg-blue-50 px-3 py-2 rounded border">
                       {certificate.verificationCode}

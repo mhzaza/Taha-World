@@ -34,7 +34,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-md border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 shadow-xl border-b border-gray-600 sticky top-0 z-50 backdrop-blur-lg">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -49,27 +49,27 @@ export default function Header() {
                   priority
                 />
               </div>
-              <span className="text-xl font-bold text-gray-900">عالم الكابتن طه الصباغ</span>
+              <span className="text-xl font-bold text-gray-100">عالم الكابتن طه الصباغ</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8 space-x-reverse">
+          <nav className="hidden md:flex flex-1 justify-center items-center space-x-6 space-x-reverse">
             <Link
               href="/"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="text-gray-200 hover:text-blue-400 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
             >
               الرئيسية
             </Link>
             <Link
               href="/courses"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="text-gray-200 hover:text-blue-400 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
             >
               الدورات
             </Link>
             <Link
               href="/consultations"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="text-gray-200 hover:text-blue-400 px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
             >
               الاستشارات
             </Link>
@@ -77,20 +77,20 @@ export default function Header() {
             {user && (
               <Link
                 href="/dashboard"
-                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 لوحة التحكم
               </Link>
             )}
             <Link
               href="/about"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="text-gray-200 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
               من نحن
             </Link>
             <Link
               href="/contact"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              className="text-gray-200 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
               تواصل معنا
             </Link>
@@ -104,7 +104,7 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={toggleUserMenu}
-                  className="flex items-center space-x-2 space-x-reverse text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="flex items-center space-x-2 space-x-reverse text-gray-200 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-medium">
@@ -118,17 +118,17 @@ export default function Header() {
                 </button>
                 
                 {isUserMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-md shadow-xl py-1 z-50 border border-gray-600">
                     <Link
                       href="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-500 hover:text-black"
+                      className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       لوحة التحكم
                     </Link>
                     <Link
                       href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-500 hover:text-black"
+                      className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       الملف الشخصي
@@ -136,7 +136,7 @@ export default function Header() {
                     {user?.isAdmin && (
                       <Link
                         href="/admin"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-500 hover:text-black border-t border-gray-200 mt-1 pt-2"
+                        className="flex items-center px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-white border-t border-gray-600 mt-1 pt-2"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +148,7 @@ export default function Header() {
                     )}
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-right px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-black border-t border-gray-200 mt-1 pt-2"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 border-t border-gray-600 mt-1 pt-2"
                     >
                       تسجيل الخروج
                     </button>
@@ -159,7 +159,7 @@ export default function Header() {
               <>
                 <Link
                   href="/auth/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-gray-200 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   تسجيل الدخول
                 </Link>
@@ -177,7 +177,7 @@ export default function Header() {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none focus:text-blue-600"
+              className="text-gray-200 hover:text-blue-600 focus:outline-none focus:text-blue-600"
               aria-label="فتح القائمة"
             >
               <svg
@@ -209,24 +209,24 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-800 border-t border-gray-600">
               <Link
                 href="/"
-                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 الرئيسية
               </Link>
               <Link
                 href="/courses"
-                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 الدورات
               </Link>
               <Link
                 href="/consultations"
-                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 الاستشارات
@@ -235,7 +235,7 @@ export default function Header() {
               {user && (
                 <Link
                   href="/dashboard"
-                  className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                  className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   لوحة التحكم
@@ -243,20 +243,20 @@ export default function Header() {
               )}
               <Link
                 href="/about"
-                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 من نحن
               </Link>
               <Link
                 href="/contact"
-                className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 تواصل معنا
               </Link>
               
-              <div className="border-t border-gray-200 pt-4">
+              <div className="border-t border-gray-600 pt-4">
                 {loading ? (
                   <div className="animate-pulse bg-gray-200 h-8 w-full rounded"></div>
                 ) : user ? (
@@ -271,7 +271,7 @@ export default function Header() {
                     </div>
                     <Link
                       href="/profile"
-                      className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                      className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       الملف الشخصي
@@ -281,7 +281,7 @@ export default function Header() {
                         handleLogout();
                         setIsMenuOpen(false);
                       }}
-                      className="text-gray-700 hover:text-blue-600 block w-full text-right px-3 py-2 rounded-md text-base font-medium transition-colors"
+                      className="text-gray-200 hover:text-blue-600 block w-full text-right px-3 py-2 rounded-md text-base font-medium transition-colors"
                     >
                       تسجيل الخروج
                     </button>
@@ -290,7 +290,7 @@ export default function Header() {
                   <>
                     <Link
                       href="/auth/login"
-                      className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
+                      className="text-gray-200 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       تسجيل الدخول

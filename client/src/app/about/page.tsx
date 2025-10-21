@@ -103,7 +103,7 @@ const AboutPage = () => {
                 <UserGroupIcon className="w-8 h-8 text-blue-600 ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900">من نحن</h2>
               </div>
-              <div className="space-y-6 text-gray-700 leading-relaxed">
+              <div className="space-y-6 text-gray-200 leading-relaxed">
                 <p className="text-lg">
                   نحن فريق من المدربين المحترفين والخبراء في مجال الرياضة، نجمعنا رؤية واحدة: تقديم تعليم رياضي عالي الجودة يمكن الوصول إليه من أي مكان وفي أي وقت.
                 </p>
@@ -145,7 +145,7 @@ const AboutPage = () => {
                 <EyeIcon className="w-8 h-8 text-green-600 ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900">رؤيتنا</h2>
               </div>
-              <div className="space-y-6 text-gray-700 leading-relaxed">
+              <div className="space-y-6 text-gray-200 leading-relaxed">
                 <p className="text-lg font-medium text-green-600">
                   "أن نكون المنصة الرائدة عالمياً في التعليم الرياضي الرقمي"
                 </p>

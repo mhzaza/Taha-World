@@ -84,33 +84,15 @@ export default function Home() {
                  </div>
                </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex justify-center mt-6">
                 <Link
                   href="/courses"
-                  className="btn-primary inline-flex items-center gap-2 text-lg"
+                  className="btn-primary inline-flex items-center gap-2 text-lg px-10 py-3 w-full sm:w-auto"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                   ابدأ التدريب الآن
-                </Link>
-                <Link
-                  href="/consultations"
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl inline-flex items-center gap-2 text-lg"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  احجز استشارة
-                </Link>
-                <Link
-                  href="/about"
-                  className="btn-secondary inline-flex items-center gap-2 text-lg"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  تعرف علينا أكثر
                 </Link>
               </div>
             </div>
@@ -132,7 +114,7 @@ export default function Home() {
 
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">دورة مصارعة الذراعين</h3>
 
-                  <div className="space-y-4 text-gray-700 mb-10">
+                  <div className="space-y-4 text-gray-200 mb-10">
                     <p className="leading-relaxed">اكتشف أسرار القوة والتقنية في مصارعة الذراعين من خلال برنامج تدريبي مكثف يقوده خبراء البطولة.</p>
                     <p className="leading-relaxed">يشمل المنهج خطط قوة وتحمل، تمارين موجهة، واستراتيجيات للفوز في المنافسات الرسمية.</p>
                   </div>
@@ -189,7 +171,7 @@ export default function Home() {
             <h2 className="text-hero font-black text-gray-900 mb-6">
               لماذا تختار منصتنا؟
             </h2>
-            <p className="text-xl leading-relaxed text-gray-700 max-w-3xl mx-auto">
+            <p className="text-xl leading-relaxed text-gray-200 max-w-3xl mx-auto">
               منصة الكابتن طه الصباغ ليست مجرد موقع تدريبي، بل رحلة لبناء البطل بداخلك. 
               نجمع بين الخبرة، القوة، والعلم لنقدّم تجربة تدريبية متكاملة تصنع منك نسخة أقوى في الجسد والعقل.
             </p>
@@ -406,7 +388,7 @@ export default function Home() {
               ماذا يقول متدربونا عنا
             </h2>
             
-            <p className="text-xl leading-relaxed text-gray-700 max-w-3xl mx-auto">
+            <p className="text-xl leading-relaxed text-gray-200 max-w-3xl mx-auto">
               اكتشف تجارب المتدربين الذين حققوا أهدافهم وغيروا حياتهم من خلال برامجنا التدريبية
             </p>
           </div>
@@ -416,7 +398,7 @@ export default function Home() {
             {/* Navigation Arrows */}
             <button 
               id="testimonials-prev"
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-200 backdrop-blur-sm"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-gray-800/95 hover:bg-gray-700 shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-600 backdrop-blur-sm text-white"
               onClick={() => {
                 const container = document.getElementById('testimonials-container');
                 if (!container) return;
@@ -441,7 +423,7 @@ export default function Home() {
             
             <button 
               id="testimonials-next"
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/95 hover:bg-white shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-200 backdrop-blur-sm"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-gray-800/95 hover:bg-gray-700 shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-600 backdrop-blur-sm text-white"
               onClick={() => {
                 const container = document.getElementById('testimonials-container');
                 if (!container) return;
@@ -473,11 +455,11 @@ export default function Home() {
               {/* Testimonial 1 - جمانة زرق */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
-                    <div className="line-clamp-4">
-                      "بشكرك كتير كابتن طه على هيدي الدورة كانت عن جد أكتر من رائعة، بالإضافة للمعلومات القيمة اللي قدمتها إلنا حبيت كتير هيدي المعلومات بأمانة لكل شخص متواجد معنا بالدورة.. الله يقويك ويعطيك ألف عافية يارب"
-                    </div>
-                  </blockquote>
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                <div className="line-clamp-4">
+                  "بشكرك كتير كابتن طه على هيدي الدورة كانت عن جد أكتر من رائعة، بالإضافة للمعلومات القيمة اللي قدمتها إلنا حبيت كتير هيدي المعلومات بأمانة لكل شخص متواجد معنا بالدورة.. الله يقويك ويعطيك ألف عافية يارب"
+                </div>
+              </blockquote>
                   
                   <div className="flex items-center mt-auto">
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
@@ -494,7 +476,7 @@ export default function Home() {
               {/* Testimonial 2 - حمزة العسكر */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "والله يا كابتن طه جزاك الله خير، أشي توب. بداية قوية لصقل الشخصية القيادية ورسم ملامحها الأولى وتشكيلها لاتخاذ القرارات الصائبة والحاسمة بدون تردد وأنه نقدر على التفكير الصحيح وقدرة الشخصية القيادية على التواصل والتأثير"
                     </div>
@@ -515,7 +497,7 @@ export default function Home() {
               {/* Testimonial 3 - محمد الحبيب العراقي */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "كل الحب وتقدير كابتننا الراقي كيفيت ووفيت، دورة أكتر من روعة وما ندمان لأن حطيت من وقتي عليها. تحياتي لكل زملائي الطيبين أتمنالكم الموفقية والنجاح الدائم. كلام من القلب حفظكم الله بحفظه ودمتم سالمين"
                     </div>
@@ -536,7 +518,7 @@ export default function Home() {
               {/* Testimonial 4 - رولا أنضوني */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "الله يعطيك العافية كابتن طه، أسلوبك بسيط وواضح وعندك قدرة عالية في إيصال المعلومة بشكل واضح ومنظم. لفت انتباهي إنك كتير بتحترم آراء المشاركين ولغة الحوار اللي استخدمتها راقية ومحفزة للنقاش وإن شاء الله رح نستمر معك في حضور باقي الدورات"
                     </div>
@@ -557,7 +539,7 @@ export default function Home() {
               {/* Testimonial 5 - حنين عربيات */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "حابة أقدم شكر العظيم للدكتوش طه على المحاضرة الحلوة اللي انحقنا فيها (حول الحوار الراقي) كانت محاضرة كتير مثيرة فيها مفاهيم نحتاجها بحياتنا. بشكرك على أسلوبك الراقي اللي طرحتها مع خالص تقدير والاحترام"
                     </div>
@@ -578,7 +560,7 @@ export default function Home() {
               {/* Testimonial 6 - دكتورة شيرين */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "ما شاء الله عليك كابتن، حضور جميل ولقاء ممتع ومعلومات غنية وإفادة كبيرة ورقي أخلاقي وتعاملي. بارك الله فيك ويعلمك ينتمي دايماً تعقد دورات مثل هيك"
                     </div>
@@ -599,7 +581,7 @@ export default function Home() {
               {/* Testimonial 7 - فرح الكسواني */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "كابتن طه جد شكرا كتير إلك حرفياً من أكتر المحاضرات المفيدة وبلي بتتأكد إنه كل دقيقة فيها نحطت بالمكان الصح فخورين جداً إنه في بلوقت الحالي شباب طموح ومفيد لغيره يعطيك العافية يا رب وشكراً لجهودك 🌸🌸"
                     </div>
@@ -620,7 +602,7 @@ export default function Home() {
               {/* Testimonial 8 - مجد عوده */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "أحب أقدم شكري وتقديري للكوتش طه الصباغ على جهوده الطيبة في تقديم جلسة "فن الحوار الراقي" اللقاء كان فيه طاقة إيجابية واضحة وحسيت بصدق نيتك في التأثير الإيجابي ومساعدة الآخرين على تطوير أنفسهم ومميزة وشكراً على طاقتك الحلوة وحضورك الراقي كل الدعم إلك وبالتوفيق دايماً ❤️"
                     </div>
@@ -641,7 +623,7 @@ export default function Home() {
               {/* Testimonial 9 - متدرب من فلسطين */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "الدورة كانت جداً مفيدة وكان فيه اهتمام أن الكل يتوصلوا المعلومة تماماً شكراً الك استاذ طه على اتقان في العمل قدماً وإلى الأمام ❤️"
                     </div>
@@ -662,7 +644,7 @@ export default function Home() {
               {/* Testimonial 10 - متدرب من العراق */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "الله يعطيك العافية كابتن طه استفدنا من حضورتك كتير بس كنت أتمنى لو كان المحتوى أكتر وفي أشخاص ماحسيت كانوا متفاعلين أو مركزين هالشي كان ياخد وقت أطول"
                     </div>
@@ -683,7 +665,7 @@ export default function Home() {
               {/* Testimonial 11 - متدرب من البحرين */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "الدورة كانت ممتعة ومفيدة ومعلومات جديدة ممكن الواحد يضيفها لحياته العملية والعلمية، حرصك واهتمامك لإيصال المعلومات للكل كان بشكل واضح، يعطيك العافية يا رب"
                     </div>
@@ -704,7 +686,7 @@ export default function Home() {
               {/* Testimonial 12 - أسيل المومني */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "يعطيك العافية كانت الدورة لطيفة وممتعة وتنضيف فلنا كتير وطريقة إدارة الدورة كانت جميلة ما فيها ملل"
                     </div>
@@ -725,7 +707,7 @@ export default function Home() {
               {/* Testimonial 13 - بلال سمور */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "الله يعطيك العافية كابتن طه تعلمت منك معلومات أول مرة أعرفها وطريقتك بالشرح الدروس والمراجعة أكتر من رائع وانتشرف فيك ويمعرفتك كابتن طه"
                     </div>
@@ -746,7 +728,7 @@ export default function Home() {
               {/* Testimonial 14 - عبد العزيز من عُمان */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "معلومات الدورة بحد ذاتها لا تساوي شيئاً بالنسبة لي فقد مرت على مراراً قبل هذه الدورة أما القيمة اللي نستحق 50-100$ هي في أسلوبك المحفز والأنشطة الجميلة وربط المعلومات بأمثلة عربية وقصص كانت هي ميزتك عن باقي المحاضرين في هذا الموضوع والله أنضحت لي أمور خفية كانت الشخصية القوية شيئاً من المجهول و أمست شيئاً من المعلوم السهل الوصول إليه جزاك الله خيراً ونفع الله بك وبارك في علمك يا كابتن كان لنا الشرف بالتعرف عليك و على الحضور الكريم"
                     </div>
@@ -767,7 +749,7 @@ export default function Home() {
               {/* Testimonial 15 - دانا المحيسيري */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "كوتش طه ربي يعطيك ألف عافية ويجزيك عنا خير جزاء ❤️ كانت جلسة رائعة.. ممتعة.. مفيدة.. مسلية فعلياً مضى الوقت 3 ساعات وكأنها نص ساعة كنت بتمنى لو الوقت أطول كتير مصطلحات وكتير مفاهيم فهمتها اليوم بشكل أدق أشياء كنت مفكرة حالي بعرفها اكتشفت إنه معرفتي كانت ناقصة واليوم كملتها بالمعلومات يلي قدمتنا إياها كانت جلسة حوارية جداً مفيدة بعنوان "فن الحوار الراقي" ربي يقدرنا عالتطبيق ويشكرك جداً من قلبي على رقيك بالتعامل وأسلوبك فعلياً لا يمل.. شكراً كتير كوتش طه ❤️"
                     </div>
@@ -788,7 +770,7 @@ export default function Home() {
               {/* Testimonial 16 - غادة أبو سمرة */}
               <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-700 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
                       "ماشاءالله عنك ياكوتش ويعطيك العافية على المحاضرة الحلوة كانت أكتر من مجرد دوره ... كانت ورشة فن الحوار) فيها وعي ومعلومات قيمة جداً وأسلوبك وطلاقتك إبداعية وطريقتك بتطوير وتوصيل المعلومة جداً رائعة 💥 وإن شاء الله رح أستمر معك في حضور باقي دورات 🌹🌹"
                     </div>
@@ -875,7 +857,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-400">
               <Link
                 href="/courses"
-                className="btn-primary bg-white text-primary-600 hover:bg-gray-100 hover:text-primary-700 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-2 text-lg"
+                className="btn-primary bg-blue-600 text-white hover:bg-blue-700 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-2 text-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -885,7 +867,7 @@ export default function Home() {
               
               <Link
                 href="/about"
-                className="btn-secondary bg-transparent text-white border-2 border-white/30 hover:bg-white/10 hover:border-white/50 inline-flex items-center gap-2 text-lg"
+                className="btn-secondary bg-transparent text-white border-2 border-blue-400/50 hover:bg-blue-600/20 hover:border-blue-400/70 inline-flex items-center gap-2 text-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

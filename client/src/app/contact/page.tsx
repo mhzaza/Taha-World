@@ -104,7 +104,7 @@ const ContactPage = () => {
             {contactInfo.map((info, index) => {
               const IconComponent = info.icon;
               return (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-center">
+                <div key={index} className="bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-center">
                   <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4 mx-auto">
                     <IconComponent className="w-6 h-6 text-blue-600" />
                   </div>
@@ -113,7 +113,7 @@ const ContactPage = () => {
                   </h3>
                   <div className="space-y-1 mb-3">
                     {info.details.map((detail, idx) => (
-                      <p key={idx} className="text-gray-700 font-medium">
+                      <p key={idx} className="text-gray-200 font-medium">
                         {detail}
                       </p>
                     ))}
@@ -129,7 +129,7 @@ const ContactPage = () => {
       </section>
 
       {/* Contact Form Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-800">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Form */}
@@ -180,7 +180,7 @@ const ContactPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-200 mb-2">
                       الاسم الكامل *
                     </label>
                     <input
@@ -195,7 +195,7 @@ const ContactPage = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
                       البريد الإلكتروني *
                     </label>
                     <input
@@ -213,7 +213,7 @@ const ContactPage = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-200 mb-2">
                       رقم الهاتف
                     </label>
                     <input
@@ -227,7 +227,7 @@ const ContactPage = () => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-200 mb-2">
                       موضوع الرسالة *
                     </label>
                     <select
@@ -249,7 +249,7 @@ const ContactPage = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-200 mb-2">
                     الرسالة *
                   </label>
                   <textarea

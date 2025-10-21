@@ -57,8 +57,8 @@ const CoursePageSkeleton = () => (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Player Skeleton */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-600">
               <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
               <div className="h-4 bg-gray-200 rounded w-1/3"></div>
             </div>
@@ -77,8 +77,8 @@ const CoursePageSkeleton = () => (
 
         {/* Sidebar Skeleton */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-lg">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-gray-800 rounded-lg shadow-lg">
+            <div className="p-6 border-b border-gray-600">
               <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
               <div className="h-2 bg-gray-200 rounded w-full mb-4"></div>
               <div className="grid grid-cols-2 gap-4">
@@ -88,7 +88,7 @@ const CoursePageSkeleton = () => (
             </div>
             <div className="p-4 space-y-2">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="border border-gray-200 rounded-lg p-4">
+                <div key={i} className="border border-gray-600 rounded-lg p-4">
                   <div className="flex gap-3">
                     <div className="w-6 h-6 bg-gray-200 rounded-full flex-shrink-0"></div>
                     <div className="flex-1">
@@ -108,8 +108,8 @@ const CoursePageSkeleton = () => (
 
 // Player Skeleton
 const PlayerSkeleton = () => (
-  <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-    <div className="p-6 border-b border-gray-200">
+  <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <div className="p-6 border-b border-gray-600">
       <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
       <div className="h-4 bg-gray-200 rounded w-1/3"></div>
     </div>
@@ -136,7 +136,7 @@ const PlayerSkeleton = () => (
 const ListSkeleton = ({ count }: { count: number }) => (
   <div className="space-y-2">
     {[...Array(count)].map((_, i) => (
-      <div key={i} className="border border-gray-200 rounded-lg p-4">
+      <div key={i} className="border border-gray-600 rounded-lg p-4">
         <div className="flex gap-3">
           <div className="w-6 h-6 bg-gray-200 rounded-full flex-shrink-0"></div>
           <div className="flex-1">
@@ -151,7 +151,7 @@ const ListSkeleton = ({ count }: { count: number }) => (
 
 // Card Skeleton
 const CardSkeleton = () => (
-  <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+  <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
     <div className="aspect-video bg-gray-200"></div>
     <div className="p-6">
       <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>

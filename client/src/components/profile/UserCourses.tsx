@@ -102,7 +102,7 @@ export default function UserCourses() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold mb-6">دوراتي التدريبية</h2>
       
       {loading ? (

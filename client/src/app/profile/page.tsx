@@ -358,7 +358,7 @@ const ProfilePage = () => {
                       className={`py-4 px-1 border-b-2 font-medium text-sm ${
                         activeTab === 'profile'
                           ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <UserIcon className="w-5 h-5 inline ml-2" />
@@ -369,7 +369,7 @@ const ProfilePage = () => {
                       className={`py-4 px-1 border-b-2 font-medium text-sm ${
                         activeTab === 'subscriptions'
                           ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <CreditCardIcon className="w-5 h-5 inline ml-2" />
@@ -388,7 +388,7 @@ const ProfilePage = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             الاسم الكامل <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -402,7 +402,7 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             البريد الإلكتروني
                           </label>
                           <input
@@ -415,7 +415,7 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             رقم الهاتف
                           </label>
                           <input
@@ -428,7 +428,7 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             تاريخ الميلاد
                           </label>
                           <input
@@ -440,7 +440,7 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             الموقع
                           </label>
                           <input
@@ -453,7 +453,7 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             الجنس
                           </label>
                           <select
@@ -469,7 +469,7 @@ const ProfilePage = () => {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-200 mb-2">
                             مستوى اللياقة البدنية
                           </label>
                           <select
@@ -486,7 +486,7 @@ const ProfilePage = () => {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-200 mb-2">
                           نبذة شخصية
                         </label>
                         <textarea
@@ -506,7 +506,7 @@ const ProfilePage = () => {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-200 mb-2">
                           الأهداف التدريبية
                         </label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -530,7 +530,7 @@ const ProfilePage = () => {
                                 }}
                                 className="ml-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                               />
-                              <span className="text-sm text-gray-700">{goal}</span>
+                              <span className="text-sm text-gray-200">{goal}</span>
                             </label>
                           ))}
                         </div>

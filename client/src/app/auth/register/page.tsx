@@ -92,7 +92,7 @@ const RegisterPage = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Display Name Field */}
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="displayName" className="block text-sm font-medium text-gray-200 mb-2">
                   الاسم الكامل
                 </label>
                 <input
@@ -109,7 +109,7 @@ const RegisterPage = () => {
 
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
                   البريد الإلكتروني
                 </label>
                 <input
@@ -127,7 +127,7 @@ const RegisterPage = () => {
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
                   كلمة المرور
                 </label>
                 <div className="relative">
@@ -162,7 +162,7 @@ const RegisterPage = () => {
 
               {/* Confirm Password Field */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-200 mb-2">
                   تأكيد كلمة المرور
                 </label>
                 <div className="relative">
@@ -249,7 +249,7 @@ const RegisterPage = () => {
             <div className="mt-6 text-center">
               <Link
                 href="/"
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                className="text-gray-500 hover:text-gray-200 text-sm"
               >
                 ← العودة إلى الصفحة الرئيسية
               </Link>

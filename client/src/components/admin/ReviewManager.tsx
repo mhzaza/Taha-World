@@ -209,7 +209,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
 
   if (loading && reviews.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-gray-800 rounded-lg shadow">
         <div className="p-6">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -228,8 +228,8 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-gray-800 rounded-lg shadow">
+      <div className="p-6 border-b border-gray-600">
         <h2 className="text-xl font-semibold text-gray-900">{AR.pageTitle}</h2>
         <p className="text-sm text-gray-600 mt-1">
           {AR.totalReviews}: {totalItems}
@@ -237,10 +237,10 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
       </div>
 
       {/* Filters */}
-      <div className="p-6 border-b border-gray-200 bg-gray-50">
+      <div className="p-6 border-b border-gray-600 bg-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-200 mb-2">
               {AR.filterByCourse}
             </label>
             <select
@@ -254,7 +254,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-200 mb-2">
               {AR.filterByStatus}
             </label>
             <select
@@ -269,7 +269,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-200 mb-2">
               {AR.search}
             </label>
             <input
@@ -285,8 +285,8 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
 
       {/* Reviews Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-600">
+          <thead className="bg-gray-700">
             <tr>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {AR.course}
@@ -308,9 +308,9 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-gray-800 divide-y divide-gray-600">
             {reviews.map((review) => (
-              <tr key={review._id} className="hover:bg-gray-50">
+              <tr key={review._id} className="hover:bg-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">
                     {review.courseId.title}
@@ -356,7 +356,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       review.isVerified 
                         ? 'bg-blue-100 text-blue-800' 
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-gray-700 text-gray-800'
                     }`}>
                       {review.isVerified ? AR.verified : AR.notVerified}
                     </span>
@@ -396,9 +396,9 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-gray-600">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-gray-200">
               {AR.page} {page} {AR.of} {totalPages}
             </div>
             <div className="flex space-x-2 space-x-reverse">
@@ -409,7 +409,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
                   loadReviews(prevPage);
                 }}
                 disabled={page === 1}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-sm bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {AR.previous}
               </button>
@@ -420,7 +420,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
                   loadReviews(nextPage);
                 }}
                 disabled={page === totalPages}
-                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-1 text-sm bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {AR.next}
               </button>
@@ -430,7 +430,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
       )}
 
       {error && (
-        <div className="p-6 border-t border-gray-200">
+        <div className="p-6 border-t border-gray-600">
           <div className="text-red-600 text-center">{error}</div>
         </div>
       )}
