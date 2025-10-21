@@ -45,6 +45,10 @@ const reviewSchema = new mongoose.Schema({
     type: Boolean,
     default: false // Whether the user actually took the course
   },
+  isCertified: {
+    type: Boolean,
+    default: false // Whether the user completed the course and got a certificate
+  },
   isVisible: {
     type: Boolean,
     default: true // Admin can hide reviews

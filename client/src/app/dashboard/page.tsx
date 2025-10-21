@@ -6,6 +6,7 @@ import { Layout, Container } from '@/components/layout';
 import RequireAuth from '@/components/auth/RequireAuth';
 import { useAuth } from '@/contexts/AuthContext';
 import { userAPI, apiUtils, Course } from '@/lib/api';
+import UserCertificates from '@/components/profile/UserCertificates';
 
 interface UserProgress {
   courseId: string;
@@ -361,19 +362,13 @@ const DashboardPage = () => {
             {/* Certificates Tab */}
             {activeTab === 'certificates' && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">شهاداتي</h2>
-                <div className="text-center py-12">
-                  <div className="text-gray-400 text-6xl mb-4">🏆</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">لا توجد شهادات بعد</h3>
-                  <p className="text-gray-600 mb-6">أكمل دوراتك التدريبية للحصول على شهادات إتمام معتمدة</p>
-                  <Link
-                    href="#"
-                    onClick={() => setActiveTab('courses')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors cursor-pointer"
-                  >
-                    عرض دوراتي
-                  </Link>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">شهاداتي</h2>
+                  <div className="text-sm text-gray-500">
+                    شهادات معتمدة لإتمام الدورات التدريبية
+                  </div>
                 </div>
+                <UserCertificates />
               </div>
             )}
           </Container>

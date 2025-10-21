@@ -3,12 +3,26 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { Course, CourseFilters, SearchParams } from '@/types';
+import { courseAPI } from '@/lib/api';
+
+interface CourseStats {
+  totalCourses: number;
+  totalEnrollments: number;
+  averageRating: number;
+  categories: number;
+}
 
 export const useCourses = (initialParams?: SearchParams) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useState<SearchParams>(initialParams || {});
+  const [stats, setStats] = useState<CourseStats>({
+    totalCourses: 0,
+    totalEnrollments: 0,
+    averageRating: 0,
+    categories: 0,
+  });
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
@@ -96,20 +110,31 @@ export const useCourses = (initialParams?: SearchParams) => {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const response = await courseAPI.getStats();
+      if (response.data.success) {
+        setStats(response.data.stats);
+      }
+    } catch (err) {
+      console.error('Error fetching course stats:', err);
+      // Keep default stats if fetch fails
+    }
+  };
+
   useEffect(() => {
     fetchCourses(searchParams);
   }, [searchParams]);
 
-  // Since filtering and pagination are now handled by the backend,
-  // we can use the courses directly from the API response
+  // Fetch stats when component mounts
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
-  const stats = useMemo(() => {
-    const totalCourses = courses.length;
-    const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollmentCount || 0), 0);
-    const averageRating = totalCourses > 0 
-      ? courses.reduce((sum, course) => sum + (course.rating?.average || 0), 0) / totalCourses 
-      : 0;
-
+  // Use dynamic stats from API instead of calculating from courses array
+  // This ensures we get global statistics, not just from the current page
+  const courseStats = useMemo(() => {
+    // We still calculate categories from the loaded courses for the filter
     const categoriesCount = courses.reduce((acc, course) => {
       if (course.category) {
         acc[course.category] = (acc[course.category] || 0) + 1;
@@ -124,12 +149,12 @@ export const useCourses = (initialParams?: SearchParams) => {
     }));
 
     return {
-      totalCourses,
-      totalEnrollments,
-      averageRating,
+      totalCourses: stats.totalCourses,
+      totalEnrollments: stats.totalEnrollments,
+      averageRating: stats.averageRating,
       categories: categoryStats,
     };
-  }, [courses]);
+  }, [courses, stats]);
 
   const getCourseById = (id: string): Course | undefined => {
     return courses.find(course => course.id === id);
@@ -164,6 +189,6 @@ export const useCourses = (initialParams?: SearchParams) => {
     updateFilters,
     clearFilters,
     getCourseById,
-    stats,
+    stats: courseStats,
   };
 };

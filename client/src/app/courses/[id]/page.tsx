@@ -4,16 +4,21 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Course, Lesson } from '@/types';
+import { Certificate } from '@/lib/api';
 import Cookies from 'js-cookie';
 import EnhancedMediaPlayer from '@/components/course/EnhancedMediaPlayer';
 import LessonsList from '@/components/course/LessonsList';
 import CourseHeader from '@/components/course/CourseHeader';
 import CourseReviews from '@/components/course/CourseReviews';
+import CongratulationsPopup from '@/components/course/CongratulationsPopup';
+import CertifiedUserReviewPopup from '@/components/course/CertifiedUserReviewPopup';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
 import PayPalButton from '@/components/payment/PayPalButton';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { generateCertificatePDF } from '@/utils/certificateGenerator';
+import { userAPI, reviewsAPI } from '@/lib/api';
 // Firebase imports removed - using API calls instead
 
 interface CourseProgress {
@@ -64,6 +69,7 @@ export default function CoursePage() {
 
   const courseId = params.id as string;
   const [course, setCourse] = useState<Course | null>(null);
+  const [courseMongoId, setCourseMongoId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentLessonId, setCurrentLessonId] = useState<string>('');
@@ -71,6 +77,13 @@ export default function CoursePage() {
   const [progress, setProgress] = useState<CourseProgress>(EMPTY_PROGRESS);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [progressLoading, setProgressLoading] = useState(false);
+  
+  // Certificate and popup states
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  const [showCongratulations, setShowCongratulations] = useState(false);
+  const [showReviewPopup, setShowReviewPopup] = useState(false);
+  const [isCheckingCertificate, setIsCheckingCertificate] = useState(false);
+  const [congratulationsShown, setCongratulationsShown] = useState(false);
 
   const adminEmailList = useMemo(
     () =>
@@ -169,6 +182,8 @@ export default function CoursePage() {
         console.log('Course thumbnail:', normalizedCourse.thumbnail);
 
         setCourse(normalizedCourse);
+        // Store the original MongoDB ID for API calls
+        setCourseMongoId(courseData._id || courseId);
         setIsEnrolled(courseData.isEnrolled || false);
         
         // Debug logging
@@ -213,6 +228,14 @@ export default function CoursePage() {
     }
   }, [user?._id, courseId, course]);
 
+  // Check for certificate when progress changes and reaches 100%
+  useEffect(() => {
+    if (progress.progressPercentage === 100 && courseId && course && user?._id && !showCongratulations && !congratulationsShown) {
+      checkForCertificate();
+      setCongratulationsShown(true);
+    }
+  }, [progress.progressPercentage, courseId, course, user?._id, showCongratulations, congratulationsShown]);
+
   const getLocalProgressKey = (userId?: string | null) =>
     `course_progress_${courseId}_${userId || 'guest'}`;
 
@@ -254,9 +277,9 @@ export default function CoursePage() {
             const data = await response.json();
             console.log('Backend progress response:', data);
             
-            if (data.success && data.progress) {
+            if (data.success && data.data?.progress) {
               // The progress should be an array of individual lesson progress records
-              const completedLessons = data.progress
+              const completedLessons = data.data.progress
                 .filter((p: any) => p.completed)
                 .map((p: any) => {
                   // Find the frontend lesson ID that matches this backend lesson ID
@@ -275,7 +298,7 @@ export default function CoursePage() {
               };
               
               console.log('Loaded progress from backend:', storedProgress);
-              console.log('Backend progress records:', data.progress);
+              console.log('Backend progress records:', data.data.progress);
             }
           } else {
             console.log('Backend progress request failed:', response.status, response.statusText);
@@ -491,6 +514,11 @@ export default function CoursePage() {
       // Save to local storage as fallback
       await saveProgress(newProgress);
 
+      // Check if course is completed and show congratulations
+      if (progressPercentage === 100) {
+        await checkForCertificate();
+      }
+
     } catch (error) {
       console.error('Error marking lesson as complete:', error);
     } finally {
@@ -536,6 +564,149 @@ export default function CoursePage() {
         currentLesson: lessonId,
         progressPercentage,
       });
+    }
+  };
+
+  // Check for certificate when course is completed
+  const checkForCertificate = async () => {
+    if (!courseId || !course) return;
+    
+    try {
+      setIsCheckingCertificate(true);
+      
+      // Add initial delay to ensure certificate creation has time to complete
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      let response;
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      // Try multiple times with increasing delays
+      while (attempts < maxAttempts) {
+        try {
+          response = await userAPI.getCertificate(courseId);
+          
+          if (response.data.success && response.data.certificate) {
+            setCertificate(response.data.certificate);
+            setShowCongratulations(true);
+            return; // Success, exit the function
+          }
+        } catch (error: any) {
+          console.log(`Certificate check attempt ${attempts + 1} failed:`, error?.response?.status);
+          
+          if (error?.response?.status === 404 && attempts < maxAttempts - 1) {
+            // Wait longer between retries
+            const delay = (attempts + 1) * 3000; // 3s, 6s delays
+            console.log(`Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          } else if (error?.response?.status !== 404) {
+            // Non-404 error, don't retry
+            break;
+          }
+        }
+        
+        attempts++;
+      }
+      
+      // If we get here, all attempts failed but still show congratulations
+      console.log('Certificate not created yet, but showing congratulations anyway');
+      setShowCongratulations(true);
+      
+    } catch (error: any) {
+      console.error('Error checking for certificate:', error);
+      // Still show congratulations even if certificate check fails
+      setShowCongratulations(true);
+    } finally {
+      setIsCheckingCertificate(false);
+    }
+  };
+
+  // Handle certificate download
+  const handleDownloadCertificate = async () => {
+    if (!certificate || !user) return;
+    
+    try {
+      console.log('Downloading certificate with data:', {
+        userName: certificate.userName || user.displayName || user.email,
+        courseTitle: certificate.courseTitle,
+        issuedDate: certificate.issuedAt,
+        verificationCode: certificate.verificationCode
+      });
+
+      await generateCertificatePDF({
+        userName: certificate.userName || user.displayName || user.email,
+        courseTitle: certificate.courseTitle || course?.title || 'Unknown Course',
+        issuedDate: certificate.issuedAt,
+        verificationCode: certificate.verificationCode
+      });
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
+    }
+  };
+
+  // Handle review submission for certified user
+  const handleCertifiedReview = async (rating: number, comment: string) => {
+    if (!courseMongoId || !course) return;
+    
+    try {
+      // Use the stored MongoDB ID that we got from the backend response
+      const mongoId = courseMongoId;
+      
+      // Ensure title and comment meet validation requirements
+      const baseTitle = `تقييم خريج: ${course.title}`;
+      const title = baseTitle.length > 100 ? baseTitle.substring(0, 97) + '...' : baseTitle;
+      
+      // Ensure title is at least 5 characters
+      const finalTitle = title.length < 5 ? `تقييم: ${course.title}` : title;
+      
+      const defaultComment = `انتهيت بنجاح من دورة "${course.title}" وأوصي بها للآخرين.`;
+      let finalComment = comment && comment.length >= 10 ? comment : defaultComment;
+      
+      // Ensure comment is between 10-1000 characters
+      if (finalComment.length < 10) {
+        finalComment = defaultComment;
+      } else if (finalComment.length > 1000) {
+        finalComment = finalComment.substring(0, 997) + '...';
+      }
+      
+      console.log('Submitting review with:', {
+        courseId: mongoId,
+        courseIdType: typeof mongoId,
+        courseIdLength: mongoId?.length,
+        originalCourseId: courseId,
+        courseObj: {
+          id: course.id,
+          _id: (course as any)._id,
+          title: course.title
+        },
+        rating,
+        title: finalTitle,
+        comment: finalComment,
+        titleLength: finalTitle.length,
+        commentLength: finalComment.length
+      });
+      
+      await reviewsAPI.createReview({
+        courseId: mongoId,
+        rating,
+        title: finalTitle,
+        comment: finalComment
+      });
+      
+      // Close popups on success
+      setShowReviewPopup(false);
+      setShowCongratulations(false);
+      
+      // You might want to show a success message here
+      console.log('Certified user review submitted successfully!');
+    } catch (error: any) {
+      console.error('Error submitting certified review:', error);
+      
+      // Log more details about the error
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response data:', error.response.data);
+      }
     }
   };
 
@@ -778,6 +949,27 @@ export default function CoursePage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <CourseReviews courseId={courseId} isEnrolled={canAccessCourse} />
       </div>
+      
+      {/* Congratulations Popup */}
+      <CongratulationsPopup
+        course={course}
+        certificate={certificate}
+        isOpen={showCongratulations}
+        onClose={() => setShowCongratulations(false)}
+        onDownloadCertificate={handleDownloadCertificate}
+        onReview={() => {
+          setShowCongratulations(false);
+          setShowReviewPopup(true);
+        }}
+      />
+
+      {/* Certified User Review Popup */}
+      <CertifiedUserReviewPopup
+        course={course}
+        isOpen={showReviewPopup}
+        onClose={() => setShowReviewPopup(false)}
+        onSubmit={handleCertifiedReview}
+      />
       
       <Footer />
     </div>

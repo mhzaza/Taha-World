@@ -99,6 +99,36 @@ router.get('/', [
   }
 });
 
+// @desc    Get global course statistics
+// @route   GET /api/courses/stats
+// @access  Public
+router.get('/stats', async (req, res) => {
+  try {
+    // Get comprehensive course statistics
+    const [courseStats, categoriesCount] = await Promise.all([
+      Course.getCourseStats(),
+      Course.distinct('category', { isPublished: true })
+    ]);
+
+    res.json({
+      success: true,
+      stats: {
+        totalCourses: courseStats.totalCourses,
+        totalEnrollments: courseStats.totalEnrollments,
+        averageRating: courseStats.averageRating || 0,
+        categories: categoriesCount.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Get course stats error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
 // @desc    Get single course
 // @route   GET /api/courses/:id
 // @access  Public

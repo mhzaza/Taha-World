@@ -3,6 +3,7 @@ const { body, validationResult, query } = require('express-validator');
 const Review = require('../models/Review');
 const Course = require('../models/Course');
 const User = require('../models/User');
+const Certificate = require('../models/Certificate');
 const { authenticate, optionalAuth, authenticateAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -136,6 +137,16 @@ router.post('/', authenticate, [
     );
     if (isEnrolled) {
       review.isVerified = true;
+    }
+
+    // Check if user has a certificate for this course (certified graduate)
+    const certificate = await Certificate.findOne({
+      userId: req.user._id,
+      courseId
+    });
+    if (certificate) {
+      review.isCertified = true;
+      review.isVerified = true; // Certified users are automatically verified
     }
 
     await review.save();

@@ -7,7 +7,7 @@ import { useCourses } from '@/hooks/useCourses';
 import { CourseFilters } from '@/types';
 import ClientOnly from '@/components/ClientOnly';
 import { useAuth } from '@/contexts/AuthContext';
-import { userAPI, apiUtils } from '@/lib/api';
+import { userAPI } from '@/lib/api';
 
 interface UserProgress {
   courseId: string;
@@ -69,7 +69,7 @@ const CoursesPage = () => {
       ]);
 
       if (coursesResponse.data.success) {
-        const enrolledCourseIds = ((coursesResponse.data as any).courses || []).map((course: any) => course._id);
+        const enrolledCourseIds = (coursesResponse.data.courses || []).map((course) => course._id);
         setEnrolledCourses(enrolledCourseIds);
       }
 

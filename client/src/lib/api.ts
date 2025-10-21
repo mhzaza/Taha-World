@@ -112,6 +112,39 @@ export interface Order {
   isNew?: boolean;
 }
 
+export interface Certificate {
+  _id: string;
+  userId: string;
+  courseId: string;
+  courseTitle: string;
+  userName: string;
+  userEmail: string;
+  issuedAt: string;
+  verificationCode: string;
+  certificateUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Review {
+  _id: string;
+  courseId: string;
+  userId: string;
+  rating: number;
+  title: string;
+  comment: string;
+  isVerified: boolean;
+  isCertified?: boolean;
+  isVisible: boolean;
+  helpfulVotes: number;
+  totalVotes: number;
+  reportedCount: number;
+  createdAt: string;
+  updatedAt: string;
+  userName?: string;
+  userAvatar?: string;
+}
+
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;
@@ -307,6 +340,25 @@ export interface AnalyticsResponse {
   arabic?: string;
 }
 
+// Special response type for auth endpoints that return data directly
+export interface AuthResponse {
+  success: boolean;
+  token?: string;
+  refreshToken?: string;
+  user?: User;
+  message?: string;
+  error?: string;
+  arabic?: string;
+}
+
+// Special response type for /auth/me endpoint
+export interface CurrentUserResponse {
+  success: boolean;
+  user?: User;
+  error?: string;
+  arabic?: string;
+}
+
 export interface PaginatedResponse<T = unknown> {
   success: boolean;
   data: T[];
@@ -323,7 +375,7 @@ export interface PaginatedResponse<T = unknown> {
 // Auth API
 export const authAPI = {
   login: (email: string, password: string) =>
-    api.post<ApiResponse<{ token: string; refreshToken: string; user: User }>>('/auth/login', {
+    api.post<AuthResponse>('/auth/login', {
       email,
       password,
     }),
@@ -340,7 +392,7 @@ export const authAPI = {
     fitnessLevel?: string;
     goals?: string[];
   }) =>
-    api.post<ApiResponse<{ token: string; refreshToken: string; user: User }>>('/auth/register', userData),
+    api.post<AuthResponse>('/auth/register', userData),
 
   logout: () => api.post<ApiResponse>('/auth/logout'),
 
@@ -354,7 +406,7 @@ export const authAPI = {
     api.post<ApiResponse>('/auth/verify-email', { token }),
 
   getCurrentUser: () =>
-    api.get<ApiResponse<{ user: User }>>('/auth/me'),
+    api.get<CurrentUserResponse>('/auth/me'),
 
   refreshToken: (refreshToken: string) =>
     api.post<ApiResponse<{ token: string; refreshToken: string }>>('/auth/refresh', {
@@ -386,7 +438,9 @@ export const userAPI = {
     search?: string;
   }) => api.get<PaginatedResponse<Order>>('/users/orders', { params }),
 
-  getCertificates: () => api.get<ApiResponse<{ certificates: unknown[] }>>('/users/certificates'),
+  getCertificates: () => api.get<{ success: boolean; certificates: Certificate[] }>('/users/certificates'),
+
+  getCertificate: (courseId: string) => api.get<{ success: boolean; certificate: Certificate }>(`/users/certificate/${courseId}`),
 
   getProgress: () => api.get<ApiResponse<{ progress: unknown[] }>>('/users/progress'),
 
@@ -452,6 +506,39 @@ export const courseAPI = {
   getCourseStats: (id: string) => api.get<ApiResponse<{ stats: unknown }>>(`/courses/${id}/stats`),
 
   getCategories: () => api.get<ApiResponse<{ categories: string[] }>>('/courses/categories/list'),
+
+  getStats: () => api.get<ApiResponse<{ 
+    totalCourses: number; 
+    totalEnrollments: number; 
+    averageRating: number; 
+    categories: number; 
+  }>>('/courses/stats'),
+};
+
+// Reviews API
+export const reviewsAPI = {
+  getCourseReviews: (courseId: string, params?: {
+    page?: number;
+    limit?: number;
+    rating?: number;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => api.get<ApiResponse<{ reviews: Review[]; pagination: PaginationInfo }>>(`/reviews/course/${courseId}`, { params }),
+
+  createReview: (data: {
+    courseId: string;
+    rating: number;
+    title: string;
+    comment: string;
+  }) => api.post<ApiResponse<{ review: Review }>>('/reviews', data),
+
+  updateReview: (reviewId: string, data: {
+    rating?: number;
+    title?: string;
+    comment?: string;
+  }) => api.put<ApiResponse<{ review: Review }>>(`/reviews/${reviewId}`, data),
+
+  deleteReview: (reviewId: string) => api.delete<ApiResponse>(`/reviews/${reviewId}`),
 };
 
 // Admin API

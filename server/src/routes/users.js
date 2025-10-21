@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const Order = require('../models/Order');
 const Progress = require('../models/Progress');
+const Certificate = require('../models/Certificate');
 const { authenticate, authorizeResource } = require('../middleware/auth');
 
 const router = express.Router();
@@ -226,15 +227,74 @@ router.get('/orders', authenticate, async (req, res) => {
 router.get('/certificates', authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-      .populate('certificates', 'courseTitle issuedAt verificationCode');
+      .populate({
+        path: 'certificates',
+        populate: {
+          path: 'courseId',
+          select: 'title thumbnail'
+        }
+      });
 
     res.json({
       success: true,
-      certificates: user.certificates
+      certificates: user.certificates || []
     });
 
   } catch (error) {
     console.error('Get user certificates error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
+// @desc    Get certificate by course ID for current user
+// @route   GET /api/users/certificate/:courseId
+// @access  Private
+router.get('/certificate/:courseId', authenticate, async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    
+    console.log('Looking for certificate:', {
+      userId: req.user._id,
+      courseId: courseId,
+      userEmail: req.user.email
+    });
+    
+    const certificate = await Certificate.findOne({
+      userId: req.user._id,
+      courseId
+    }).populate('courseId', 'title thumbnail');
+
+    console.log('Certificate query result:', {
+      found: !!certificate,
+      certificateId: certificate?._id,
+      courseId: courseId
+    });
+
+    if (!certificate) {
+      // Also check if there are any certificates for this user to see if it's a different issue
+      const userCertificates = await Certificate.find({ userId: req.user._id });
+      console.log('User has certificates for other courses:', userCertificates.map(c => ({
+        id: c._id,
+        courseId: c.courseId,
+        courseTitle: c.courseTitle
+      })));
+      
+      return res.status(404).json({
+        error: 'Certificate not found',
+        arabic: 'الشهادة غير موجودة'
+      });
+    }
+
+    res.json({
+      success: true,
+      certificate
+    });
+
+  } catch (error) {
+    console.error('Get certificate error:', error);
     res.status(500).json({
       error: 'Internal server error',
       arabic: 'خطأ داخلي في الخادم'
@@ -368,45 +428,109 @@ router.post('/progress', authenticate, [
     }
 
     // Update or create progress
+    const updateData = {
+      userId: req.user._id,
+      courseId,
+      lessonId,
+      watchTime,
+      totalDuration,
+      completed: completed || false,
+      lastWatchedAt: new Date(),
+      ...(quizScore && { quizScore }),
+      ...(notes && { notes })
+    };
+
+    // Set completedAt when lesson is completed
+    if (completed) {
+      updateData.completedAt = new Date();
+    }
+
     const progress = await Progress.findOneAndUpdate(
       { userId: req.user._id, courseId, lessonId },
-      {
-        userId: req.user._id,
-        courseId,
-        lessonId,
-        watchTime,
-        totalDuration,
-        completed: completed || false,
-        lastWatchedAt: new Date(),
-        ...(quizScore && { quizScore }),
-        ...(notes && { notes })
-      },
+      updateData,
       { upsert: true, new: true }
     );
 
     // If lesson is completed, check if course is completed
     if (completed) {
       const course = await Course.findById(courseId);
-      const totalLessons = course.lessons.length;
-      const completedLessons = await Progress.countDocuments({
-        userId: req.user._id,
-        courseId,
-        completed: true
-      });
-
-      // If all lessons are completed, add certificate
-      if (completedLessons >= totalLessons) {
-        const certificate = {
+      if (course) {
+        const totalLessons = course.lessons.length;
+        const completedLessons = await Progress.countDocuments({
           userId: req.user._id,
           courseId,
-          courseTitle: course.title,
-          issuedAt: new Date(),
-          verificationCode: Math.random().toString(36).substr(2, 9).toUpperCase()
-        };
+          completed: true
+        });
 
-        // Add certificate to user (you might want to create a Certificate model)
-        user.certificates.push(certificate);
-        await user.save();
+        // If all lessons are completed, create certificate
+        if (completedLessons >= totalLessons) {
+          console.log('Course completed! Attempting to create certificate...', {
+            userId: req.user._id,
+            courseId,
+            courseTitle: course.title,
+            completedLessons,
+            totalLessons,
+            userDisplayName: user.displayName,
+            userEmail: user.email
+          });
+
+          try {
+            // Check if certificate already exists
+            const existingCertificate = await Certificate.findOne({
+              userId: req.user._id,
+              courseId
+            });
+
+            if (existingCertificate) {
+              console.log('Certificate already exists:', existingCertificate._id);
+            } else {
+              // Create new certificate with unique verification code
+              const verificationCode = await Certificate.generateVerificationCode();
+              const certificate = new Certificate({
+                userId: req.user._id,
+                courseId,
+                courseTitle: course.title,
+                userName: user.displayName || user.email?.split('@')[0] || 'User',
+                userEmail: user.email,
+                verificationCode: verificationCode
+              });
+
+              await certificate.save();
+
+              // Add certificate to user
+              user.certificates.push(certificate._id);
+              await user.save();
+
+              console.log('Certificate created successfully!', {
+                certificateId: certificate._id,
+                userId: req.user._id,
+                courseId,
+                courseTitle: course.title,
+                verificationCode: certificate.verificationCode
+              });
+
+              // Verify the certificate was actually created in the database
+              const verificationCheck = await Certificate.findById(certificate._id);
+              if (verificationCheck) {
+                console.log('Certificate verified in database:', verificationCheck._id);
+              } else {
+                console.error('Certificate was not found in database after creation!');
+              }
+            }
+          } catch (certError) {
+            console.error('Error creating certificate:', certError);
+            console.error('Certificate creation error details:', {
+              message: certError.message,
+              stack: certError.stack,
+              userId: req.user._id,
+              courseId,
+              courseTitle: course.title,
+              userDisplayName: user.displayName,
+              userEmail: user.email
+            });
+            // Don't fail the progress update if certificate creation fails
+          }
+        }
       }
     }
 
@@ -419,9 +543,17 @@ router.post('/progress', authenticate, [
 
   } catch (error) {
     console.error('Update progress error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      userId: req.user._id,
+      requestBody: req.body
+    });
     res.status(500).json({
       error: 'Internal server error',
-      arabic: 'خطأ داخلي في الخادم'
+      arabic: 'خطأ داخلي في الخادم',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

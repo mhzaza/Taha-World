@@ -41,6 +41,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  hasToken: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,16 +66,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const token = Cookies.get('token');
+      
       if (token) {
+        // We have a token, verify it with the server
         try {
           const response = await authAPI.getCurrentUser();
-          setUser(response.data.data?.user || null);
+          if (response.data.success && response.data.user) {
+            setUser(response.data.user);
+          } else {
+            // Invalid response, clear tokens
+            Cookies.remove('token');
+            Cookies.remove('refreshToken');
+            setUser(null);
+          }
         } catch (error) {
           console.error('Auth check failed:', error);
+          // Token is invalid, clear cookies and set user to null
           Cookies.remove('token');
           Cookies.remove('refreshToken');
+          setUser(null);
         }
+      } else {
+        // No token found, user is definitely not authenticated
+        setUser(null);
       }
+      
       setLoading(false);
     };
 
@@ -84,11 +100,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<void> => {
     try {
       const response = await authAPI.login(email, password);
-      const { token, refreshToken, user } = response.data.data!;
+      
+      if (!response.data.token || !response.data.user) {
+        throw new Error('Invalid response from server');
+      }
+      
+      const { token, refreshToken, user } = response.data;
 
       // Store tokens in cookies
       Cookies.set('token', token, { expires: 7 });
-      Cookies.set('refreshToken', refreshToken, { expires: 30 });
+      Cookies.set('refreshToken', refreshToken || '', { expires: 30 });
 
       setUser(user);
     } catch (error: unknown) {
@@ -104,11 +125,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         displayName,
         ...additionalData,
       });
-      const { token, refreshToken, user } = response.data.data!;
+      
+      if (!response.data.token || !response.data.user) {
+        throw new Error('Invalid response from server');
+      }
+      
+      const { token, refreshToken, user } = response.data;
 
       // Store tokens in cookies
       Cookies.set('token', token, { expires: 7 });
-      Cookies.set('refreshToken', refreshToken, { expires: 30 });
+      Cookies.set('refreshToken', refreshToken || '', { expires: 30 });
 
       setUser(user);
     } catch (error: unknown) {
@@ -146,6 +172,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Helper function to check if user has tokens (indicating potential authentication)
+  const hasToken = (): boolean => {
+    return !!Cookies.get('token');
+  };
+
   const value: AuthContextType = {
     user,
     loading,
@@ -154,6 +185,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     resetPassword,
     updateProfile,
+    hasToken,
   };
 
   return (
