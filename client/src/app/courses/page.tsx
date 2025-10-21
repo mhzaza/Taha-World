@@ -102,7 +102,7 @@ const CoursesPage = () => {
 
   return (
     <Layout>
-      <section className="bg-gradient-to-br from-gray-400 to-gray-500 py-16">
+      <section className="bg-black py-16">
         <Container>
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">

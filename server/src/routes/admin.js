@@ -38,6 +38,14 @@ router.get('/dashboard', async (req, res) => {
     const recentOrders = await Order.find({ status: 'completed' })
       .populate('userId', 'displayName')
       .populate('courseId', 'title')
+      .populate({
+        path: 'consultationBookingId',
+        select: 'bookingNumber consultationId',
+        populate: {
+          path: 'consultationId',
+          select: 'title'
+        }
+      })
       .sort({ createdAt: -1 })
       .limit(5);
 
@@ -182,6 +190,14 @@ router.get('/users/:id', requirePermission('users.manage'), async (req, res) => 
     // Get user's order history
     const orders = await Order.find({ userId: user._id })
       .populate('courseId', 'title thumbnail')
+      .populate({
+        path: 'consultationBookingId',
+        select: 'bookingNumber consultationId',
+        populate: {
+          path: 'consultationId',
+          select: 'title'
+        }
+      })
       .sort({ createdAt: -1 })
       .limit(10);
 
@@ -660,7 +676,8 @@ router.get('/orders', async (req, res) => {
       filter.$or = [
         { userEmail: searchRegex },
         { userName: searchRegex },
-        { courseTitle: searchRegex }
+        { courseTitle: searchRegex },
+        { consultationTitle: searchRegex }
       ];
     }
 
@@ -676,6 +693,14 @@ router.get('/orders', async (req, res) => {
     const orders = await Order.find(filter)
       .populate('userId', 'displayName email')
       .populate('courseId', 'title thumbnail')
+      .populate({
+        path: 'consultationBookingId',
+        select: 'bookingNumber consultationId',
+        populate: {
+          path: 'consultationId',
+          select: 'title'
+        }
+      })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -707,6 +732,24 @@ router.get('/orders', async (req, res) => {
         };
         orderObj.courseId = orderObj.courseId._id || orderObj.courseId.id;
       }
+      
+      // Preserve populated consultation booking data
+      if (orderObj.consultationBookingId && typeof orderObj.consultationBookingId === 'object') {
+        orderObj.consultationInfo = {
+          _id: orderObj.consultationBookingId._id || orderObj.consultationBookingId.id,
+          bookingNumber: orderObj.consultationBookingId.bookingNumber,
+          consultationId: {
+            _id: orderObj.consultationBookingId.consultationId?._id || orderObj.consultationBookingId.consultationId?.id,
+            title: orderObj.consultationBookingId.consultationId?.title
+          }
+        };
+        orderObj.consultationTitle = orderObj.consultationBookingId.consultationId?.title;
+        orderObj.consultationBookingNumber = orderObj.consultationBookingId.bookingNumber;
+        orderObj.consultationBookingId = orderObj.consultationBookingId._id || orderObj.consultationBookingId.id;
+      }
+      
+      // Determine order type
+      orderObj.orderType = orderObj.courseId ? 'course' : orderObj.consultationBookingId ? 'consultation' : undefined;
       
       return orderObj;
     });

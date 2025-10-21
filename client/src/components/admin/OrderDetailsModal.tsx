@@ -33,14 +33,26 @@ interface OrderDetails {
     displayName: string;
     email: string;
   };
-  courseId: string;
-  courseTitle: string;
+  courseId?: string;
+  courseTitle?: string;
   courseThumbnail?: string;
   courseInfo?: {
     _id: string;
     title: string;
     thumbnail?: string;
   };
+  consultationBookingId?: string;
+  consultationTitle?: string;
+  consultationBookingNumber?: string;
+  consultationInfo?: {
+    _id: string;
+    consultationId: {
+      title: string;
+      _id: string;
+    };
+    bookingNumber: string;
+  };
+  orderType?: 'course' | 'consultation';
   amount: number;
   currency?: string;
   originalAmount?: number;
@@ -103,10 +115,14 @@ export default function OrderDetailsModal({
     ...order,
     userId: order.userId,
     courseId: order.courseId,
+    consultationBookingId: order.consultationBookingId,
     userEmail: order.userEmail || order.userInfo?.email || '',
     userName: order.userName || order.userInfo?.displayName || '',
     courseTitle: order.courseTitle || order.courseInfo?.title || '',
-    courseThumbnail: order.courseThumbnail || order.courseInfo?.thumbnail || ''
+    courseThumbnail: order.courseThumbnail || order.courseInfo?.thumbnail || '',
+    consultationTitle: order.consultationTitle || order.consultationInfo?.consultationId?.title || '',
+    consultationBookingNumber: order.consultationBookingNumber || order.consultationInfo?.bookingNumber || '',
+    orderType: order.orderType || (order.courseId ? 'course' as const : order.consultationBookingId ? 'consultation' as const : undefined)
   };
 
   const getStatusColor = (status: string) => {
@@ -421,31 +437,61 @@ export default function OrderDetailsModal({
                       </div>
                     </div>
 
-                    {/* Course Information */}
+                    {/* Course/Consultation Information */}
                     <div className="bg-white border border-gray-200 rounded-lg p-6">
                       <div className="flex items-center mb-4">
-                        <AcademicCapIcon className="h-5 w-5 text-gray-400 ml-2" />
-                        <h3 className="text-lg font-semibold text-gray-900">معلومات الكورس</h3>
+                        {sanitizedOrder.orderType === 'course' ? (
+                          <>
+                            <AcademicCapIcon className="h-5 w-5 text-gray-400 ml-2" />
+                            <h3 className="text-lg font-semibold text-gray-900">معلومات الدورة</h3>
+                          </>
+                        ) : (
+                          <>
+                            <ClockIcon className="h-5 w-5 text-gray-400 ml-2" />
+                            <h3 className="text-lg font-semibold text-gray-900">معلومات الاستشارة</h3>
+                          </>
+                        )}
                       </div>
                       
                       <div className="space-y-3">
-                        {sanitizedOrder.courseThumbnail && (
-                          <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
-                            <img 
-                              src={sanitizedOrder.courseThumbnail} 
-                              alt={sanitizedOrder.courseTitle}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                        {sanitizedOrder.orderType === 'course' ? (
+                          <>
+                            {sanitizedOrder.courseThumbnail && (
+                              <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                                <img 
+                                  src={sanitizedOrder.courseThumbnail} 
+                                  alt={sanitizedOrder.courseTitle}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">عنوان الدورة</label>
+                              <p className="text-gray-900">{sanitizedOrder.courseTitle}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">معرف الدورة</label>
+                              <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.courseId}</p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">عنوان الاستشارة</label>
+                              <p className="text-gray-900">{sanitizedOrder.consultationTitle}</p>
+                            </div>
+                            {sanitizedOrder.consultationBookingNumber && (
+                              <div>
+                                <label className="text-sm font-medium text-gray-500">رقم الحجز</label>
+                                <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.consultationBookingNumber}</p>
+                              </div>
+                            )}
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">معرف الحجز</label>
+                              <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.consultationBookingId}</p>
+                            </div>
+                          </>
                         )}
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">عنوان الكورس</label>
-                          <p className="text-gray-900">{sanitizedOrder.courseTitle}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">معرف الكورس</label>
-                          <p className="text-gray-900 font-mono text-sm">{sanitizedOrder.courseId}</p>
-                        </div>
                       </div>
                     </div>
                   </div>

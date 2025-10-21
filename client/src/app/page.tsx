@@ -1,29 +1,64 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { Layout, Container } from '@/components/layout';
 import ImageCarousel from '@/components/ImageCarousel';
 
 export default function Home() {
+  const [isAtStart, setIsAtStart] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
+
+  useEffect(() => {
+    const updateNavigationState = () => {
+      const container = document.getElementById('testimonials-container');
+      if (!container) return;
+
+      const cards = Array.from(container.getElementsByClassName('testimonial-card'));
+      if (cards.length === 0) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const containerLeft = containerRect.left + 100;
+
+      let currentIndex = 0;
+      let minDistance = Infinity;
+
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        const distance = Math.abs(cardRect.left - containerLeft);
+        if (distance < minDistance) {
+          minDistance = distance;
+          currentIndex = index;
+        }
+      });
+
+      setIsAtStart(currentIndex === 0);
+      setIsAtEnd(currentIndex === cards.length - 1);
+    };
+
+    const container = document.getElementById('testimonials-container');
+    if (container) {
+      updateNavigationState();
+      container.addEventListener('scroll', updateNavigationState);
+      return () => container.removeEventListener('scroll', updateNavigationState);
+    }
+  }, []);
+
   return (
     <Layout>
       {/* Limited Time Banner */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
-                           radial-gradient(circle at 75% 75%, rgba(255,255,255,0.5) 0.5px, transparent 0.5px)`,
-          backgroundSize: '80px 80px, 40px 40px'
-        }}></div>
-        <Container>
-          <div className="text-center relative z-10">
-            <div className="achievement-badge mx-auto">
+      <div className="text-white py-4 overflow-hidden" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%)' }}>
+        <div className="flex animate-marquee">
+          {/* Repeat the content multiple times for seamless loop */}
+          {[...Array(20)].map((_, index) => (
+            <div key={index} className="achievement-badge mx-8 flex-shrink-0 whitespace-nowrap">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
               </svg>
               عرض محدود: خصم 30% على جميع الدورات التدريبية - ينتهي خلال 7 أيام!
             </div>
-          </div>
-        </Container>
+          ))}
+        </div>
       </div>
 
       {/* Hero Section */}
@@ -152,7 +187,7 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 relative">
         {/* Elegant Pattern Overlay */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-200/10 via-transparent to-gray-200/10"></div>
+          <div className="absolute inset-0 bg-black"></div>
           <div className="absolute inset-0 opacity-[0.05]" style={{
             backgroundImage: `radial-gradient(circle at 25% 25%, gray 2px, transparent 2px),
                              radial-gradient(circle at 75% 75%, gray 2px, transparent 2px)`,
@@ -367,7 +402,7 @@ export default function Home() {
       <section className="py-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 relative">
         {/* Elegant Pattern Overlay */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-200/5 via-transparent to-gray-300/10"></div>
+          <div className="absolute inset-0 bg-black"></div>
           <div className="absolute inset-0 opacity-[0.04]" style={{
             backgroundImage: `linear-gradient(45deg, gray 1px, transparent 1px),
                              linear-gradient(-45deg, gray 1px, transparent 1px)`,
@@ -398,50 +433,104 @@ export default function Home() {
             {/* Navigation Arrows */}
             <button 
               id="testimonials-prev"
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-gray-800/95 hover:bg-gray-700 shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-600 backdrop-blur-sm text-white"
+              disabled={isAtStart}
+              className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 
+                         rounded-full p-4 
+                         transition-all duration-300 
+                         border border-gray-200 backdrop-blur-sm
+                         ${isAtStart 
+                           ? 'bg-gray-300 cursor-not-allowed opacity-50' 
+                           : 'bg-white/90 hover:bg-white cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
+                         }`}
               onClick={() => {
+                if (isAtStart) return;
+                
                 const container = document.getElementById('testimonials-container');
                 if (!container) return;
                 
-                const scrollAmount = container.clientWidth; // scroll by full visible width
-                const currentScroll = container.scrollLeft;
-                const maxScroll = container.scrollWidth - container.clientWidth;
+                const cards = Array.from(container.getElementsByClassName('testimonial-card'));
+                if (cards.length === 0) return;
                 
-                if (currentScroll <= 0) {
-                  // If at the beginning, scroll to the end
-                  container.scrollTo({ left: maxScroll, behavior: 'smooth' });
-                } else {
-                  // Normal scroll left
-                  container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                // Find the currently visible card (the one most aligned with the container's left)
+                const containerRect = container.getBoundingClientRect();
+                const containerCenter = containerRect.left + 100; // Small offset for padding
+                
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+                
+                cards.forEach((card, index) => {
+                  const cardRect = card.getBoundingClientRect();
+                  const distance = Math.abs(cardRect.left - containerCenter);
+                  if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestIndex = index;
+                  }
+                });
+                
+                // Scroll to previous card one by one
+                if (closestIndex > 0) {
+                  cards[closestIndex - 1].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest', 
+                    inline: 'start' 
+                  });
                 }
               }}
+              aria-label="الشهادات السابقة"
             >
-              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-6 h-6 ${isAtStart ? 'text-gray-500' : 'text-gray-800'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             
             <button 
               id="testimonials-next"
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-gray-800/95 hover:bg-gray-700 shadow-2xl rounded-full p-4 transition-all duration-300 hover:scale-110 border border-gray-600 backdrop-blur-sm text-white"
+              disabled={isAtEnd}
+              className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 
+                         rounded-full p-4 
+                         transition-all duration-300 
+                         border border-gray-200 backdrop-blur-sm
+                         ${isAtEnd 
+                           ? 'bg-gray-300 cursor-not-allowed opacity-50' 
+                           : 'bg-white/90 hover:bg-white cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
+                         }`}
               onClick={() => {
+                if (isAtEnd) return;
+                
                 const container = document.getElementById('testimonials-container');
                 if (!container) return;
                 
-                const scrollAmount = container.clientWidth; // scroll by full visible width
-                const currentScroll = container.scrollLeft;
-                const maxScroll = container.scrollWidth - container.clientWidth;
+                const cards = Array.from(container.getElementsByClassName('testimonial-card'));
+                if (cards.length === 0) return;
                 
-                if (currentScroll >= maxScroll - 10) {
-                  // If at the end, scroll to the beginning
-                  container.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                  // Normal scroll right
-                  container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                // Find the currently visible card (the one most aligned with the container's left)
+                const containerRect = container.getBoundingClientRect();
+                const containerLeft = containerRect.left + 100; // Small offset for padding
+                
+                let currentIndex = 0;
+                let minDistance = Infinity;
+                
+                cards.forEach((card, index) => {
+                  const cardRect = card.getBoundingClientRect();
+                  const distance = Math.abs(cardRect.left - containerLeft);
+                  if (distance < minDistance) {
+                    minDistance = distance;
+                    currentIndex = index;
+                  }
+                });
+                
+                // Scroll to next card one by one
+                if (currentIndex < cards.length - 1) {
+                  cards[currentIndex + 1].scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest', 
+                    inline: 'start' 
+                  });
                 }
               }}
+              aria-label="الشهادات التالية"
             >
-              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-6 h-6 ${isAtEnd ? 'text-gray-500' : 'text-gray-800'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -449,11 +538,11 @@ export default function Home() {
             {/* Testimonials Carousel */}
             <div 
               id="testimonials-container"
-              className="flex gap-6 overflow-x-auto scrollbar-hide px-12 py-4"
+              className="flex gap-6 overflow-x-auto scrollbar-hide px-12 py-4 scroll-smooth"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {/* Testimonial 1 - جمانة زرق */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                 <div className="line-clamp-4">
@@ -474,7 +563,7 @@ export default function Home() {
               </div>
               
               {/* Testimonial 2 - حمزة العسكر */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -495,7 +584,7 @@ export default function Home() {
               </div>
               
               {/* Testimonial 3 - محمد الحبيب العراقي */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -516,7 +605,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 4 - رولا أنضوني */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -537,7 +626,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 5 - حنين عربيات */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -558,7 +647,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 6 - دكتورة شيرين */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -579,7 +668,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 7 - فرح الكسواني */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -600,7 +689,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 8 - مجد عوده */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -621,7 +710,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 9 - متدرب من فلسطين */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -642,7 +731,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 10 - متدرب من العراق */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -663,7 +752,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 11 - متدرب من البحرين */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -684,7 +773,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 12 - أسيل المومني */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -705,7 +794,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 13 - بلال سمور */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -726,7 +815,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 14 - عبد العزيز من عُمان */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -747,7 +836,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 15 - دانا المحيسيري */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">
@@ -768,7 +857,7 @@ export default function Home() {
               </div>
 
               {/* Testimonial 16 - غادة أبو سمرة */}
-              <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
                 <div className="p-8 h-full flex flex-col">
                   <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                     <div className="line-clamp-4">

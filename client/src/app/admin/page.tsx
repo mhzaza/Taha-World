@@ -23,9 +23,16 @@ interface RecentOrder {
     displayName: string;
     email: string;
   };
-  courseId: {
+  courseId?: {
     title: string;
     _id: string;
+  };
+  consultationBookingId?: {
+    consultationId: {
+      title: string;
+      _id: string;
+    };
+    bookingNumber: string;
   };
   amount: number;
   status: 'completed' | 'pending' | 'failed' | 'cancelled';
@@ -491,33 +498,65 @@ export default function AdminDashboard() {
           </div>
           <div className="divide-y divide-gray-200">
             {recentOrders.length > 0 ? (
-              recentOrders.map((order) => (
-                <div key={order._id} className="px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {order.userId?.displayName || 'مستخدم غير معروف'}
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">
-                        {order.courseId?.title || 'كورس محذوف'}
-                      </p>
-                      <p className="text-xs text-gray-400">{formatDate(order.createdAt)}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          getStatusColor(order.status)
-                        }`}
-                      >
-                        {getStatusText(order.status)}
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(order.amount)}
-                      </span>
+              recentOrders.map((order) => {
+                const isCourse = !!order.courseId;
+                const isConsultation = !!order.consultationBookingId;
+                const itemTitle = isCourse 
+                  ? (order.courseId?.title || 'كورس محذوف')
+                  : (order.consultationBookingId?.consultationId?.title || 'استشارة محذوفة');
+                
+                return (
+                  <div key={order._id} className="px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-medium text-gray-900">
+                            {order.userId?.displayName || 'مستخدم غير معروف'}
+                          </p>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            isCourse 
+                              ? 'bg-blue-100 text-blue-800' 
+                              : 'bg-purple-100 text-purple-800'
+                          }`}>
+                            {isCourse ? (
+                              <>
+                                <AcademicCapIcon className="h-3 w-3 ml-1" />
+                                دورة
+                              </>
+                            ) : (
+                              <>
+                                <ClockIcon className="h-3 w-3 ml-1" />
+                                استشارة
+                              </>
+                            )}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 truncate">
+                          {itemTitle}
+                        </p>
+                        {isConsultation && order.consultationBookingId?.bookingNumber && (
+                          <p className="text-xs text-gray-400">
+                            رقم الحجز: {order.consultationBookingId.bookingNumber}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-400">{formatDate(order.createdAt)}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            getStatusColor(order.status)
+                          }`}
+                        >
+                          {getStatusText(order.status)}
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {formatCurrency(order.amount)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="px-6 py-8 text-center text-gray-500">
                 <ShoppingCartIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />

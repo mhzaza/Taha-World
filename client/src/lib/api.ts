@@ -84,14 +84,26 @@ export interface Order {
     displayName: string;
     email: string;
   };
-  courseId: string;
-  courseTitle: string;
+  courseId?: string;
+  courseTitle?: string;
   courseThumbnail?: string;
   courseInfo?: {
     _id: string;
     title: string;
     thumbnail?: string;
   };
+  consultationBookingId?: string;
+  consultationTitle?: string;
+  consultationBookingNumber?: string;
+  consultationInfo?: {
+    _id: string;
+    consultationId: {
+      title: string;
+      _id: string;
+    };
+    bookingNumber: string;
+  };
+  orderType?: 'course' | 'consultation';
   amount: number;
   currency?: string;
   originalAmount?: number;

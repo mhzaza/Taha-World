@@ -186,15 +186,24 @@ export default function OrdersPage() {
         const newOrders = response.data.data?.orders || [];
         
         // Ensure all order data is properly structured (no nested objects)
-        const sanitizedOrders = newOrders.map((order: any) => ({
-          ...order,
-          userId: typeof order.userId === 'object' ? order.userId._id || order.userId.id : order.userId,
-          courseId: typeof order.courseId === 'object' ? order.courseId._id || order.courseId.id : order.courseId,
-          userEmail: order.userEmail || (order.userId && typeof order.userId === 'object' ? order.userId.email : ''),
-          userName: order.userName || (order.userId && typeof order.userId === 'object' ? order.userId.displayName : ''),
-          courseTitle: order.courseTitle || (order.courseId && typeof order.courseId === 'object' ? order.courseId.title : ''),
-          courseThumbnail: order.courseThumbnail || (order.courseId && typeof order.courseId === 'object' ? order.courseId.thumbnail : '')
-        }));
+        const sanitizedOrders = newOrders.map((order: any) => {
+          const isCourse = !!order.courseId;
+          const isConsultation = !!order.consultationBookingId;
+          
+          return {
+            ...order,
+            userId: typeof order.userId === 'object' ? order.userId._id || order.userId.id : order.userId,
+            courseId: typeof order.courseId === 'object' ? order.courseId._id || order.courseId.id : order.courseId,
+            consultationBookingId: typeof order.consultationBookingId === 'object' ? order.consultationBookingId._id || order.consultationBookingId.id : order.consultationBookingId,
+            userEmail: order.userEmail || (order.userId && typeof order.userId === 'object' ? order.userId.email : ''),
+            userName: order.userName || (order.userId && typeof order.userId === 'object' ? order.userId.displayName : ''),
+            courseTitle: order.courseTitle || (order.courseId && typeof order.courseId === 'object' ? order.courseId.title : ''),
+            courseThumbnail: order.courseThumbnail || (order.courseId && typeof order.courseId === 'object' ? order.courseId.thumbnail : ''),
+            consultationTitle: order.consultationTitle || (order.consultationBookingId && typeof order.consultationBookingId === 'object' ? order.consultationBookingId.consultationId?.title : ''),
+            consultationBookingNumber: order.consultationBookingNumber || (order.consultationBookingId && typeof order.consultationBookingId === 'object' ? order.consultationBookingId.bookingNumber : ''),
+            orderType: isCourse ? 'course' as const : isConsultation ? 'consultation' as const : undefined
+          };
+        });
         
         setOrders(sanitizedOrders);
         setTotalOrders(response.data.data?.pagination?.totalItems || 0);
@@ -271,7 +280,9 @@ export default function OrdersPage() {
         order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.courseTitle.toLowerCase().includes(searchTerm.toLowerCase());
+        (order.courseTitle && order.courseTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (order.consultationTitle && order.consultationTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (order.consultationBookingNumber && order.consultationBookingNumber.toLowerCase().includes(searchTerm.toLowerCase()));
       
       // Status filter
       const statusMatch = statusFilter === 'all' || order.status === statusFilter;
@@ -381,7 +392,8 @@ export default function OrdersPage() {
       'رقم الطلب',
       'البريد الإلكتروني',
       'اسم المستخدم',
-      'عنوان الكورس',
+      'نوع الطلب',
+      'الدورة/الاستشارة',
       'المبلغ',
       'الحالة',
       'طريقة الدفع',
@@ -391,17 +403,22 @@ export default function OrdersPage() {
 
     const csvContent = [
       headers.join(','),
-      ...filteredOrders.map(order => [
-        order.id,
-        order.userEmail,
-        order.userName,
-        `"${order.courseTitle}"`,
-        order.amount,
-        getStatusText(order.status),
-        order.paymentMethod,
-        formatDate(order.createdAt),
-        order.transactionId || ''
-      ].join(','))
+      ...filteredOrders.map(order => {
+        const orderTypeName = order.orderType === 'course' ? 'دورة' : order.orderType === 'consultation' ? 'استشارة' : '';
+        const itemTitle = order.orderType === 'course' ? order.courseTitle : order.consultationTitle;
+        return [
+          order.id,
+          order.userEmail,
+          order.userName,
+          orderTypeName,
+          `"${itemTitle || ''}"`,
+          order.amount,
+          getStatusText(order.status),
+          order.paymentMethod,
+          formatDate(order.createdAt),
+          order.transactionId || ''
+        ].join(',');
+      })
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -789,8 +806,37 @@ export default function OrdersPage() {
                     <div className="text-sm text-gray-500">{order.userEmail}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-xs truncate" title={order.courseTitle}>
-                      {order.courseTitle}
+                    <div className="flex items-center gap-2">
+                      {order.orderType === 'course' ? (
+                        <>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                            <AcademicCapIcon className="h-3 w-3 ml-1" />
+                            دورة
+                          </span>
+                          <div className="text-sm text-gray-900 max-w-xs truncate" title={order.courseTitle}>
+                            {order.courseTitle}
+                          </div>
+                        </>
+                      ) : order.orderType === 'consultation' ? (
+                        <>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            <ClockIcon className="h-3 w-3 ml-1" />
+                            استشارة
+                          </span>
+                          <div className="max-w-xs">
+                            <div className="text-sm text-gray-900 truncate" title={order.consultationTitle}>
+                              {order.consultationTitle}
+                            </div>
+                            {order.consultationBookingNumber && (
+                              <div className="text-xs text-gray-500">
+                                #{order.consultationBookingNumber}
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-sm text-gray-500">غير محدد</div>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
