@@ -16,6 +16,7 @@ import {
   XMarkIcon,
   ArrowRightOnRectangleIcon,
   ChatBubbleLeftRightIcon,
+  TicketIcon,
 } from '@heroicons/react/24/outline';
 
 interface AdminLayoutProps {
@@ -27,6 +28,7 @@ const navigation = [
   { name: '\u0627\u0644\u062f\u0648\u0631\u0627\u062a', href: '/admin/courses', icon: AcademicCapIcon },
   { name: '\u0627\u0644\u0637\u0644\u0628\u0627\u062a', href: '/admin/orders', icon: ShoppingCartIcon },
   { name: '\u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u0648\u0646', href: '/admin/users', icon: UsersIcon },
+  { name: 'أكواد الخصم', href: '/admin/coupons', icon: TicketIcon },
   { name: '\u0627\u0644\u062a\u0642\u064a\u064a\u0645\u0627\u062a', href: '/admin/reviews', icon: ChatBubbleLeftRightIcon },
   { name: '\u0627\u0644\u062a\u062d\u0644\u064a\u0644\u0627\u062a', href: '/admin/analytics', icon: ChartBarIcon },
   { name: '\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a', href: '/admin/settings', icon: Cog6ToothIcon },

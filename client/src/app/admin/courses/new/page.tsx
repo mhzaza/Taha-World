@@ -49,10 +49,19 @@ export default function NewCoursePage() {
       } else {
         addNotification('error', response.data.arabic || response.data.error || 'خطأ في إنشاء الكورس');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating course:', error);
-      const errorMessage = apiUtils.handleApiError(error);
-      addNotification('error', errorMessage);
+      
+      // Check if there are validation details from the backend
+      if (error.response?.data?.details && Array.isArray(error.response.data.details)) {
+        const validationErrors = error.response.data.details
+          .map((err: any) => `${err.param}: ${err.msg}`)
+          .join(', ');
+        addNotification('error', `خطأ في البيانات: ${validationErrors}`);
+      } else {
+        const errorMessage = apiUtils.handleApiError(error);
+        addNotification('error', errorMessage);
+      }
     } finally {
       setLoading(false);
     }

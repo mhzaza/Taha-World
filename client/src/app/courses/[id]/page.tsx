@@ -26,6 +26,23 @@ interface CourseProgress {
   progressPercentage: number;
 }
 
+interface CourseResponse {
+  course?: Course;
+  _id?: string;
+  id?: string;
+  lessons?: Array<{
+    _id?: string;
+    id?: string;
+    order?: number;
+    isFree?: boolean;
+    [key: string]: unknown;
+  }>;
+  rating?: { average: number; count: number };
+  enrollmentCount?: number;
+  isEnrolled?: boolean;
+  [key: string]: unknown;
+}
+
 const EMPTY_PROGRESS: CourseProgress = {
   completedLessons: [],
   currentLesson: '',
@@ -120,7 +137,7 @@ export default function CoursePage() {
       });
 
       if (response.ok) {
-        const responseData: any = await response.json();
+        const responseData = await response.json() as CourseResponse;
         const courseData = responseData.course || responseData;
         
         // Update only the rating
@@ -172,7 +189,7 @@ export default function CoursePage() {
           return;
         }
 
-        const responseData: any = await response.json();
+        const responseData = await response.json() as CourseResponse;
         console.log('Backend response:', responseData);
         
         // Extract course data from backend response structure
@@ -793,7 +810,7 @@ export default function CoursePage() {
     : false;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen">
       <Header />
       <CourseHeader course={course} isEnrolled={canAccessCourse} progress={progress.progressPercentage} />
 
@@ -898,14 +915,6 @@ export default function CoursePage() {
                   />
                   
                   <div className="mt-8 text-center">
-                    {/* Debug info - remove in production */}
-                    {process.env.NODE_ENV === 'development' && (
-                      <div className="mb-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-sm text-black">
-                        <strong>Debug:</strong> isEnrolled: {isEnrolled ? 'true' : 'false'}, 
-                        canAccess: {canAccessCourse ? 'true' : 'false'}, 
-                        isAdmin: {isAdmin ? 'true' : 'false'}
-                      </div>
-                    )}
                     <h3 className="mb-6 text-2xl font-bold text-gray-900">{AR.lockedTitle}</h3>
 
                     {!user ? (
@@ -934,8 +943,8 @@ export default function CoursePage() {
                         <div className="max-w-md mx-auto">
                           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6 border border-blue-100">
                             <div className="text-center">
-                              <span className="text-4xl font-bold text-black block">${course.price}</span>
-                              <span className="font-medium text-black">دفعة واحدة – وصول دائم</span>
+                              <span className="text-4xl font-bold !text-black block">${course.price}</span>
+                              <span className="font-medium !text-black">دفعة واحدة – وصول دائم</span>
                             </div>
                           </div>
                           <button

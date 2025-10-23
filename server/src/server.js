@@ -16,6 +16,7 @@ const uploadRoutes = require('./routes/upload');
 const paymentRoutes = require('./routes/payment');
 const reviewRoutes = require('./routes/reviews');
 const consultationRoutes = require('./routes/consultations');
+const couponRoutes = require('./routes/coupons');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -85,6 +86,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/consultations', consultationRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

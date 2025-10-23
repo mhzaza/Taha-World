@@ -457,12 +457,17 @@ export default function OrdersPage() {
     const completedOrders = filteredOrders.filter(order => order.status === 'completed').length;
     const pendingOrders = filteredOrders.filter(order => order.status === 'pending').length;
     const failedOrders = filteredOrders.filter(order => order.status === 'failed').length;
+    const pendingBankTransfers = filteredOrders.filter(order => 
+      order.paymentMethod === 'bank_transfer' && 
+      order.bankTransfer?.verificationStatus === 'pending'
+    ).length;
     
     return {
       totalRevenue,
       completedOrders,
       pendingOrders,
       failedOrders,
+      pendingBankTransfers,
       totalOrders: filteredOrders.length
     };
   }, [filteredOrders]);
@@ -562,7 +567,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -630,6 +635,20 @@ export default function OrdersPage() {
             </div>
           </div>
         </div>
+        
+        <div className="bg-white rounded-lg shadow p-6 border-2 border-orange-200">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <span className="text-orange-600 font-bold">{stats.pendingBankTransfers}</span>
+              </div>
+            </div>
+            <div className="mr-4">
+              <p className="text-sm font-medium text-gray-500">تحويلات تحتاج موافقة</p>
+              <p className="text-2xl font-bold text-orange-600">{stats.pendingBankTransfers}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
@@ -665,6 +684,7 @@ export default function OrdersPage() {
               <option value="all">جميع الحالات</option>
               <option value="completed">مكتمل</option>
               <option value="pending">معلق</option>
+              <option value="processing">قيد المعالجة</option>
               <option value="failed">فاشل</option>
               <option value="refunded">مسترد</option>
             </select>
@@ -849,8 +869,30 @@ export default function OrdersPage() {
                       {getStatusText(order.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
-                    {order.paymentMethod}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm text-gray-900 capitalize">
+                        {order.paymentMethod === 'bank_transfer' ? 'تحويل بنكي' : order.paymentMethod}
+                      </span>
+                      {order.paymentMethod === 'bank_transfer' && order.bankTransfer?.verificationStatus === 'pending' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                          <ExclamationTriangleIcon className="h-3 w-3 ml-1" />
+                          يحتاج موافقة
+                        </span>
+                      )}
+                      {order.paymentMethod === 'bank_transfer' && order.bankTransfer?.verificationStatus === 'verified' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          <CheckCircleIcon className="h-3 w-3 ml-1" />
+                          تم التحقق
+                        </span>
+                      )}
+                      {order.paymentMethod === 'bank_transfer' && order.bankTransfer?.verificationStatus === 'rejected' && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          <XCircleIcon className="h-3 w-3 ml-1" />
+                          مرفوض
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button

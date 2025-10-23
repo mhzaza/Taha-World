@@ -122,6 +122,18 @@ export interface Order {
   notes?: string;
   refundReason?: string;
   isNew?: boolean;
+  bankTransfer?: {
+    receiptImage?: string;
+    receiptImagePublicId?: string;
+    transferDate?: string;
+    transferReference?: string;
+    bankName?: string;
+    accountHolderName?: string;
+    verificationStatus?: 'pending' | 'verified' | 'rejected';
+    verifiedBy?: string;
+    verifiedAt?: string;
+    rejectionReason?: string;
+  };
 }
 
 export interface Certificate {

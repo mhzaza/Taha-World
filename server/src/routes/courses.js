@@ -279,11 +279,13 @@ router.post('/', authenticateAdmin, [
   body('price').isNumeric().withMessage('Price must be a number'),
   body('level').isIn(['beginner', 'intermediate', 'advanced']).withMessage('Invalid level'),
   body('category').notEmpty().withMessage('Category is required'),
-  body('lessons').isArray().withMessage('Lessons must be an array')
+  body('lessons').optional().isArray().withMessage('Lessons must be an array')
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error('Course creation validation errors:', errors.array());
+      console.log('Request body:', req.body);
       return res.status(400).json({
         error: 'Validation failed',
         arabic: 'فشل في التحقق من البيانات',
@@ -293,6 +295,7 @@ router.post('/', authenticateAdmin, [
 
     const courseData = {
       ...req.body,
+      lessons: req.body.lessons || [], // Initialize as empty array if not provided
       instructor: {
         id: req.user._id,
         name: req.user.displayName,
@@ -307,7 +310,9 @@ router.post('/', authenticateAdmin, [
       success: true,
       message: 'Course created successfully',
       arabic: 'تم إنشاء الدورة بنجاح',
-      course
+      data: {
+        course
+      }
     });
 
   } catch (error) {

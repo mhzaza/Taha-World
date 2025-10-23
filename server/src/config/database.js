@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
+    // Remove deprecated options - they're no longer needed in Mongoose 8.x
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      socketTimeoutMS: 45000, // 45 seconds socket timeout
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);

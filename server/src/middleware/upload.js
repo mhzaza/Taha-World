@@ -57,25 +57,47 @@ const uploadSingle = (fieldName) => {
         
         if (fieldName === 'thumbnail' || fieldName === 'avatar') {
           uploadType = fieldName === 'thumbnail' ? 'courseThumbnail' : 'userAvatar';
+        } else if (fieldName === 'file' && req.file.mimetype.startsWith('image/')) {
+          // For receipt images and general image uploads
+          uploadType = 'receiptImage';
         } else if (req.file.mimetype.startsWith('video/')) {
           uploadType = 'courseVideo';
         } else if (req.file.mimetype.startsWith('image/')) {
           uploadType = 'lessonImage';
         }
         
+        console.log('Uploading to Cloudinary:', { 
+          fieldName, 
+          uploadType, 
+          mimetype: req.file.mimetype,
+          size: req.file.size 
+        });
+        
         // Upload to Cloudinary
         const result = await uploadToCloudinary(req.file.buffer, uploadType);
+        
+        console.log('Cloudinary upload successful:', {
+          public_id: result.public_id,
+          secure_url: result.secure_url
+        });
         
         // Add Cloudinary result to request
         req.cloudinaryResult = result;
         
         next();
       } catch (error) {
-        console.error('Upload error:', error);
+        console.error('Upload error details:', {
+          message: error.message,
+          stack: error.stack,
+          fieldName,
+          fileSize: req.file?.size,
+          mimetype: req.file?.mimetype
+        });
         return res.status(500).json({
           success: false,
-          error: 'Upload failed',
-          arabic: 'فشل في رفع الملف'
+          error: error.message || 'Upload failed',
+          arabic: 'فشل في رفع الملف',
+          details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
       }
     });

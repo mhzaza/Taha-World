@@ -2,10 +2,25 @@ const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: 'dkcui067d',
-  api_key: '378168273153864',
-  api_secret: 'WVD6FI43h62qKFjCFKxUAYEL4XE',
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// Validate Cloudinary configuration
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  console.error('❌ CLOUDINARY configuration missing! Please check your .env file');
+  console.error('Current values:', {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'NOT SET',
+    api_key: process.env.CLOUDINARY_API_KEY || 'NOT SET',
+    api_secret: process.env.CLOUDINARY_API_SECRET ? '***SET***' : 'NOT SET'
+  });
+} else {
+  console.log('✅ Cloudinary configured successfully:', {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY?.substring(0, 5) + '...'
+  });
+}
 
 // Upload options for different types of content
 const uploadOptions = {
@@ -66,6 +81,16 @@ const uploadOptions = {
       quality: 'auto',
     },
   },
+  receiptImage: {
+    folder: 'payments/receipts',
+    transformation: {
+      width: 1200,
+      height: 1600,
+      crop: 'limit',
+      quality: 'auto',
+      format: 'webp',
+    },
+  },
 };
 
 /**
@@ -77,29 +102,55 @@ const uploadOptions = {
  */
 const uploadToCloudinary = async (file, type = 'generalUpload', options = {}) => {
   try {
+    console.log('uploadToCloudinary called with:', {
+      fileType: typeof file,
+      isBuffer: Buffer.isBuffer(file),
+      uploadType: type,
+      hasOptions: Object.keys(options).length > 0
+    });
+
     const uploadConfig = {
       ...uploadOptions[type],
       ...options,
     };
 
+    console.log('Upload config:', {
+      folder: uploadConfig.folder,
+      resource_type: uploadConfig.resource_type,
+      hasTransformation: !!uploadConfig.transformation
+    });
+
     let result;
     if (typeof file === 'string') {
       // File path
+      console.log('Uploading file from path...');
       result = await cloudinary.uploader.upload(file, uploadConfig);
     } else if (Buffer.isBuffer(file)) {
       // Buffer data - convert to base64 data URI
+      console.log('Converting buffer to base64...', { bufferSize: file.length });
       const base64Data = file.toString('base64');
       // Detect MIME type from buffer or use default
       const mimeType = uploadConfig.resource_type === 'video' ? 'video/mp4' : 'image/jpeg';
       const dataUri = `data:${mimeType};base64,${base64Data}`;
+      console.log('Uploading to Cloudinary from buffer...');
       result = await cloudinary.uploader.upload(dataUri, uploadConfig);
     } else {
       throw new Error('Invalid file type. Expected string (path) or Buffer.');
     }
 
+    console.log('Cloudinary upload successful!', {
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+      format: result.format
+    });
+
     return result;
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
+    console.error('Cloudinary upload error:', {
+      message: error.message,
+      stack: error.stack,
+      error: error
+    });
     throw error;
   }
 };
@@ -147,7 +198,8 @@ const deleteFromCloudinary = async (publicId, resourceType = 'image') => {
  * @returns {string} Optimized URL
  */
 const getCloudinaryUrl = (publicId, transformations = {}) => {
-  let url = `https://res.cloudinary.com/dkcui067d/image/upload`;
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  let url = `https://res.cloudinary.com/${cloudName}/image/upload`;
   
   if (Object.keys(transformations).length > 0) {
     const transforms = [];

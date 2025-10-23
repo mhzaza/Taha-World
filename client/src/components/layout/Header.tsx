@@ -45,6 +45,7 @@ export default function Header() {
                   src="/Asset 1.png" 
                   alt="طه صباغ" 
                   fill
+                  sizes="40px"
                   className="object-contain"
                   priority
                 />
