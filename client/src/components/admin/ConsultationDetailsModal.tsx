@@ -2,6 +2,7 @@
 
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import Cookies from 'js-cookie';
 import {
   XMarkIcon,
   CheckCircleIcon,
@@ -154,9 +155,19 @@ export default function ConsultationDetailsModal({
       setError(null);
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
       
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+      
       const response = await axios.get(
         `${API_BASE_URL}/consultations/admin/bookings/${consultationBookingId}`,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
 
       if (response.data.success) {
