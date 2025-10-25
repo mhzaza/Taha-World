@@ -122,7 +122,7 @@ export default function Home() {
               <div className="flex justify-center mt-6">
                 <Link
                   href="/courses"
-                  className="btn-primary inline-flex items-center gap-2 text-lg px-10 py-3 w-full sm:w-auto"
+                  className="btn-primary bg-[#41ADE1] hover:bg-[#3399CC] inline-flex items-center gap-2 text-lg px-10 py-3 w-full sm:w-auto"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -155,7 +155,7 @@ export default function Home() {
                   </div>
 
                   <div className="space-y-4">
-                    <div className="bg-gradient-to-r from-primary-600 to-primary-500 text-white font-extrabold text-3xl rounded-full px-8 py-3 shadow-xl inline-flex items-center gap-3 justify-center">
+                    <div className="bg-gradient-to-r from-[#41ADE1] to-[#3399CC] text-white font-extrabold text-3xl rounded-full px-8 py-3 shadow-xl inline-flex items-center gap-3 justify-center">
                       <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 1.343-3 3 0 1.306.835 2.418 2 2.83V19m0-14v2m0 10h0m6-7a6 6 0 11-12 0 6 6 0 0112 0z" />
                       </svg>
@@ -164,7 +164,7 @@ export default function Home() {
 
                     <Link
                       href="/courses/arm-wrestling"
-                      className="btn-primary inline-flex items-center gap-2 text-lg px-6 py-3 shadow-lg hover:shadow-xl transition"
+                      className="btn-primary bg-[#41ADE1] hover:bg-[#3399CC] inline-flex items-center gap-2 text-lg px-6 py-3 shadow-lg hover:shadow-xl transition"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -366,7 +366,7 @@ export default function Home() {
               <div className="mt-8 text-center">
                 <Link
                   href="/about"
-                  className="btn-primary inline-block text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="btn-primary bg-[#41ADE1] hover:bg-[#3399CC] inline-block text-lg px-8 py-4 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                 >
                   اقرأ المزيد عن الكابتن طه
                 </Link>
@@ -946,7 +946,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-400">
               <Link
                 href="/courses"
-                className="btn-primary bg-blue-600 text-white hover:bg-blue-700 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-2 text-lg"
+                className="btn-primary bg-[#41ADE1] text-white hover:bg-[#3399CC] shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-2 text-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -956,7 +956,7 @@ export default function Home() {
               
               <Link
                 href="/about"
-                className="btn-secondary bg-transparent text-white border-2 border-blue-400/50 hover:bg-blue-600/20 hover:border-blue-400/70 inline-flex items-center gap-2 text-lg"
+                className="btn-secondary bg-transparent text-white border-2 border-[#41ADE1]/50 hover:bg-[#41ADE1]/20 hover:border-[#41ADE1]/70 inline-flex items-center gap-2 text-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

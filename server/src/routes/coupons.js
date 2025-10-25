@@ -18,13 +18,21 @@ const isAdmin = (req, res, next) => {
 // Validate coupon code (for users during checkout)
 router.post('/validate', authenticate, async (req, res) => {
   try {
-    const { code, courseId, consultationId } = req.body;
+    const { code, courseId, consultationId, purchaseAmount } = req.body;
 
     if (!code) {
       return res.status(400).json({
         success: false,
         message: 'Coupon code is required',
         arabic: 'يرجى إدخال كود الخصم'
+      });
+    }
+
+    if (!purchaseAmount || purchaseAmount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Purchase amount is required',
+        arabic: 'مبلغ الشراء مطلوب'
       });
     }
 
@@ -56,6 +64,15 @@ router.post('/validate', authenticate, async (req, res) => {
         success: false,
         message: 'You have already used this coupon',
         arabic: 'لقد استخدمت هذا الكود من قبل'
+      });
+    }
+
+    // Check minimum purchase amount
+    if (coupon.minPurchaseAmount && purchaseAmount < coupon.minPurchaseAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum purchase amount is ${coupon.minPurchaseAmount}`,
+        arabic: `الحد الأدنى للشراء هو ${coupon.minPurchaseAmount}`
       });
     }
 

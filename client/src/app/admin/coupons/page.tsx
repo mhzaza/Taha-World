@@ -396,7 +396,7 @@ export default function CouponsManagementPage() {
                 </tr>
               ) : (
                 filteredCoupons.map((coupon) => (
-                  <tr key={coupon._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={coupon._id} className="hover:bg-gray-500 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
@@ -589,7 +589,7 @@ export default function CouponsManagementPage() {
               {/* Min Purchase Amount */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  الحد الأدنى للشراء (ر.س)
+                  الحد الأدنى للشراء ($)
                 </label>
                 <input
                   type="number"
@@ -603,6 +603,7 @@ export default function CouponsManagementPage() {
                   min="0"
                   step="0.01"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0.00"
                 />
               </div>
 

@@ -9,12 +9,13 @@ import {
   UserIcon,
   CreditCardIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
+  ShoppingBagIcon
 } from '@heroicons/react/24/outline';
 
 const ProfilePage = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'subscriptions'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'subscriptions' | 'orders'>('profile');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -374,6 +375,19 @@ const ProfilePage = () => {
                     >
                       <CreditCardIcon className="w-5 h-5 inline ml-2" />
                       إدارة الاشتراكات
+                    </button>
+                    <button
+                      onClick={() => {
+                        window.location.href = '/profile/orders';
+                      }}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === 'orders'
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <ShoppingBagIcon className="w-5 h-5 inline ml-2" />
+                      الطلبات
                     </button>
                   </nav>
                 </div>

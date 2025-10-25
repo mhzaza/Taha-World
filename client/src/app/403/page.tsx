@@ -32,7 +32,7 @@ export default function ForbiddenPage() {
         <div className="space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center">
           <button
             onClick={() => router.back()}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-500 transition-colors duration-200"
           >
             <ArrowLeftIcon className="h-5 w-5 ml-2" />
             العودة للخلف

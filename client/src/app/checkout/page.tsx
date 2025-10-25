@@ -225,6 +225,13 @@ function CheckoutContent() {
       } else {
         payload.consultationBookingId = searchParams.get('bookingId')
       }
+      
+      console.log('Bank transfer payload being sent:', {
+        ...payload,
+        receiptImageUrl: receiptImageUrl,
+        hasReceiptImage: !!receiptImageUrl,
+        receiptImageLength: receiptImageUrl?.length
+      })
 
       const response = await axios.post(
         `${API_BASE_URL}/payment/bank-transfer/create-order`,
@@ -240,8 +247,8 @@ function CheckoutContent() {
 
       if (response.data.success && response.data.order) {
         toast.success('تم إرسال طلب التحويل البنكي بنجاح. سيتم مراجعته قريباً')
-        // Redirect to success page or orders page
-        router.push('/orders?status=pending')
+        // Redirect to profile orders page
+        router.push('/profile/orders?status=pending')
       } else {
         throw new Error('فشل في إنشاء طلب التحويل البنكي')
       }
@@ -410,7 +417,8 @@ function CheckoutContent() {
         {
           code: couponCode.trim().toUpperCase(),
           courseId: itemType === 'course' ? item?._id : null,
-          consultationId: itemType === 'consultation' ? item?._id : null
+          consultationId: itemType === 'consultation' ? item?._id : null,
+          purchaseAmount: item?.price || 0
         },
         {
           headers: {

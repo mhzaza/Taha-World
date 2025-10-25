@@ -676,15 +676,19 @@ export default function OrderDetailsModal({
                       </div>
 
                       {/* Receipt Image */}
-                      {sanitizedOrder.bankTransfer.receiptImage && (
-                        <div className="mb-6">
-                          <label className="text-sm font-medium text-gray-500 block mb-2">صورة الإيصال</label>
+                      <div className="mb-6">
+                        <label className="text-sm font-medium text-gray-500 block mb-2">صورة الإيصال</label>
+                        {sanitizedOrder.bankTransfer.receiptImage ? (
                           <div className="relative border-2 border-gray-300 rounded-lg overflow-hidden">
                             <img 
                               src={sanitizedOrder.bankTransfer.receiptImage} 
                               alt="Receipt"
                               className="w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
                               onClick={() => setShowReceiptModal(true)}
+                              onError={(e) => {
+                                console.error('Failed to load receipt image:', sanitizedOrder.bankTransfer?.receiptImage);
+                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect width="400" height="300" fill="%23f3f4f6"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="%236b7280"%3Eفشل تحميل الصورة%3C/text%3E%3C/svg%3E';
+                              }}
                             />
                             <button
                               onClick={() => setShowReceiptModal(true)}
@@ -693,8 +697,18 @@ export default function OrderDetailsModal({
                               <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-700" />
                             </button>
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="mt-2 text-sm text-gray-500">لم يتم رفع صورة الإيصال</p>
+                            <p className="mt-1 text-xs text-red-600">
+                              تحذير: لا يمكن التحقق من التحويل بدون صورة إيصال
+                            </p>
+                          </div>
+                        )}
+                      </div>
 
                       {/* Verification Actions */}
                       {sanitizedOrder.bankTransfer.verificationStatus === 'pending' && onVerifyBankTransfer && (
@@ -788,7 +802,7 @@ export default function OrderDetailsModal({
                 <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
                   <button
                     onClick={onClose}
-                    className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-6 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-500 transition-colors"
                   >
                     إغلاق
                   </button>
@@ -854,7 +868,7 @@ export default function OrderDetailsModal({
                         </a>
                         <button
                           onClick={() => setShowReceiptModal(false)}
-                          className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-500 transition-colors"
                         >
                           إغلاق
                         </button>

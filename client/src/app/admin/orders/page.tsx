@@ -25,113 +25,6 @@ import {
 import { adminAPI, apiUtils, Order } from '@/lib/api';
 import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 
-// Order interface is now imported from @/lib/api
-
-// Enhanced mock data with more realistic orders
-const mockOrders: Order[] = [
-  {
-    id: 'ORD-001',
-    userId: 'user-1',
-    userEmail: 'ahmed@example.com',
-    userName: 'أحمد محمد',
-    courseId: 'course-1',
-    courseTitle: 'كورس تدريب كمال الأجسام المتقدم',
-    amount: 299,
-    status: 'completed',
-    paymentMethod: 'paypal',
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:35:00Z',
-    transactionId: 'TXN-123456',
-    processingTime: 5
-  },
-  {
-    id: 'ORD-002',
-    userId: 'user-2',
-    userEmail: 'sara@example.com',
-    userName: 'سارة أحمد',
-    courseId: 'course-2',
-    courseTitle: 'كورس تدريب المصارعة للمبتدئين',
-    amount: 199,
-    status: 'processing',
-    paymentMethod: 'stripe',
-    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
-    updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(), // 10 minutes ago
-    processingTime: 15,
-    isNew: true
-  },
-  {
-    id: 'ORD-003',
-    userId: 'user-3',
-    userEmail: 'omar@example.com',
-    userName: 'عمر خالد',
-    courseId: 'course-3',
-    courseTitle: 'كورس التغذية الرياضية',
-    amount: 149,
-    status: 'failed',
-    paymentMethod: 'paypal',
-    createdAt: '2024-01-13T09:15:00Z',
-    updatedAt: '2024-01-13T09:20:00Z',
-    notes: 'فشل في التحقق من البطاقة الائتمانية'
-  },
-  {
-    id: 'ORD-004',
-    userId: 'user-4',
-    userEmail: 'fatima@example.com',
-    userName: 'فاطمة علي',
-    courseId: 'course-1',
-    courseTitle: 'كورس تدريب كمال الأجسام المتقدم',
-    amount: 299,
-    status: 'refunded',
-    paymentMethod: 'stripe',
-    createdAt: '2024-01-12T14:45:00Z',
-    updatedAt: '2024-01-13T10:00:00Z',
-    transactionId: 'TXN-789012',
-    refundReason: 'طلب من العميل'
-  },
-  {
-    id: 'ORD-005',
-    userId: 'user-5',
-    userEmail: 'hassan@example.com',
-    userName: 'حسن محمود',
-    courseId: 'course-4',
-    courseTitle: 'كورس تدريب الملاكمة',
-    amount: 249,
-    status: 'completed',
-    paymentMethod: 'paypal',
-    createdAt: '2024-01-11T11:30:00Z',
-    updatedAt: '2024-01-11T11:35:00Z',
-    transactionId: 'TXN-345678',
-    processingTime: 5
-  },
-  {
-    id: 'ORD-006',
-    userId: 'user-6',
-    userEmail: 'layla@example.com',
-    userName: 'ليلى سعد',
-    courseId: 'course-5',
-    courseTitle: 'كورس اليوجا والتأمل',
-    amount: 179,
-    status: 'pending',
-    paymentMethod: 'bank_transfer',
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
-    updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    isNew: true
-  },
-  {
-    id: 'ORD-007',
-    userId: 'user-7',
-    userEmail: 'youssef@example.com',
-    userName: 'يوسف أحمد',
-    courseId: 'course-6',
-    courseTitle: 'كورس الرقص المعاصر',
-    amount: 229,
-    status: 'processing',
-    paymentMethod: 'crypto',
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-    updatedAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-    processingTime: 30
-  }
-];
 
 type StatusFilter = 'all' | 'pending' | 'completed' | 'failed' | 'refunded' | 'processing';
 type SortField = 'createdAt' | 'amount' | 'status' | 'userName';
@@ -186,6 +79,7 @@ export default function OrdersPage() {
         const newOrders = response.data.data?.orders || [];
         
         // Ensure all order data is properly structured (no nested objects)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const sanitizedOrders = newOrders.map((order: any) => {
           const isCourse = !!order.courseId;
           const isConsultation = !!order.consultationBookingId;
@@ -231,10 +125,6 @@ export default function OrdersPage() {
       
       // Add error notification
       addNotification('error', `خطأ في تحميل الطلبات: ${errorMessage}`);
-      
-      // Fallback to mock data if API fails
-      setOrders(mockOrders);
-      setTotalOrders(mockOrders.length);
     } finally {
       setLoading(false);
     }
@@ -300,8 +190,8 @@ export default function OrdersPage() {
 
     // Sort orders
     filtered.sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
+      let aValue: string | number = a[sortField];
+      let bValue: string | number = b[sortField];
       
       if (sortField === 'createdAt') {
         aValue = new Date(aValue).getTime();
@@ -489,7 +379,7 @@ export default function OrdersPage() {
           <div className="relative">
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="relative inline-flex items-center px-3 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
             >
               <BellIcon className="h-4 w-4" />
               {notifications.length > 0 && (
@@ -518,7 +408,7 @@ export default function OrdersPage() {
                     <p className="p-4 text-sm text-gray-500">لا توجد إشعارات جديدة</p>
                   ) : (
                     notifications.map((notification) => (
-                      <div key={notification.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
+                      <div key={notification.id} className="p-4 border-b border-gray-100 hover:bg-[#333]">
                         <div className="flex items-start justify-between">
                           <div>
                             <p className="text-sm font-medium text-gray-900">
@@ -549,7 +439,7 @@ export default function OrdersPage() {
           <button
             onClick={refreshOrders}
             disabled={refreshing}
-            className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <ArrowPathIcon className={`h-4 w-4 ml-2 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'جاري التحديث...' : 'تحديث'}
@@ -558,7 +448,7 @@ export default function OrdersPage() {
           {/* Export Button */}
           <button
             onClick={exportToCSV}
-            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
           >
             <ArrowDownTrayIcon className="h-4 w-4 ml-2" />
             تصدير CSV
@@ -723,7 +613,7 @@ export default function OrdersPage() {
           
           <button
             onClick={clearFilters}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-[#41ADE1] hover:text-[#3399CC] font-medium"
           >
             مسح الفلاتر
           </button>
@@ -811,7 +701,7 @@ export default function OrdersPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
+                <tr key={order.id} className="hover:bg-[#282828]">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {formatDate(order.createdAt)}
                   </td>
@@ -896,7 +786,7 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      className="text-blue-600 hover:text-blue-900 flex items-center"
+                      className="text-[#41ADE1] hover:text-[#2277AA] flex items-center"
                       onClick={() => {
                         setSelectedOrder(order);
                         setIsModalOpen(true);
@@ -919,14 +809,14 @@ export default function OrdersPage() {
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 السابق
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 التالي
               </button>
@@ -946,7 +836,7 @@ export default function OrdersPage() {
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     السابق
                   </button>
@@ -959,8 +849,8 @@ export default function OrdersPage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                            ? 'z-10 bg-[#E6F5FB] border-[#41ADE1] text-[#41ADE1]'
+                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-500'
                         }`}
                       >
                         {pageNum}
@@ -971,7 +861,7 @@ export default function OrdersPage() {
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                     className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     التالي
                   </button>
@@ -995,7 +885,7 @@ export default function OrdersPage() {
           {(searchTerm || statusFilter !== 'all' || dateRange.start || dateRange.end) && (
             <button
               onClick={clearFilters}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-4 inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
             >
               مسح الفلاتر
             </button>
@@ -1032,20 +922,40 @@ export default function OrdersPage() {
         onVerifyBankTransfer={async (orderId: string, status: 'verified' | 'rejected', reason?: string) => {
           try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+            
+            // Get authentication token
+            const token = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('token='))
+              ?.split('=')[1];
+
+            if (!token) {
+              addNotification('error', 'يرجى تسجيل الدخول مرة أخرى');
+              return;
+            }
+
+            console.log('Verifying bank transfer:', { orderId, status, reason });
+
             const response = await fetch(`${API_BASE_URL}/payment/bank-transfer/verify/${orderId}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
               },
               credentials: 'include',
               body: JSON.stringify({ status, rejectionReason: reason })
             });
 
+            console.log('Verify response status:', response.status);
+
             if (!response.ok) {
-              throw new Error('فشل في التحقق من التحويل البنكي');
+              const errorData = await response.json().catch(() => ({}));
+              console.error('Verify error response:', errorData);
+              throw new Error(errorData.arabic || errorData.message || 'فشل في التحقق من التحويل البنكي');
             }
 
             const data = await response.json();
+            console.log('Verify success:', data);
             
             // Update local state with the verified order
             await fetchOrders();

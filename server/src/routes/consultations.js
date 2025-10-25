@@ -201,6 +201,7 @@ router.post('/book', authenticate, [
     await booking.save();
 
     // Create order record
+    // Note: paymentMethod will be set to a placeholder and updated when user chooses payment method
     const order = new Order({
       userId: user._id,
       userEmail: user.email,
@@ -209,12 +210,19 @@ router.post('/book', authenticate, [
       consultationBookingId: booking._id,
       amount: consultation.price,
       originalAmount: consultation.originalPrice || consultation.price,
-      currency: consultation.currency,
+      currency: consultation.currency || 'USD',
       status: 'pending',
-      paymentMethod: 'paypal' // Will be updated based on actual payment method
+      paymentMethod: 'paypal' // Placeholder - will be updated based on actual payment method chosen at checkout
     });
 
-    await order.save();
+    try {
+      await order.save();
+    } catch (orderError) {
+      console.error('Error creating order for consultation booking:', orderError);
+      // If order creation fails, delete the booking to maintain consistency
+      await ConsultationBooking.findByIdAndDelete(booking._id);
+      throw new Error(`Failed to create order: ${orderError.message}`);
+    }
 
     // Update booking with order ID
     booking.orderId = order._id;
@@ -246,9 +254,17 @@ router.post('/book', authenticate, [
 
   } catch (error) {
     console.error('Create booking error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      errors: error.errors
+    });
+    
     res.status(500).json({
       error: 'Failed to create booking',
-      arabic: 'فشل في إنشاء الحجز'
+      arabic: 'فشل في إنشاء الحجز',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

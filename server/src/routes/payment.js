@@ -361,7 +361,9 @@ router.post('/bank-transfer/create-order', authenticate, [
   body('transferReference').optional().isString().trim(),
   body('bankName').optional().isString().trim(),
   body('accountHolderName').optional().isString().trim(),
-  body('transferDate').optional().isISO8601()
+  body('transferDate').optional().isISO8601(),
+  body('receiptImage').optional().isString().trim(),
+  body('couponCode').optional().isString().trim()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -373,8 +375,35 @@ router.post('/bank-transfer/create-order', authenticate, [
       });
     }
 
-    const { courseId, consultationBookingId, transferReference, bankName, accountHolderName, transferDate } = req.body;
+    const { courseId, consultationBookingId, transferReference, bankName, accountHolderName, transferDate, receiptImage, couponCode } = req.body;
     const userId = req.user._id;
+    
+    console.log('Bank transfer order data received:', {
+      transferReference,
+      bankName,
+      accountHolderName,
+      transferDate,
+      receiptImage: receiptImage ? receiptImage.substring(0, 100) + '...' : 'Missing',
+      receiptImageLength: receiptImage?.length,
+      hasReceiptImage: !!receiptImage,
+      couponCode
+    });
+
+    // Validate receipt image is provided
+    if (!receiptImage || !receiptImage.trim()) {
+      return res.status(400).json({
+        error: 'Receipt image is required for bank transfer',
+        arabic: 'صورة الإيصال مطلوبة للتحويل البنكي'
+      });
+    }
+
+    // Validate receipt image URL format (should be from Cloudinary or valid URL)
+    if (!receiptImage.startsWith('http://') && !receiptImage.startsWith('https://')) {
+      return res.status(400).json({
+        error: 'Invalid receipt image URL format',
+        arabic: 'تنسيق رابط صورة الإيصال غير صالح'
+      });
+    }
 
     // Check if either courseId or consultationBookingId is provided
     if (!courseId && !consultationBookingId) {
@@ -445,6 +474,35 @@ router.post('/bank-transfer/create-order', authenticate, [
       title = course.title;
     }
 
+    // Apply coupon discount if provided
+    let originalAmount = amount;
+    let discountAmount = 0;
+    
+    if (couponCode) {
+      try {
+        const Coupon = require('../models/Coupon');
+        const coupon = await Coupon.findOne({ 
+          code: couponCode.toUpperCase(),
+          isActive: true 
+        });
+        
+        if (coupon && coupon.isValid(orderType, courseId || consultationBookingId)) {
+          discountAmount = coupon.calculateDiscount(amount);
+          amount = Math.max(0, amount - discountAmount);
+          
+          console.log('Coupon applied:', {
+            code: couponCode,
+            originalAmount,
+            discountAmount,
+            finalAmount: amount
+          });
+        }
+      } catch (couponError) {
+        console.error('Error applying coupon:', couponError);
+        // Continue without coupon if there's an error
+      }
+    }
+
     // Create order record in database
     const orderData = {
       userId,
@@ -452,10 +510,14 @@ router.post('/bank-transfer/create-order', authenticate, [
       userName: req.user.displayName,
       orderType,
       amount,
+      originalAmount: originalAmount,
+      discountAmount: discountAmount,
       currency,
       status: 'pending',
       paymentMethod: 'bank_transfer',
+      couponCode: couponCode || null,
       bankTransfer: {
+        receiptImage: receiptImage || null, // Save receipt image URL
         transferReference: transferReference || null,
         bankName: bankName || null,
         accountHolderName: accountHolderName || null,
@@ -468,13 +530,41 @@ router.post('/bank-transfer/create-order', authenticate, [
     if (orderType === 'course') {
       orderData.courseId = courseId;
       orderData.courseTitle = title;
-      orderData.originalAmount = amount;
     } else if (orderType === 'consultation') {
       orderData.consultationBookingId = consultationBookingId;
     }
 
     const orderRecord = new Order(orderData);
     await orderRecord.save();
+    
+    // Verify the image was saved to database by re-fetching the order
+    const savedOrder = await Order.findById(orderRecord._id);
+    
+    console.log('Bank transfer order created successfully:', {
+      orderId: orderRecord._id,
+      orderType,
+      amount,
+      currency,
+      receiptImageProvided: !!receiptImage,
+      receiptImageSavedInMemory: orderRecord.bankTransfer?.receiptImage ? 'YES' : 'NO',
+      receiptImageInDB: savedOrder?.bankTransfer?.receiptImage ? 'YES' : 'NO',
+      receiptImageUrlInDB: savedOrder?.bankTransfer?.receiptImage?.substring(0, 100),
+      bankTransferData: {
+        hasReceiptImage: !!savedOrder?.bankTransfer?.receiptImage,
+        transferReference: savedOrder?.bankTransfer?.transferReference,
+        bankName: savedOrder?.bankTransfer?.bankName,
+        verificationStatus: savedOrder?.bankTransfer?.verificationStatus
+      }
+    });
+
+    // Critical check: Ensure receipt image was saved
+    if (!savedOrder?.bankTransfer?.receiptImage) {
+      console.error('CRITICAL ERROR: Receipt image was not saved to database!', {
+        orderId: orderRecord._id,
+        receiptImageProvided: receiptImage,
+        orderData: orderData.bankTransfer
+      });
+    }
 
     // Update consultation booking with order ID if consultation
     if (orderType === 'consultation') {
@@ -486,8 +576,8 @@ router.post('/bank-transfer/create-order', authenticate, [
 
     res.json({
       success: true,
-      message: 'Order created successfully. Please upload payment receipt.',
-      arabic: 'تم إنشاء الطلب بنجاح. يرجى رفع صورة الإيصال.',
+      message: 'Order created successfully with receipt image.',
+      arabic: 'تم إنشاء الطلب بنجاح مع صورة الإيصال.',
       order: orderRecord,
       orderType
     });
@@ -560,8 +650,16 @@ router.put('/bank-transfer/verify/:orderId', authenticate, [
   body('rejectionReason').optional().isString().trim()
 ], async (req, res) => {
   try {
+    console.log('Bank transfer verification request:', {
+      orderId: req.params.orderId,
+      status: req.body.status,
+      adminId: req.user?._id,
+      isAdmin: req.user?.isAdmin
+    });
+
     // Check if user is admin
     if (!req.user.isAdmin) {
+      console.log('Access denied - user is not admin');
       return res.status(403).json({
         error: 'Access denied. Admin only.',
         arabic: 'غير مصرح لك. للإدارة فقط.'
@@ -570,6 +668,7 @@ router.put('/bank-transfer/verify/:orderId', authenticate, [
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({
         error: 'Validation failed',
         arabic: 'فشل في التحقق من البيانات',
@@ -587,10 +686,23 @@ router.put('/bank-transfer/verify/:orderId', authenticate, [
     });
 
     if (!order) {
+      console.log('Order not found:', orderId);
       return res.status(404).json({
         error: 'Order not found',
         arabic: 'الطلب غير موجود'
       });
+    }
+
+    console.log('Order found:', {
+      orderId: order._id,
+      status: order.status,
+      hasBankTransfer: !!order.bankTransfer,
+      currentVerificationStatus: order.bankTransfer?.verificationStatus
+    });
+
+    // Ensure bankTransfer object exists
+    if (!order.bankTransfer) {
+      order.bankTransfer = {};
     }
 
     // Update verification status
@@ -682,9 +794,11 @@ router.put('/bank-transfer/verify/:orderId', authenticate, [
 
   } catch (error) {
     console.error('Verify bank transfer error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       error: 'Failed to verify bank transfer',
-      arabic: 'فشل في التحقق من التحويل البنكي'
+      arabic: 'فشل في التحقق من التحويل البنكي',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

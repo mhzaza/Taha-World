@@ -199,7 +199,7 @@ const FAQPage = () => {
                         >
                           <button
                             onClick={() => toggleItem(categoryIndex, questionIndex)}
-                            className="w-full px-6 py-4 text-right focus:outline-none focus:ring-2 focus:ring-purple-300 hover:bg-gray-50 transition-colors"
+                            className="w-full px-6 py-4 text-right focus:outline-none focus:ring-2 focus:ring-purple-300 hover:bg-gray-500 transition-colors"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex-1">

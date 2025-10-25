@@ -655,6 +655,51 @@ router.patch('/courses/:id/publish', requirePermission('courses.edit'), [
   }
 });
 
+// @desc    Check bank transfer orders for missing images (diagnostic)
+// @route   GET /api/admin/orders/bank-transfer-check
+// @access  Private (Admin)
+router.get('/orders/bank-transfer-check', async (req, res) => {
+  try {
+    // Find all bank transfer orders
+    const bankTransferOrders = await Order.find({ paymentMethod: 'bank_transfer' })
+      .select('_id userEmail userName amount status bankTransfer createdAt')
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    const results = bankTransferOrders.map(order => ({
+      orderId: order._id,
+      userEmail: order.userEmail,
+      userName: order.userName,
+      amount: order.amount,
+      status: order.status,
+      createdAt: order.createdAt,
+      hasReceiptImage: !!order.bankTransfer?.receiptImage,
+      receiptImageUrl: order.bankTransfer?.receiptImage || 'MISSING',
+      verificationStatus: order.bankTransfer?.verificationStatus || 'N/A',
+      transferReference: order.bankTransfer?.transferReference || 'N/A'
+    }));
+
+    const summary = {
+      totalBankTransferOrders: bankTransferOrders.length,
+      ordersWithImages: results.filter(r => r.hasReceiptImage).length,
+      ordersWithoutImages: results.filter(r => !r.hasReceiptImage).length
+    };
+
+    res.json({
+      success: true,
+      summary,
+      orders: results
+    });
+
+  } catch (error) {
+    console.error('Bank transfer check error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      arabic: 'خطأ داخلي في الخادم'
+    });
+  }
+});
+
 // @desc    Get all orders
 // @route   GET /api/admin/orders
 // @access  Private (Admin)
@@ -750,6 +795,16 @@ router.get('/orders', async (req, res) => {
       
       // Determine order type
       orderObj.orderType = orderObj.courseId ? 'course' : orderObj.consultationBookingId ? 'consultation' : undefined;
+      
+      // Log bank transfer data for debugging
+      if (orderObj.paymentMethod === 'bank_transfer') {
+        console.log(`Order ${orderObj._id} - Bank Transfer:`, {
+          hasReceiptImage: !!orderObj.bankTransfer?.receiptImage,
+          receiptImageUrl: orderObj.bankTransfer?.receiptImage ? orderObj.bankTransfer.receiptImage.substring(0, 100) : 'MISSING',
+          verificationStatus: orderObj.bankTransfer?.verificationStatus,
+          transferReference: orderObj.bankTransfer?.transferReference
+        });
+      }
       
       return orderObj;
     });
