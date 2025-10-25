@@ -120,13 +120,16 @@ router.post('/book', authenticate, [
     }
 
     // Find the consultation
+    console.log('Creating booking for consultation:', consultationId);
     const consultation = await Consultation.findById(consultationId);
     if (!consultation) {
+      console.error('Consultation not found:', consultationId);
       return res.status(404).json({
         error: 'Consultation not found',
         arabic: 'الاستشارة غير موجودة'
       });
     }
+    console.log('Consultation found:', { title: consultation.title, price: consultation.price, currency: consultation.currency });
 
     if (!consultation.isActive) {
       return res.status(400).json({
@@ -171,6 +174,24 @@ router.post('/book', authenticate, [
     const userBookingsCount = await ConsultationBooking.countDocuments({ userId: user._id });
     const isFirstBooking = userBookingsCount === 0;
 
+    // Generate booking number
+    const date = new Date();
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+    
+    // Find the last booking number for today
+    const lastBooking = await ConsultationBooking.findOne({
+      bookingNumber: new RegExp(`^CB-${dateStr}-`)
+    }).sort({ bookingNumber: -1 });
+    
+    let sequence = 1;
+    if (lastBooking && lastBooking.bookingNumber) {
+      const lastSequence = parseInt(lastBooking.bookingNumber.split('-').pop());
+      sequence = lastSequence + 1;
+    }
+    
+    const bookingNumber = `CB-${dateStr}-${String(sequence).padStart(4, '0')}`;
+    console.log('Generated booking number:', bookingNumber);
+
     // Create consultation booking
     const booking = new ConsultationBooking({
       userId: user._id,
@@ -193,6 +214,7 @@ router.post('/book', authenticate, [
       status: 'pending_payment',
       paymentStatus: 'pending',
       isFirstBooking,
+      bookingNumber, // Add the generated booking number
       source: 'web',
       ipAddress: req.ip,
       userAgent: req.get('User-Agent')
@@ -215,10 +237,26 @@ router.post('/book', authenticate, [
       paymentMethod: 'paypal' // Placeholder - will be updated based on actual payment method chosen at checkout
     });
 
+    console.log('Creating order with data:', {
+      userId: order.userId,
+      orderType: order.orderType,
+      consultationBookingId: order.consultationBookingId,
+      amount: order.amount,
+      currency: order.currency,
+      status: order.status,
+      paymentMethod: order.paymentMethod
+    });
+
     try {
       await order.save();
+      console.log('Order saved successfully:', order._id);
     } catch (orderError) {
       console.error('Error creating order for consultation booking:', orderError);
+      console.error('Order error name:', orderError.name);
+      console.error('Order error message:', orderError.message);
+      if (orderError.errors) {
+        console.error('Validation errors:', JSON.stringify(orderError.errors, null, 2));
+      }
       // If order creation fails, delete the booking to maintain consistency
       await ConsultationBooking.findByIdAndDelete(booking._id);
       throw new Error(`Failed to create order: ${orderError.message}`);
@@ -689,6 +727,114 @@ router.get('/admin/bookings', authenticate, [
     res.status(500).json({
       error: 'Failed to fetch bookings',
       arabic: 'فشل في تحميل الحجوزات'
+    });
+  }
+});
+
+// @desc    Get single booking by ID (Admin)
+// @route   GET /api/consultations/admin/bookings/:id
+// @access  Private (Admin)
+router.get('/admin/bookings/:id', authenticate, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({
+        error: 'Access denied. Admin only.',
+        arabic: 'غير مصرح لك. للإدارة فقط.'
+      });
+    }
+
+    const booking = await ConsultationBooking.findById(req.params.id)
+      .populate('consultationId', 'title description duration price category image')
+      .populate('userId', 'displayName email phone avatar')
+      .populate('orderId', 'amount status transactionId paymentMethod');
+
+    if (!booking) {
+      return res.status(404).json({
+        error: 'Booking not found',
+        arabic: 'الحجز غير موجود'
+      });
+    }
+
+    res.json({
+      success: true,
+      booking
+    });
+
+  } catch (error) {
+    console.error('Get booking by ID error:', error);
+    res.status(500).json({
+      error: 'Failed to fetch booking',
+      arabic: 'فشل في تحميل الحجز'
+    });
+  }
+});
+
+// @desc    Update booking status (Admin)
+// @route   PUT /api/consultations/admin/bookings/:id
+// @access  Private (Admin)
+router.put('/admin/bookings/:id', authenticate, [
+  body('status').optional().isIn(['pending_payment', 'pending_confirmation', 'confirmed', 'completed', 'cancelled', 'rescheduled', 'no_show']),
+  body('adminNotes').optional().isString().trim(),
+  body('internalNotes').optional().isString().trim(),
+  body('consultantNotes').optional().isString().trim(),
+  body('isPriority').optional().isBoolean()
+], async (req, res) => {
+  try {
+    // Check if user is admin
+    if (!req.user.isAdmin) {
+      return res.status(403).json({
+        error: 'Access denied. Admin only.',
+        arabic: 'غير مصرح لك. للإدارة فقط.'
+      });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        arabic: 'فشل في التحقق من البيانات',
+        details: errors.array()
+      });
+    }
+
+    const booking = await ConsultationBooking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({
+        error: 'Booking not found',
+        arabic: 'الحجز غير موجود'
+      });
+    }
+
+    // Update fields
+    const { status, adminNotes, internalNotes, consultantNotes, isPriority } = req.body;
+    
+    if (status) booking.status = status;
+    if (adminNotes !== undefined) booking.adminNotes = adminNotes;
+    if (internalNotes !== undefined) booking.internalNotes = internalNotes;
+    if (consultantNotes !== undefined) booking.consultantNotes = consultantNotes;
+    if (isPriority !== undefined) booking.isPriority = isPriority;
+
+    await booking.save();
+
+    // Populate before sending response
+    await booking.populate('consultationId', 'title description duration price category image');
+    await booking.populate('userId', 'displayName email phone avatar');
+    await booking.populate('orderId', 'amount status transactionId paymentMethod');
+
+    res.json({
+      success: true,
+      booking,
+      message: 'Booking updated successfully',
+      arabic: 'تم تحديث الحجز بنجاح'
+    });
+
+  } catch (error) {
+    console.error('Update booking error:', error);
+    res.status(500).json({
+      error: 'Failed to update booking',
+      arabic: 'فشل في تحديث الحجز'
     });
   }
 });

@@ -74,12 +74,18 @@ function CheckoutContent() {
         }
       } else if (consultationId || bookingId) {
         setItemType('consultation')
-        const id = bookingId || consultationId
-        if (id) {
-          const response = await consultationsAPI.getById(id)
+        
+        // Always use consultationId to fetch consultation details
+        if (consultationId) {
+          const response = await consultationsAPI.getById(consultationId)
           if (response.data && 'consultation' in response.data) {
             setItem(response.data.consultation as Consultation)
           }
+        } else if (bookingId) {
+          // If only bookingId is provided, we need to fetch the booking to get consultationId
+          toast.error('معرف الاستشارة مطلوب')
+          router.push('/profile/orders')
+          return
         }
       } else {
         toast.error('معرف غير صالح')

@@ -26,10 +26,10 @@ interface Coupon {
   validUntil: string;
   isActive: boolean;
   applicableTo: 'all' | 'courses' | 'consultations' | 'specific';
-  specificCourses: any[];
-  specificConsultations: any[];
+  specificCourses: string[];
+  specificConsultations: string[];
   minPurchaseAmount: number;
-  createdBy: any;
+  createdBy: string | { _id: string; displayName: string };
   createdAt: string;
   updatedAt: string;
 }
@@ -93,9 +93,10 @@ export default function CouponsManagementPage() {
       if (response.data.success) {
         setCoupons(response.data.coupons);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error fetching coupons:', error);
-      toast.error(error.response?.data?.arabic || 'فشل في تحميل أكواد الخصم');
+      const err = error as { response?: { data?: { arabic?: string } } };
+      toast.error(err.response?.data?.arabic || 'فشل في تحميل أكواد الخصم');
     } finally {
       setLoading(false);
     }
@@ -150,9 +151,10 @@ export default function CouponsManagementPage() {
         fetchCoupons();
         fetchStats();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating coupon:', error);
-      toast.error(error.response?.data?.arabic || 'فشل في إنشاء كود الخصم');
+      const err = error as { response?: { data?: { arabic?: string } } };
+      toast.error(err.response?.data?.arabic || 'فشل في إنشاء كود الخصم');
     }
   };
 
@@ -190,9 +192,10 @@ export default function CouponsManagementPage() {
         fetchCoupons();
         fetchStats();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error updating coupon:', error);
-      toast.error(error.response?.data?.arabic || 'فشل في تحديث كود الخصم');
+      const err = error as { response?: { data?: { arabic?: string } } };
+      toast.error(err.response?.data?.arabic || 'فشل في تحديث كود الخصم');
     }
   };
 
@@ -217,9 +220,10 @@ export default function CouponsManagementPage() {
         fetchCoupons();
         fetchStats();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error deleting coupon:', error);
-      toast.error(error.response?.data?.arabic || 'فشل في حذف كود الخصم');
+      const err = error as { response?: { data?: { arabic?: string } } };
+      toast.error(err.response?.data?.arabic || 'فشل في حذف كود الخصم');
     }
   };
 
@@ -348,7 +352,7 @@ export default function CouponsManagementPage() {
           {/* Status Filter */}
           <select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as any)}
+            onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'expired')}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="all">جميع الأكواد</option>
@@ -511,7 +515,7 @@ export default function CouponsManagementPage() {
                   <select
                     value={formData.discountType}
                     onChange={(e) =>
-                      setFormData({ ...formData, discountType: e.target.value as any })
+                      setFormData({ ...formData, discountType: e.target.value as 'percentage' | 'fixed' })
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
@@ -576,7 +580,7 @@ export default function CouponsManagementPage() {
                 <select
                   value={formData.applicableTo}
                   onChange={(e) =>
-                    setFormData({ ...formData, applicableTo: e.target.value as any })
+                    setFormData({ ...formData, applicableTo: e.target.value as 'all' | 'courses' | 'consultations' | 'specific' })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >

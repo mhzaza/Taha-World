@@ -413,7 +413,7 @@ router.post('/bank-transfer/create-order', authenticate, [
       });
     }
 
-    let orderType, amount, currency, title;
+    let orderType, amount, currency, title, bookingNumber;
 
     // Handle consultation booking payment
     if (consultationBookingId) {
@@ -445,6 +445,7 @@ router.post('/bank-transfer/create-order', authenticate, [
       amount = booking.amount;
       currency = booking.currency;
       title = booking.consultationTitle;
+      bookingNumber = booking.bookingNumber;
     } 
     // Handle course enrollment payment
     else {
@@ -532,6 +533,8 @@ router.post('/bank-transfer/create-order', authenticate, [
       orderData.courseTitle = title;
     } else if (orderType === 'consultation') {
       orderData.consultationBookingId = consultationBookingId;
+      orderData.consultationTitle = title;
+      orderData.consultationBookingNumber = bookingNumber;
     }
 
     const orderRecord = new Order(orderData);

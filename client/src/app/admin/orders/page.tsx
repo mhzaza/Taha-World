@@ -24,9 +24,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { adminAPI, apiUtils, Order } from '@/lib/api';
 import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
+import ConsultationDetailsModal from '@/components/admin/ConsultationDetailsModal';
 
 
 type StatusFilter = 'all' | 'pending' | 'completed' | 'failed' | 'refunded' | 'processing';
+type OrderTypeFilter = 'all' | 'course' | 'consultation';
 type SortField = 'createdAt' | 'amount' | 'status' | 'userName';
 type SortOrder = 'asc' | 'desc';
 
@@ -36,6 +38,7 @@ export default function OrdersPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [orderTypeFilter, setOrderTypeFilter] = useState<OrderTypeFilter>('all');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
@@ -55,6 +58,8 @@ export default function OrdersPage() {
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
+  const [selectedConsultationBookingId, setSelectedConsultationBookingId] = useState<string | null>(null);
 
   // Fetch orders data from API
   const fetchOrders = useCallback(async () => {
@@ -160,7 +165,7 @@ export default function OrdersPage() {
     const interval = setInterval(fetchOrders, 30000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchOrders]);
 
   // Filter and sort orders
   const filteredOrders = useMemo(() => {
@@ -177,6 +182,9 @@ export default function OrdersPage() {
       // Status filter
       const statusMatch = statusFilter === 'all' || order.status === statusFilter;
       
+      // Order type filter
+      const orderTypeMatch = orderTypeFilter === 'all' || order.orderType === orderTypeFilter;
+      
       // Date range filter
       const orderDate = new Date(order.createdAt);
       const startDate = dateRange.start ? new Date(dateRange.start) : null;
@@ -185,7 +193,7 @@ export default function OrdersPage() {
       const dateMatch = (!startDate || orderDate >= startDate) && 
                        (!endDate || orderDate <= endDate);
       
-      return searchMatch && statusMatch && dateMatch;
+      return searchMatch && statusMatch && orderTypeMatch && dateMatch;
     });
 
     // Sort orders
@@ -206,7 +214,7 @@ export default function OrdersPage() {
     });
 
     return filtered;
-  }, [orders, searchTerm, statusFilter, sortField, sortOrder, dateRange]);
+  }, [orders, searchTerm, statusFilter, orderTypeFilter, sortField, sortOrder, dateRange]);
 
   // Pagination - using API pagination instead of client-side
   const paginatedOrders = filteredOrders; // API handles pagination
@@ -334,6 +342,7 @@ export default function OrdersPage() {
   const clearFilters = () => {
     setSearchTerm('');
     setStatusFilter('all');
+    setOrderTypeFilter('all');
     setDateRange({ start: '', end: '' });
     setCurrentPage(1);
   };
@@ -352,13 +361,18 @@ export default function OrdersPage() {
       order.bankTransfer?.verificationStatus === 'pending'
     ).length;
     
+    const courseOrders = filteredOrders.filter(order => order.orderType === 'course').length;
+    const consultationOrders = filteredOrders.filter(order => order.orderType === 'consultation').length;
+    
     return {
       totalRevenue,
       completedOrders,
       pendingOrders,
       failedOrders,
       pendingBankTransfers,
-      totalOrders: filteredOrders.length
+      totalOrders: filteredOrders.length,
+      courseOrders,
+      consultationOrders
     };
   }, [filteredOrders]);
 
@@ -452,6 +466,44 @@ export default function OrdersPage() {
           >
             <ArrowDownTrayIcon className="h-4 w-4 ml-2" />
             تصدير CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Order Type Filter Tabs */}
+      <div className="bg-white rounded-lg shadow p-1">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setOrderTypeFilter('all')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
+              orderTypeFilter === 'all'
+                ? 'bg-[#41ADE1] text-white'
+                : 'bg-transparent text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            جميع الطلبات ({stats.totalOrders})
+          </button>
+          <button
+            onClick={() => setOrderTypeFilter('course')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              orderTypeFilter === 'course'
+                ? 'bg-blue-600 text-white'
+                : 'bg-transparent text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <AcademicCapIcon className="h-5 w-5" />
+            طلبات الدورات ({stats.courseOrders})
+          </button>
+          <button
+            onClick={() => setOrderTypeFilter('consultation')}
+            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              orderTypeFilter === 'consultation'
+                ? 'bg-purple-600 text-white'
+                : 'bg-transparent text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <ClockIcon className="h-5 w-5" />
+            طلبات الاستشارات ({stats.consultationOrders})
           </button>
         </div>
       </div>
@@ -788,8 +840,13 @@ export default function OrdersPage() {
                     <button
                       className="text-[#41ADE1] hover:text-[#2277AA] flex items-center"
                       onClick={() => {
-                        setSelectedOrder(order);
-                        setIsModalOpen(true);
+                        if (order.orderType === 'consultation' && order.consultationBookingId) {
+                          setSelectedConsultationBookingId(order.consultationBookingId);
+                          setIsConsultationModalOpen(true);
+                        } else {
+                          setSelectedOrder(order);
+                          setIsModalOpen(true);
+                        }
                       }}
                     >
                       <EyeIcon className="h-4 w-4 ml-1" />
@@ -892,6 +949,51 @@ export default function OrdersPage() {
           )}
         </div>
       )}
+
+      {/* Consultation Details Modal */}
+      <ConsultationDetailsModal
+        isOpen={isConsultationModalOpen}
+        onClose={() => {
+          setIsConsultationModalOpen(false);
+          setSelectedConsultationBookingId(null);
+        }}
+        consultationBookingId={selectedConsultationBookingId}
+        onUpdateStatus={async (bookingId: string, status: string, notes?: string) => {
+          try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+            
+            const token = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('token='))
+              ?.split('=')[1];
+
+            if (!token) {
+              addNotification('error', 'يرجى تسجيل الدخول مرة أخرى');
+              return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/consultations/admin/bookings/${bookingId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              credentials: 'include',
+              body: JSON.stringify({ status, adminNotes: notes })
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to update consultation status');
+            }
+
+            await fetchOrders();
+            addNotification('success', 'تم تحديث حالة الاستشارة بنجاح');
+          } catch (error) {
+            console.error('Error updating consultation status:', error);
+            addNotification('error', 'حدث خطأ أثناء تحديث حالة الاستشارة');
+          }
+        }}
+      />
 
       {/* Order Details Modal */}
       <OrderDetailsModal

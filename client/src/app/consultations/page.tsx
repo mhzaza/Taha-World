@@ -21,6 +21,7 @@ interface Consultation {
   features: string[]
   consultationType: string
   image?: string
+  thumbnail?: string
   isActive: boolean
 }
 
@@ -153,7 +154,23 @@ export default function ConsultationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredConsultations.map((consultation) => (
               <div key={consultation._id} className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                <div className="h-48 relative overflow-hidden">
+                  {consultation.thumbnail || consultation.image ? (
+                    <img 
+                      src={consultation.thumbnail || consultation.image} 
+                      alt={consultation.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to gradient if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        if (e.currentTarget.parentElement) {
+                          e.currentTarget.parentElement.className += ' bg-gradient-to-br from-blue-500 to-purple-600';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
+                  )}
                   <div className="absolute inset-0 bg-black/20"></div>
                   <div className="absolute bottom-4 left-4">
                     <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">

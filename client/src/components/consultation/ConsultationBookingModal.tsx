@@ -127,13 +127,26 @@ export default function ConsultationBookingModal({
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!formData.preferredDate || !formData.preferredTime) {
-          toast.error('يرجى اختيار التاريخ والوقت المفضل');
+        const missingFields: string[] = [];
+        
+        if (!formData.preferredDate) {
+          missingFields.push('التاريخ المفضل');
+        }
+        if (!formData.preferredTime) {
+          missingFields.push('الوقت المفضل');
+        }
+        
+        if (missingFields.length > 0) {
+          toast.error(`يرجى ملء: ${missingFields.join('، ')}`);
           return false;
         }
         return true;
       case 2:
-        return true; // Optional step
+        if (!formData.meetingType) {
+          toast.error('يرجى اختيار نوع الجلسة (عبر الإنترنت أو حضورية)');
+          return false;
+        }
+        return true;
       case 3:
         return true; // Optional fields
       default:
@@ -197,8 +210,40 @@ export default function ConsultationBookingModal({
       }
     } catch (error: any) {
       console.error('Booking error:', error);
-      const errorMessage = error?.response?.data?.arabic || error?.response?.data?.error || 'فشل في إنشاء الحجز';
-      toast.error(errorMessage);
+      
+      // Check for specific error messages from backend
+      let errorMessage = 'فشل في إنشاء الحجز';
+      
+      if (error?.response?.data) {
+        const data = error.response.data;
+        
+        // Check for phone number error
+        if (data.error && data.error.includes('Phone number is required')) {
+          errorMessage = 'رقم الهاتف مطلوب. يرجى تحديث ملفك الشخصي وإضافة رقم هاتف';
+          toast.error(errorMessage, { duration: 5000 });
+          setTimeout(() => {
+            router.push('/profile');
+          }, 2000);
+          return;
+        }
+        
+        // Check for other validation errors
+        if (data.errors) {
+          const validationErrors = Object.values(data.errors).map((err: any) => err.message).join('، ');
+          errorMessage = `خطأ في البيانات: ${validationErrors}`;
+        } else if (data.arabic) {
+          errorMessage = data.arabic;
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        
+        // Show details if available in development
+        if (data.details && process.env.NODE_ENV === 'development') {
+          console.error('Error details:', data.details);
+        }
+      }
+      
+      toast.error(errorMessage, { duration: 4000 });
     } finally {
       setLoading(false);
     }
@@ -349,7 +394,9 @@ export default function ConsultationBookingModal({
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4">نوع الجلسة</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  نوع الجلسة <span className="text-red-500">*</span>
+                </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {(consultation.consultationType === 'both' || consultation.consultationType === 'online') && (

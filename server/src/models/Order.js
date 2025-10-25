@@ -41,6 +41,14 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ConsultationBooking'
   },
+  consultationTitle: {
+    type: String,
+    trim: true
+  },
+  consultationBookingNumber: {
+    type: String,
+    trim: true
+  },
   amount: {
     type: Number,
     required: [true, 'Order amount is required'],
