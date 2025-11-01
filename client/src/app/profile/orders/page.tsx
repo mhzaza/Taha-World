@@ -10,7 +10,8 @@ import {
   CheckCircleIcon, 
   ClockIcon, 
   XCircleIcon,
-  MagnifyingGlassIcon 
+  MagnifyingGlassIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import Cookies from 'js-cookie';
 
@@ -36,6 +37,7 @@ export default function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState(searchParams.get('status') || 'all');
 
   useEffect(() => {
@@ -44,8 +46,26 @@ export default function OrdersPage() {
     }
   }, [user]);
 
-  const loadOrders = async () => {
+  // Auto-refresh when page comes into focus
+  useEffect(() => {
+    const handleFocus = () => {
+      if (user && !loading && !refreshing) {
+        loadOrders();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [user, loading, refreshing]);
+
+  const loadOrders = async (showLoading = true) => {
     try {
+      if (showLoading) {
+        setLoading(true);
+      } else {
+        setRefreshing(true);
+      }
+
       const token = Cookies.get('token');
       if (!token) return;
 
@@ -65,14 +85,19 @@ export default function OrdersPage() {
       console.error('Error loading orders:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadOrders(false);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800 border-green-200';
       case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'processing': return 'bg-[#41ADE1]/30 text-[#41ADE1] border-[#41ADE1]/40';
       case 'failed': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -109,9 +134,19 @@ export default function OrdersPage() {
         <Container>
           <div className="py-12">
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">طلباتي</h1>
-              <p className="text-gray-600">عرض وإدارة جميع طلباتك</p>
+            <div className="mb-8 flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">طلباتي</h1>
+                <p className="text-gray-600">عرض وإدارة جميع طلباتك</p>
+              </div>
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing || loading}
+                className="inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ArrowPathIcon className={`h-5 w-5 ml-2 ${refreshing ? 'animate-spin' : ''}`} />
+                {refreshing ? 'جاري التحديث...' : 'تحديث'}
+              </button>
             </div>
 
             {/* Filters */}
@@ -122,7 +157,7 @@ export default function OrdersPage() {
                   onClick={() => setFilter(status)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     filter === status
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-[#41ADE1] text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
@@ -134,7 +169,7 @@ export default function OrdersPage() {
             {/* Orders List */}
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1]"></div>
               </div>
             ) : filteredOrders.length === 0 ? (
               <div className="bg-white rounded-xl shadow-sm p-12 text-center">
@@ -143,7 +178,7 @@ export default function OrdersPage() {
                 <p className="text-gray-600 mb-6">لم تقم بأي طلبات بعد</p>
                 <button
                   onClick={() => router.push('/courses')}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="bg-[#41ADE1] text-white px-6 py-3 rounded-lg hover:bg-[#3399CC] transition-colors"
                 >
                   تصفح الدورات
                 </button>
@@ -197,7 +232,7 @@ export default function OrdersPage() {
                       {order.status === 'completed' && order.orderType === 'course' && order.courseId && (
                         <button
                           onClick={() => router.push(`/courses/${order.courseId}`)}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                          className="bg-[#41ADE1] text-white px-4 py-2 rounded-lg hover:bg-[#3399CC] transition-colors text-sm font-medium"
                         >
                           الذهاب للدورة
                         </button>

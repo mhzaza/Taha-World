@@ -128,12 +128,13 @@ const DashboardPage = () => {
     <RequireAuth>
       <Layout>
         {/* Welcome Section */}
-        <section className="bg-gradient-to-br from-gray-400 to-gray-500 py-16">
+        <section className="bg-gradient-to-br from-[#41ADE1]/200 via-[#41ADE1] to-[#3399CC] py-16">
+          <Container>
             <div className="text-center mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 مرحباً، {user?.displayName || 'المتدرب'}
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-[#41ADE1]/30 max-w-3xl mx-auto">
                 تابع تقدمك في الدورات التدريبية وواصل رحلتك نحو تحقيق أهدافك
               </p>
             </div>
@@ -141,7 +142,7 @@ const DashboardPage = () => {
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow-md p-6 text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
+                <div className="text-3xl font-bold text-[#41ADE1] mb-2">
                   {loading ? '...' : dashboardStats.totalCourses}
                 </div>
                 <div className="text-gray-600">الدورات المسجلة</div>
@@ -165,10 +166,11 @@ const DashboardPage = () => {
                 <div className="text-gray-600">دورات مكتملة</div>
               </div>
             </div>
+          </Container>
         </section>
 
         {/* Dashboard Content */}
-        <section className="py-16">
+        <section className="bg-gray-50 py-16">
           <Container>
             {/* Tabs Navigation */}
             <div className="flex flex-wrap gap-4 mb-8 border-b border-gray-200">
@@ -176,7 +178,7 @@ const DashboardPage = () => {
                 onClick={() => setActiveTab('courses')}
                 className={`pb-4 px-2 font-medium text-sm border-b-2 transition-colors ${
                   activeTab === 'courses'
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-[#41ADE1] text-[#41ADE1]'
                     : 'border-transparent text-gray-500 hover:text-gray-200'
                 }`}
               >
@@ -186,7 +188,7 @@ const DashboardPage = () => {
                 onClick={() => setActiveTab('progress')}
                 className={`pb-4 px-2 font-medium text-sm border-b-2 transition-colors ${
                   activeTab === 'progress'
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-[#41ADE1] text-[#41ADE1]'
                     : 'border-transparent text-gray-500 hover:text-gray-200'
                 }`}
               >
@@ -196,7 +198,7 @@ const DashboardPage = () => {
                 onClick={() => setActiveTab('certificates')}
                 className={`pb-4 px-2 font-medium text-sm border-b-2 transition-colors ${
                   activeTab === 'certificates'
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-[#41ADE1] text-[#41ADE1]'
                     : 'border-transparent text-gray-500 hover:text-gray-200'
                 }`}
               >
@@ -211,7 +213,7 @@ const DashboardPage = () => {
                   <h2 className="text-2xl font-bold text-gray-900">دوراتي التدريبية</h2>
                   <Link
                     href="/courses"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                    className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-6 py-2 rounded-lg font-medium transition-colors"
                   >
                     تصفح المزيد من الدورات
                   </Link>
@@ -219,7 +221,7 @@ const DashboardPage = () => {
 
                 {loading ? (
                   <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto mb-4"></div>
                     <p className="text-gray-600">جاري تحميل دوراتك...</p>
                   </div>
                 ) : error ? (
@@ -229,7 +231,7 @@ const DashboardPage = () => {
                     <p className="text-gray-600 mb-6">{error}</p>
                     <button
                       onClick={fetchDashboardData}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                      className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                     >
                       إعادة المحاولة
                     </button>
@@ -241,7 +243,7 @@ const DashboardPage = () => {
                     <p className="text-gray-600 mb-6">ابدأ رحلتك التدريبية اليوم واختر من مجموعة واسعة من الدورات</p>
                     <Link
                       href="/courses"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                      className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                     >
                       تصفح الدورات
                     </Link>
@@ -260,7 +262,7 @@ const DashboardPage = () => {
                                 className="h-48 w-full object-cover"
                               />
                             ) : (
-                              <div className="h-48 bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center">
+                              <div className="h-48 bg-gradient-to-br from-[#41ADE1] to-green-400 flex items-center justify-center">
                                 <div className="text-white text-6xl font-bold opacity-20">
                                   {course.title.charAt(0)}
                                 </div>
@@ -276,7 +278,7 @@ const DashboardPage = () => {
                           
                           <div className="p-6">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                              <span className="bg-[#41ADE1]/30 text-[#41ADE1] text-xs font-medium px-2 py-1 rounded">
                                 {course.category}
                               </span>
                               <span className="text-sm text-gray-500">
@@ -297,7 +299,7 @@ const DashboardPage = () => {
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div 
-                                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                  className="bg-[#41ADE1] h-2 rounded-full transition-all duration-300"
                                   style={{ width: `${progress}%` }}
                                 ></div>
                               </div>
@@ -309,7 +311,7 @@ const DashboardPage = () => {
                               </div>
                               <Link
                                 href={`/courses/${course._id}`}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                                className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                               >
                                 {progress > 0 ? 'متابعة التعلم' : 'بدء التعلم'}
                               </Link>
@@ -338,13 +340,13 @@ const DashboardPage = () => {
                             <p className="text-gray-600">{course.category}</p>
                           </div>
                           <div className="text-left">
-                            <div className="text-2xl font-bold text-blue-600">{progress}%</div>
+                            <div className="text-2xl font-bold text-[#41ADE1]">{progress}%</div>
                             <div className="text-sm text-gray-500">مكتمل</div>
                           </div>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
                           <div 
-                            className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                            className="bg-[#41ADE1] h-3 rounded-full transition-all duration-300"
                             style={{ width: `${progress}%` }}
                           ></div>
                         </div>

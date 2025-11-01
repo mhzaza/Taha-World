@@ -67,7 +67,7 @@ const RegisterPage = () => {
 
   return (
     <RedirectIfAuthenticated redirectTo="/">
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-[#41ADE1]/20 to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <Container size="sm">
         <div className="max-w-md w-full mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">
@@ -102,7 +102,7 @@ const RegisterPage = () => {
                   value={formData.displayName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right"
                   placeholder="أدخل اسمك الكامل"
                 />
               </div>
@@ -119,7 +119,7 @@ const RegisterPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right"
                   placeholder="أدخل بريدك الإلكتروني"
                   dir="ltr"
                 />
@@ -138,7 +138,7 @@ const RegisterPage = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right pr-12"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right pr-12"
                     placeholder="أدخل كلمة المرور (6 أحرف على الأقل)"
                   />
                   <button
@@ -173,7 +173,7 @@ const RegisterPage = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right pr-12"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right pr-12"
                     placeholder="أعد إدخال كلمة المرور"
                   />
                   <button
@@ -205,11 +205,11 @@ const RegisterPage = () => {
                 />
                 <label htmlFor="terms" className="text-sm text-gray-600">
                   أوافق على{' '}
-                  <Link href="/terms" className="text-blue-600 hover:text-blue-700">
+                  <Link href="/terms" className="text-[#41ADE1] hover:text-[#3399CC]">
                     الشروط والأحكام
                   </Link>
                   {' '}و{' '}
-                  <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
+                  <Link href="/privacy" className="text-[#41ADE1] hover:text-[#3399CC]">
                     سياسة الخصوصية
                   </Link>
                 </label>
@@ -219,7 +219,7 @@ const RegisterPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                className="w-full bg-[#41ADE1] hover:bg-[#3399CC] disabled:bg-[#3399CC]/70 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
               >
                 {loading ? (
                   <>
@@ -238,7 +238,7 @@ const RegisterPage = () => {
                 لديك حساب بالفعل؟{' '}
                 <Link
                   href="/auth/login"
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
+                  className="text-[#41ADE1] hover:text-[#3399CC] font-semibold"
                 >
                   تسجيل الدخول
                 </Link>

@@ -294,20 +294,20 @@ export default function ConsultationBookingModal({
                 <div className="flex flex-col items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                     currentStep >= step.number 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-[#41ADE1] text-white' 
                       : 'bg-gray-700 text-gray-400'
                   }`}>
                     {step.number}
                   </div>
                   <span className={`text-xs mt-2 ${
-                    currentStep >= step.number ? 'text-blue-400' : 'text-gray-500'
+                    currentStep >= step.number ? 'text-[#41ADE1]' : 'text-gray-500'
                   }`}>
                     {step.title}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
                   <div className={`flex-1 h-1 mx-2 ${
-                    currentStep > step.number ? 'bg-blue-600' : 'bg-gray-700'
+                    currentStep > step.number ? 'bg-[#41ADE1]' : 'bg-gray-700'
                   }`} />
                 )}
               </React.Fragment>
@@ -333,7 +333,7 @@ export default function ConsultationBookingModal({
                       value={formData.preferredDate}
                       onChange={(e) => handleInputChange('preferredDate', e.target.value)}
                       min={getMinDate()}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                       required
                     />
                   </div>
@@ -346,7 +346,7 @@ export default function ConsultationBookingModal({
                       type="time"
                       value={formData.preferredTime}
                       onChange={(e) => handleInputChange('preferredTime', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                       required
                     />
                   </div>
@@ -370,7 +370,7 @@ export default function ConsultationBookingModal({
                       value={formData.alternativeDate}
                       onChange={(e) => handleInputChange('alternativeDate', e.target.value)}
                       min={getMinDate()}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     />
                   </div>
 
@@ -382,7 +382,7 @@ export default function ConsultationBookingModal({
                       type="time"
                       value={formData.alternativeTime}
                       onChange={(e) => handleInputChange('alternativeTime', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -404,7 +404,7 @@ export default function ConsultationBookingModal({
                       onClick={() => handleInputChange('meetingType', 'online')}
                       className={`p-6 rounded-xl border-2 transition-all ${
                         formData.meetingType === 'online'
-                          ? 'border-blue-500 bg-blue-500/10'
+                          ? 'border-[#41ADE1] bg-[#41ADE1]/10'
                           : 'border-gray-700 hover:border-gray-600'
                       }`}
                     >
@@ -421,7 +421,7 @@ export default function ConsultationBookingModal({
                       onClick={() => handleInputChange('meetingType', 'in_person')}
                       className={`p-6 rounded-xl border-2 transition-all ${
                         formData.meetingType === 'in_person'
-                          ? 'border-blue-500 bg-blue-500/10'
+                          ? 'border-[#41ADE1] bg-[#41ADE1]/10'
                           : 'border-gray-700 hover:border-gray-600'
                       }`}
                     >
@@ -485,7 +485,7 @@ export default function ConsultationBookingModal({
                       placeholder="مثال: 28"
                       min="1"
                       max="150"
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     />
                   </div>
 
@@ -494,7 +494,7 @@ export default function ConsultationBookingModal({
                     <select
                       value={formData.userDetails.gender}
                       onChange={(e) => handleUserDetailsChange('gender', e.target.value)}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     >
                       <option value="">اختر</option>
                       <option value="male">ذكر</option>
@@ -512,7 +512,7 @@ export default function ConsultationBookingModal({
                       placeholder="مثال: 75"
                       min="1"
                       step="0.1"
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     />
                   </div>
 
@@ -525,7 +525,7 @@ export default function ConsultationBookingModal({
                       placeholder="مثال: 175"
                       min="1"
                       step="0.1"
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -535,7 +535,7 @@ export default function ConsultationBookingModal({
                   <select
                     value={formData.userDetails.fitnessLevel}
                     onChange={(e) => handleUserDetailsChange('fitnessLevel', e.target.value)}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                   >
                     <option value="">اختر المستوى</option>
                     <option value="beginner">مبتدئ</option>
@@ -554,7 +554,7 @@ export default function ConsultationBookingModal({
                         onClick={() => handleGoalsChange(goal)}
                         className={`px-3 py-2 rounded-lg text-sm transition-all ${
                           formData.userDetails.goals.includes(goal)
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-[#41ADE1] text-white'
                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                         }`}
                       >
@@ -571,7 +571,7 @@ export default function ConsultationBookingModal({
                     value={formData.userDetails.currentActivity}
                     onChange={(e) => handleUserDetailsChange('currentActivity', e.target.value)}
                     placeholder="مثال: الجيم 3 مرات في الأسبوع"
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                   />
                 </div>
 
@@ -582,7 +582,7 @@ export default function ConsultationBookingModal({
                     onChange={(e) => handleUserDetailsChange('medicalConditions', e.target.value)}
                     placeholder="مثال: السكري، الضغط، إلخ..."
                     rows={2}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                   />
                 </div>
 
@@ -593,7 +593,7 @@ export default function ConsultationBookingModal({
                     onChange={(e) => handleUserDetailsChange('injuries', e.target.value)}
                     placeholder="مثال: إصابة في الكتف، الركبة، إلخ..."
                     rows={2}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                   />
                 </div>
 
@@ -604,7 +604,7 @@ export default function ConsultationBookingModal({
                     onChange={(e) => handleUserDetailsChange('additionalNotes', e.target.value)}
                     placeholder="أي ملاحظات أو أسئلة تريد مناقشتها..."
                     rows={3}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-[#41ADE1] focus:outline-none"
                   />
                 </div>
               </div>
@@ -664,7 +664,7 @@ export default function ConsultationBookingModal({
                       <h4 className="text-sm text-gray-400 mb-1">الأهداف</h4>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {formData.userDetails.goals.map(goal => (
-                          <span key={goal} className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm">
+                          <span key={goal} className="bg-[#41ADE1]/20 text-[#41ADE1] px-3 py-1 rounded-full text-sm">
                             {goal}
                           </span>
                         ))}
@@ -673,8 +673,8 @@ export default function ConsultationBookingModal({
                   )}
                 </div>
 
-                <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-lg mt-4">
-                  <p className="text-sm text-blue-300">
+                <div className="bg-[#41ADE1]/10 border border-[#41ADE1]/30 p-4 rounded-lg mt-4">
+                  <p className="text-sm text-[#41ADE1]/80">
                     📝 <strong>ملاحظة:</strong> بعد إتمام الدفع، سيتم مراجعة الحجز وتأكيد الموعد النهائي من قبل الإدارة.
                     ستصلك رسالة تأكيد عبر البريد الإلكتروني.
                   </p>
@@ -697,7 +697,7 @@ export default function ConsultationBookingModal({
           {currentStep < 4 ? (
             <button
               onClick={handleNext}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
               disabled={loading}
             >
               التالي

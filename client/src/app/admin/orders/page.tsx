@@ -226,7 +226,7 @@ export default function OrdersPage() {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'processing':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[#41ADE1]/30 text-[#41ADE1]';
       case 'failed':
         return 'bg-red-100 text-red-800';
       case 'refunded':
@@ -434,7 +434,7 @@ export default function OrdersPage() {
                             notification.type === 'success' ? 'bg-green-100 text-green-800' :
                             notification.type === 'error' ? 'bg-red-100 text-red-800' :
                             notification.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-blue-100 text-blue-800'
+                            'bg-[#41ADE1]/30 text-[#41ADE1]'
                           }`}>
                             {notification.type === 'success' ? 'نجح' :
                              notification.type === 'error' ? 'خطأ' :
@@ -487,7 +487,7 @@ export default function OrdersPage() {
             onClick={() => setOrderTypeFilter('course')}
             className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               orderTypeFilter === 'course'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-[#41ADE1] text-white'
                 : 'bg-transparent text-gray-600 hover:bg-gray-100'
             }`}
           >
@@ -525,8 +525,8 @@ export default function OrdersPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-bold">{stats.totalOrders}</span>
+              <div className="h-8 w-8 bg-[#41ADE1]/30 rounded-full flex items-center justify-center">
+                <span className="text-[#41ADE1] font-bold">{stats.totalOrders}</span>
               </div>
             </div>
             <div className="mr-4">
@@ -607,7 +607,7 @@ export default function OrdersPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 placeholder="البحث في الطلبات..."
               />
             </div>
@@ -621,7 +621,7 @@ export default function OrdersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="all">جميع الحالات</option>
               <option value="completed">مكتمل</option>
@@ -641,7 +641,7 @@ export default function OrdersPage() {
               type="date"
               value={dateRange.start}
               onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             />
           </div>
 
@@ -653,7 +653,7 @@ export default function OrdersPage() {
               type="date"
               value={dateRange.end}
               onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             />
           </div>
         </div>
@@ -686,7 +686,7 @@ export default function OrdersPage() {
                     <CalendarIcon className="h-4 w-4" />
                     <span>التاريخ</span>
                     {sortField === 'createdAt' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -703,7 +703,7 @@ export default function OrdersPage() {
                     <UserIcon className="h-4 w-4" />
                     <span>المستخدم</span>
                     {sortField === 'userName' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -723,7 +723,7 @@ export default function OrdersPage() {
                     <CurrencyDollarIcon className="h-4 w-4" />
                     <span>المبلغ</span>
                     {sortField === 'amount' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -737,7 +737,7 @@ export default function OrdersPage() {
                     <FunnelIcon className="h-4 w-4" />
                     <span>الحالة</span>
                     {sortField === 'status' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -771,7 +771,7 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-2">
                       {order.orderType === 'course' ? (
                         <>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#41ADE1]/30 text-[#41ADE1]">
                             <AcademicCapIcon className="h-3 w-3 ml-1" />
                             دورة
                           </span>
@@ -983,14 +983,71 @@ export default function OrdersPage() {
             });
 
             if (!response.ok) {
-              throw new Error('Failed to update consultation status');
+              const errorData = await response.json().catch(() => ({}));
+              const errorMessage = errorData.arabic || errorData.message || 'فشل في تحديث حالة الاستشارة';
+              throw new Error(errorMessage);
             }
 
             await fetchOrders();
             addNotification('success', 'تم تحديث حالة الاستشارة بنجاح');
           } catch (error) {
             console.error('Error updating consultation status:', error);
-            addNotification('error', 'حدث خطأ أثناء تحديث حالة الاستشارة');
+            const errorMessage = error instanceof Error ? error.message : 'حدث خطأ أثناء تحديث حالة الاستشارة';
+            addNotification('error', errorMessage);
+            throw error; // Re-throw to let the modal handle it
+          }
+        }}
+        onVerifyBankTransfer={async (orderId: string, status: 'verified' | 'rejected', reason?: string) => {
+          try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+            
+            // Get authentication token
+            const token = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('token='))
+              ?.split('=')[1];
+
+            if (!token) {
+              addNotification('error', 'يرجى تسجيل الدخول مرة أخرى');
+              return;
+            }
+
+            console.log('Verifying bank transfer for consultation order:', { orderId, status, reason });
+
+            const response = await fetch(`${API_BASE_URL}/payment/bank-transfer/verify/${orderId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              credentials: 'include',
+              body: JSON.stringify({ status, rejectionReason: reason })
+            });
+
+            console.log('Verify response status:', response.status);
+
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              console.error('Verify error response:', errorData);
+              throw new Error(errorData.arabic || errorData.message || 'فشل في التحقق من التحويل البنكي');
+            }
+
+            const data = await response.json();
+            console.log('Verify success:', data);
+            
+            // Refresh orders list
+            await fetchOrders();
+            
+            if (status === 'verified') {
+              addNotification('success', 'تم قبول التحويل البنكي وتفعيل الطلب بنجاح!');
+            } else {
+              addNotification('success', 'تم رفض التحويل البنكي');
+            }
+          } catch (error) {
+            console.error('Error verifying bank transfer:', error);
+            const errorMessage = error instanceof Error ? error.message : 'حدث خطأ أثناء التحقق من التحويل البنكي';
+            addNotification('error', errorMessage);
+            throw error;
           }
         }}
       />
@@ -1005,20 +1062,38 @@ export default function OrdersPage() {
         order={selectedOrder}
         onUpdateStatus={async (orderId: string, status: string, notes?: string) => {
           try {
-            // Here you would call your API to update the order status
-            // await adminAPI.updateOrderStatus(orderId, { status, notes });
+            // Find the order to get the _id
+            const orderToUpdate = selectedOrder || orders.find(order => order.id === orderId || order._id === orderId);
+            const order_id = orderToUpdate?._id || orderToUpdate?.id || orderId;
             
-            // For now, just update the local state
-            setOrders(prev => prev.map(order => 
-              order.id === orderId 
-                ? { ...order, status: status as Order['status'], notes: notes || order.notes, updatedAt: new Date().toISOString() }
-                : order
-            ));
+            // Call the API to update the order status
+            const response = await adminAPI.updateOrder(order_id, { status, notes });
             
-            addNotification('success', `تم تحديث حالة الطلب ${orderId} إلى ${getStatusText(status)}`);
+            if (response.data.success) {
+              // Refresh the orders list to get the latest data
+              await fetchOrders();
+              
+              // Update the selected order if modal is still open
+              // The backend returns { success: true, order: Order }
+              const updatedOrder = (response.data as unknown as { order?: Order }).order;
+              if (selectedOrder && (selectedOrder.id === orderId || selectedOrder._id === orderId) && updatedOrder) {
+                setSelectedOrder({
+                  ...selectedOrder,
+                  ...updatedOrder,
+                  status: status as Order['status'],
+                  notes: notes || selectedOrder.notes,
+                  updatedAt: new Date().toISOString()
+                });
+              }
+              
+              addNotification('success', `تم تحديث حالة الطلب ${orderId} إلى ${getStatusText(status)}`);
+            } else {
+              throw new Error(response.data.error || 'فشل في تحديث حالة الطلب');
+            }
           } catch (error) {
             console.error('Error updating order status:', error);
-            addNotification('error', 'حدث خطأ أثناء تحديث حالة الطلب');
+            const errorMessage = apiUtils.handleApiError(error);
+            addNotification('error', `حدث خطأ أثناء تحديث حالة الطلب: ${errorMessage}`);
           }
         }}
         onVerifyBankTransfer={async (orderId: string, status: 'verified' | 'rejected', reason?: string) => {

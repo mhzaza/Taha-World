@@ -63,13 +63,13 @@ const AboutPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
+      <section className="bg-gradient-to-br from-[#41ADE1] via-[#3399CC] to-[#3399CC] text-white py-20">
         <Container>
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               من نحن
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
+            <p className="text-xl md:text-2xl text-[#41ADE1]/40 leading-relaxed">
               منصة رائدة في التدريب الرياضي عبر الإنترنت، نقدم دورات تدريبية متخصصة في مصارعة الذراعين وفنون القتال والتدريب البدني
             </p>
           </div>
@@ -82,7 +82,7 @@ const AboutPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+                <div className="text-3xl md:text-4xl font-bold text-[#41ADE1] mb-2">
                   {stat.number}
                 </div>
                 <div className="text-gray-600 font-medium">
@@ -100,7 +100,7 @@ const AboutPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="flex items-center mb-6">
-                <UserGroupIcon className="w-8 h-8 text-blue-600 ml-3" />
+                <UserGroupIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900">من نحن</h2>
               </div>
               <div className="space-y-6 text-gray-200 leading-relaxed">
@@ -116,7 +116,7 @@ const AboutPage = () => {
               </div>
             </div>
             <div className="relative">
-              <div className="bg-blue-600 rounded-2xl p-8 text-white">
+              <div className="bg-[#41ADE1] rounded-2xl p-8 text-white">
                 <h3 className="text-2xl font-bold mb-4">قصتنا</h3>
                 <p className="leading-relaxed">
                   بدأت رحلتنا من شغف حقيقي بالرياضة ورغبة في نشر المعرفة الرياضية. اليوم، نفخر بكوننا واحدة من أكبر المنصات التعليمية الرياضية في المنطقة، مع مجتمع نشط من الرياضيين والمدربين.
@@ -235,7 +235,7 @@ const AboutPage = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {member.name}
                 </h3>
-                <p className="text-blue-600 font-medium mb-3">
+                <p className="text-[#41ADE1] font-medium mb-3">
                   {member.role}
                 </p>
                 <p className="text-gray-600 leading-relaxed">
@@ -248,20 +248,20 @@ const AboutPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+      <section className="py-20 bg-gradient-to-r from-[#41ADE1] to-[#3399CC] text-white">
         <Container>
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-6">
               انضم إلى مجتمعنا الرياضي
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-xl text-[#41ADE1]/40 mb-8">
               ابدأ رحلتك التدريبية معنا اليوم واكتشف إمكاناتك الحقيقية
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              <button className="bg-white text-[#41ADE1] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
                 تصفح الدورات
               </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#41ADE1] transition-colors">
                 تواصل معنا
               </button>
             </div>

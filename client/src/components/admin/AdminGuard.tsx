@@ -58,7 +58,7 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto mb-4"></div>
           <p className="text-gray-600">جاري التحقق من الصلاحيات...</p>
           {debugInfo && <p className="mt-2 text-sm text-gray-500">{debugInfo}</p>}
         </div>
@@ -90,7 +90,7 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
             </button>
             <button
               onClick={() => router.push('/admin/login')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-3"
+              className="bg-[#41ADE1] text-white px-6 py-2 rounded-lg hover:bg-[#3399CC] transition-colors mr-3"
             >
               تسجيل دخول المدير
             </button>

@@ -68,7 +68,7 @@ const LoginPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right"
                   placeholder="أدخل بريدك الإلكتروني"
                   dir="ltr"
                 />
@@ -86,7 +86,7 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right pr-12"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right pr-12"
                     placeholder="أدخل كلمة المرور"
                   />
                   <button
@@ -112,7 +112,7 @@ const LoginPage = () => {
               <div className="text-left">
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm text-blue-600 hover:text-blue-700"
+                  className="text-sm text-[#41ADE1] hover:text-[#3399CC]"
                 >
                   نسيت كلمة المرور؟
                 </Link>
@@ -122,7 +122,7 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                className="w-full bg-[#41ADE1] hover:bg-[#3399CC] disabled:bg-[#3399CC]/70 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
               >
                 {loading ? (
                   <>
@@ -141,7 +141,7 @@ const LoginPage = () => {
                 ليس لديك حساب؟{' '}
                 <Link
                   href="/auth/register"
-                  className="text-blue-600 hover:text-blue-700 font-semibold"
+                  className="text-[#41ADE1] hover:text-[#3399CC] font-semibold"
                 >
                   إنشاء حساب جديد
                 </Link>

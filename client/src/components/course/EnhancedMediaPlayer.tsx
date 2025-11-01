@@ -196,7 +196,7 @@ export default function EnhancedMediaPlayer({
             {onUnlock && (
               <button
                 onClick={onUnlock}
-                className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 bg-[#41ADE1] hover:bg-[#3399CC] text-white font-semibold rounded-lg transition-colors duration-200"
               >
                 <EyeIcon className="w-5 h-5 ml-2" />
                 عرض المحتوى
@@ -290,7 +290,7 @@ export default function EnhancedMediaPlayer({
           {thumbnailUrl && (
             <button
               onClick={() => setShowVideo(false)}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="mt-4 px-4 py-2 bg-[#41ADE1] hover:bg-[#3399CC] text-white rounded-lg transition-colors"
             >
               عرض الصورة بدلاً من ذلك
             </button>
@@ -315,12 +315,12 @@ export default function EnhancedMediaPlayer({
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
           <div className="text-center text-white">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <div className="w-16 h-16 bg-[#41ADE1] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
               <PlayIcon className="w-8 h-8" />
             </div>
             <h3 className="text-lg font-semibold mb-2">جاري تحميل الفيديو...</h3>
             <div className="w-32 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
-              <div className="h-full bg-blue-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+              <div className="h-full bg-[#41ADE1] rounded-full animate-pulse" style={{ width: '60%' }}></div>
             </div>
           </div>
         </div>

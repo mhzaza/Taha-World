@@ -242,7 +242,7 @@ export const adminUtils = {
 
   getSeverityBadge: (severity: string) => {
     const severityConfig: { [key: string]: { color: string; label: string } } = {
-      low: { color: 'bg-blue-100 text-blue-800', label: 'منخفض' },
+      low: { color: 'bg-[#41ADE1]/30 text-[#41ADE1]', label: 'منخفض' },
       medium: { color: 'bg-yellow-100 text-yellow-800', label: 'متوسط' },
       high: { color: 'bg-orange-100 text-orange-800', label: 'عالي' },
       critical: { color: 'bg-red-100 text-red-800', label: 'حرج' },

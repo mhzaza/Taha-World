@@ -36,7 +36,7 @@ const CertifiedUserReviewPopup: React.FC<CertifiedUserReviewPopupProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center mb-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center ml-3">
+            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-[#41ADE1] rounded-full flex items-center justify-center ml-3">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
@@ -50,9 +50,9 @@ const CertifiedUserReviewPopup: React.FC<CertifiedUserReviewPopupProps> = ({
 
         <div className="p-6">
           {/* Course Info */}
-          <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="font-semibold text-blue-900 mb-1">دورة: {course.title}</h4>
-            <p className="text-sm text-blue-700">بما أنك خريج هذه الدورة، تقييمك سيكون مع نجم ذهبي مميز</p>
+          <div className="mb-6 p-4 bg-[#41ADE1]/20 rounded-lg border border-[#41ADE1]/40">
+            <h4 className="font-semibold text-[#41ADE1] mb-1">دورة: {course.title}</h4>
+            <p className="text-sm text-[#3399CC]">بما أنك خريج هذه الدورة، تقييمك سيكون مع نجم ذهبي مميز</p>
           </div>
 
           {/* Rating */}
@@ -97,7 +97,7 @@ const CertifiedUserReviewPopup: React.FC<CertifiedUserReviewPopupProps> = ({
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="شارك تجربتك مع هذه الدورة ونصائح للطلاب الآخرين..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-right"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent resize-none text-right"
               dir="rtl"
             />
           </div>
@@ -126,7 +126,7 @@ const CertifiedUserReviewPopup: React.FC<CertifiedUserReviewPopupProps> = ({
             <button
               onClick={handleSubmit}
               disabled={rating === 0 || loading}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+              className="flex-1 bg-[#41ADE1] hover:bg-[#3399CC] disabled:bg-[#3399CC]/70 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
             >
               {loading ? (
                 <div className="flex items-center">

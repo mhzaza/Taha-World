@@ -84,13 +84,13 @@ const ContactPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
+      <section className="bg-gradient-to-br from-[#41ADE1] via-[#3399CC] to-[#3399CC] text-white py-20">
         <Container>
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               تواصل معنا
             </h1>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed">
+            <p className="text-xl md:text-2xl text-[#021823] leading-relaxed">
               نحن هنا لمساعدتك. تواصل معنا في أي وقت وسنكون سعداء للإجابة على استفساراتك
             </p>
           </div>
@@ -105,8 +105,8 @@ const ContactPage = () => {
               const IconComponent = info.icon;
               return (
                 <div key={index} className="bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow text-center">
-                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4 mx-auto">
-                    <IconComponent className="w-6 h-6 text-blue-600" />
+                  <div className="flex items-center justify-center w-12 h-12 bg-[#41ADE1]/30 rounded-lg mb-4 mx-auto">
+                    <IconComponent className="w-6 h-6 text-[#41ADE1]" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
                     {info.title}
@@ -190,7 +190,7 @@ const ContactPage = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
                       placeholder="أدخل اسمك الكامل"
                     />
                   </div>
@@ -205,7 +205,7 @@ const ContactPage = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -222,7 +222,7 @@ const ContactPage = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
                       placeholder="+966 50 123 4567"
                     />
                   </div>
@@ -236,7 +236,7 @@ const ContactPage = () => {
                       value={formData.subject}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
                     >
                       <option value="">اختر موضوع الرسالة</option>
                       {subjects.map((subject, index) => (
@@ -259,7 +259,7 @@ const ContactPage = () => {
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors resize-none"
                     placeholder="اكتب رسالتك هنا..."
                   />
                 </div>
@@ -267,7 +267,7 @@ const ContactPage = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-[#41ADE1] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3399CC] focus:ring-2 focus:ring-[#41ADE1] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isSubmitting ? (
                     <>
@@ -291,12 +291,12 @@ const ContactPage = () => {
             <div>
               <div className="bg-gray-50 rounded-2xl p-8">
                 <div className="flex items-center mb-6">
-                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-blue-600 ml-3" />
+                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                   <h3 className="text-2xl font-bold text-gray-900">طرق أخرى للتواصل</h3>
                 </div>
                 
                 <div className="space-y-6">
-                  <div className="border-r-4 border-blue-600 pr-4">
+                  <div className="border-r-4 border-[#41ADE1] pr-4">
                     <h4 className="font-semibold text-gray-900 mb-2">الدعم الفوري</h4>
                     <p className="text-gray-600 mb-3">
                       للحصول على مساعدة فورية، يمكنك التواصل معنا عبر الواتساب أو الاتصال المباشر.
@@ -305,7 +305,7 @@ const ContactPage = () => {
                       <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
                         واتساب
                       </button>
-                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                      <button className="bg-[#41ADE1] text-white px-4 py-2 rounded-lg hover:bg-[#3399CC] transition-colors text-sm">
                         اتصال مباشر
                       </button>
                     </div>
@@ -334,20 +334,20 @@ const ContactPage = () => {
               </div>
               
               {/* Response Time Info */}
-              <div className="mt-8 bg-blue-50 rounded-xl p-6">
-                <h4 className="font-semibold text-blue-900 mb-3">أوقات الاستجابة</h4>
+              <div className="mt-8 bg-[#41ADE1]/20 rounded-xl p-6">
+                <h4 className="font-semibold text-[#41ADE1] mb-3">أوقات الاستجابة</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-blue-700">البريد الإلكتروني:</span>
-                    <span className="text-blue-900 font-medium">خلال 24 ساعة</span>
+                    <span className="text-[#3399CC]">البريد الإلكتروني:</span>
+                    <span className="text-[#41ADE1] font-medium">خلال 24 ساعة</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-blue-700">الهاتف:</span>
-                    <span className="text-blue-900 font-medium">فوري</span>
+                    <span className="text-[#3399CC]">الهاتف:</span>
+                    <span className="text-[#41ADE1] font-medium">فوري</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-blue-700">واتساب:</span>
-                    <span className="text-blue-900 font-medium">خلال ساعة</span>
+                    <span className="text-[#3399CC]">واتساب:</span>
+                    <span className="text-[#41ADE1] font-medium">خلال ساعة</span>
                   </div>
                 </div>
               </div>

@@ -376,7 +376,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
           <div className="flex items-center space-x-3 space-x-reverse">
             <button
               onClick={() => setShowAddForm(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+              className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-4 py-2 rounded-lg flex items-center"
             >
               <PlusIcon className="h-5 w-5 ml-2" />
               إضافة درس
@@ -397,7 +397,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                   notification.type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' :
                   notification.type === 'error' ? 'bg-red-100 border border-red-200 text-red-800' :
                   notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 text-yellow-800' :
-                  'bg-blue-100 border border-blue-200 text-blue-800'
+                  'bg-[#41ADE1]/30 border border-[#41ADE1]/40 text-[#41ADE1]'
                 }`}
               >
                 {notification.message}
@@ -422,7 +422,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                     required
                   />
                 </div>
@@ -435,7 +435,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                     min="1"
                     value={formData.order}
                     onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                     required
                   />
                 </div>
@@ -449,7 +449,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 />
               </div>
 
@@ -492,7 +492,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                         value={formData.videoUrl}
                         onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
                         placeholder="https://example.com/video.mp4"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                         required={videoUploadType === 'url'}
                       />
                     </div>
@@ -557,7 +557,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                       </div>
                       {uploadingVideo && (
                         <div className="flex items-center justify-center space-x-2 space-x-reverse">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#41ADE1]"></div>
                           <span className="text-sm text-gray-600">جاري رفع الفيديو...</span>
                         </div>
                       )}
@@ -574,7 +574,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                     min="1"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                     required
                   />
                 </div>
@@ -586,7 +586,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                   id="isFree"
                   checked={formData.isFree}
                   onChange={(e) => setFormData({ ...formData, isFree: e.target.checked })}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#41ADE1] focus:ring-[#41ADE1] border-gray-300 rounded"
                 />
                 <label htmlFor="isFree" className="mr-2 text-sm text-gray-700">
                   درس مجاني
@@ -596,7 +596,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
               <div className="flex items-center space-x-3 space-x-reverse">
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center"
+                  className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-6 py-2 rounded-lg flex items-center"
                 >
                   <CheckIcon className="h-5 w-5 ml-2" />
                   {editingLesson ? 'تحديث' : 'إضافة'}
@@ -616,7 +616,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
         {/* Lessons List */}
         {loading ? (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#41ADE1] mx-auto"></div>
             <p className="text-gray-600 mt-2">جاري تحميل الدروس...</p>
           </div>
         ) : lessons.length === 0 ? (
@@ -625,7 +625,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
             <p className="text-gray-600">لا توجد دروس في هذا الكورس</p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+              className="mt-4 bg-[#41ADE1] hover:bg-[#3399CC] text-white px-4 py-2 rounded-lg"
             >
               إضافة أول درس
             </button>
@@ -639,7 +639,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 space-x-reverse mb-2">
-                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <span className="bg-[#41ADE1]/30 text-[#41ADE1] text-xs font-medium px-2.5 py-0.5 rounded">
                           #{lesson.order}
                         </span>
                         <h3 className="text-lg font-semibold text-gray-900">{lesson.title}</h3>
@@ -663,7 +663,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                             href={lesson.videoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-[#41ADE1] hover:text-[#41ADE1]"
                           >
                             عرض الفيديو
                           </a>
@@ -679,7 +679,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <button
                         onClick={() => startEditing(lesson)}
-                        className="text-blue-600 hover:text-blue-800 p-1"
+                        className="text-[#41ADE1] hover:text-[#41ADE1] p-1"
                         title="تعديل الدرس"
                       >
                         <PencilIcon className="h-5 w-5" />

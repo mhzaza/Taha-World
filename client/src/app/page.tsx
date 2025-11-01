@@ -235,14 +235,14 @@ export default function Home() {
             <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up animation-delay-200">
               <div className="text-center p-8">
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#41ADE1]/20 to-[#41ADE1]/40 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                    <svg className="w-10 h-10 text-[#41ADE1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
 
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">نتائج حقيقية ومتابعة شخصية</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#41ADE1] transition-colors">نتائج حقيقية ومتابعة شخصية</h3>
                 <p className="text-gray-600 leading-relaxed">احصل على خطة تدريبية ممنهجة، متابعة مستمرة، وتوجيه مباشر لتحقيق أفضل أداء بدني وذهني.</p>
                 
 
@@ -572,7 +572,7 @@ export default function Home() {
                   </blockquote>
                   
                   <div className="flex items-center mt-auto">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#41ADE1] to-[#3399CC] rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
                       ح
                     </div>
                     <div>

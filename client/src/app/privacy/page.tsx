@@ -49,7 +49,7 @@ const PrivacyPage = () => {
         <Container>
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-6">
-              <ShieldCheckIcon className="w-16 h-16 text-blue-400 ml-4" />
+              <ShieldCheckIcon className="w-16 h-16 text-[#41ADE1] ml-4" />
               <h1 className="text-4xl md:text-5xl font-bold">
                 سياسة الخصوصية
               </h1>
@@ -57,8 +57,8 @@ const PrivacyPage = () => {
             <p className="text-xl md:text-2xl text-gray-300 leading-relaxed mb-6">
               نحن ملتزمون بحماية خصوصيتك وبياناتك الشخصية
             </p>
-            <div className="bg-blue-900/30 rounded-lg p-4 inline-block">
-              <p className="text-blue-200">
+            <div className="bg-[#41ADE1]/30 rounded-lg p-4 inline-block">
+              <p className="text-[#41ADE1]/60">
                 آخر تحديث: 15 يناير 2024
               </p>
             </div>
@@ -78,11 +78,11 @@ const PrivacyPage = () => {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-blue-300"
+                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-[#41ADE1]/60"
                   >
                     <div className="flex items-center">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg ml-3">
-                        <IconComponent className="w-5 h-5 text-blue-600" />
+                      <div className="flex items-center justify-center w-10 h-10 bg-[#41ADE1]/30 rounded-lg ml-3">
+                        <IconComponent className="w-5 h-5 text-[#41ADE1]" />
                       </div>
                       <div>
                         <div className="text-sm text-gray-500 mb-1">{index + 1}.</div>
@@ -105,10 +105,10 @@ const PrivacyPage = () => {
             {/* Introduction */}
             <div id="introduction" className="mb-16">
               <div className="flex items-center mb-6">
-                <DocumentTextIcon className="w-8 h-8 text-blue-600 ml-3" />
+                <DocumentTextIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900 m-0">1. مقدمة</h2>
               </div>
-              <div className="bg-blue-50 border-r-4 border-blue-600 p-6 rounded-lg mb-6">
+              <div className="bg-[#41ADE1]/20 border-r-4 border-[#41ADE1] p-6 rounded-lg mb-6">
                 <p className="text-gray-200 leading-relaxed m-0">
                   مرحباً بك في منصة التدريب الرياضي. نحن نقدر ثقتك بنا ونلتزم بحماية خصوصيتك وبياناتك الشخصية. تشرح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك الشخصية عند استخدام خدماتنا.
                 </p>
@@ -281,7 +281,7 @@ const PrivacyPage = () => {
             {/* User Rights */}
             <div id="user-rights" className="mb-16">
               <div className="flex items-center mb-6">
-                <ShieldCheckIcon className="w-8 h-8 text-blue-600 ml-3" />
+                <ShieldCheckIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900 m-0">5. حقوق المستخدم</h2>
               </div>
               
@@ -290,39 +290,39 @@ const PrivacyPage = () => {
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في الوصول</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في الوصول</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك طلب نسخة من جميع البيانات الشخصية التي نحتفظ بها عنك
                   </p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في التصحيح</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في التصحيح</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك طلب تصحيح أو تحديث أي معلومات غير دقيقة أو ناقصة
                   </p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في الحذف</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في الحذف</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك طلب حذف بياناتك الشخصية في ظروف معينة
                   </p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في النقل</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في النقل</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك طلب نقل بياناتك إلى خدمة أخرى بتنسيق قابل للقراءة آلياً
                   </p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في الاعتراض</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في الاعتراض</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك الاعتراض على معالجة بياناتك لأغراض التسويق المباشر
                   </p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="font-semibold text-blue-900 mb-3">الحق في التقييد</h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="font-semibold text-[#41ADE1] mb-3">الحق في التقييد</h4>
+                  <p className="text-[#41ADE1] text-sm leading-relaxed">
                     يمكنك طلب تقييد معالجة بياناتك في ظروف معينة
                   </p>
                 </div>
@@ -378,11 +378,11 @@ const PrivacyPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">البريد الإلكتروني</h4>
-                  <p className="text-blue-600">privacy@sportsplatform.com</p>
+                  <p className="text-[#41ADE1]">privacy@sportsplatform.com</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">الهاتف</h4>
-                  <p className="text-blue-600">+966 11 123 4567</p>
+                  <p className="text-[#41ADE1]">+966 11 123 4567</p>
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">العنوان</h4>

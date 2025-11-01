@@ -783,7 +783,7 @@ export default function CoursePage() {
           <div className="space-y-3">
             <button
               onClick={() => window.location.reload()}
-              className="w-full rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
+              className="w-full rounded-lg bg-[#41ADE1] px-6 py-3 text-white transition hover:bg-[#3399CC]"
             >
               {AR.retry}
             </button>
@@ -837,7 +837,7 @@ export default function CoursePage() {
                             {currentLesson?.title || AR.untitledLesson}
                           </h1>
                           <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#41ADE1]/30 text-[#41ADE1] font-medium">
                               الدرس {currentLessonIndex + 1} من {course.lessons?.length || 0}
                             </span>
                             <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-black">
@@ -874,8 +874,8 @@ export default function CoursePage() {
                             isLessonCompleted
                               ? 'cursor-not-allowed bg-green-100 text-green-700 border border-green-200'
                               : progressLoading
-                              ? 'cursor-wait bg-blue-200 text-blue-700 border border-blue-300'
-                              : 'bg-blue-600 text-white hover:bg-blue-700 border border-blue-600'
+                              ? 'cursor-wait bg-[#41ADE1]/40 text-[#3399CC] border border-[#41ADE1]/60'
+                              : 'bg-[#41ADE1] text-white hover:bg-[#3399CC] border border-[#41ADE1]'
                           }`}
                         >
                           {progressLoading
@@ -888,9 +888,9 @@ export default function CoursePage() {
                     </div>
 
                     {currentLesson?.description && (
-                      <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                      <div className="mt-8 bg-gradient-to-r from-[#41ADE1]/20 to-indigo-50 rounded-xl p-6 border border-[#41ADE1]/30">
                         <h3 className="mb-4 text-xl font-semibold flex items-center text-black">
-                          <div className="w-2 h-6 bg-blue-600 rounded-full ml-3"></div>
+                          <div className="w-2 h-6 bg-[#41ADE1] rounded-full ml-3"></div>
                           وصف الدرس
                         </h3>
                         <div className="prose prose-gray max-w-none">
@@ -923,7 +923,7 @@ export default function CoursePage() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
                           <button
                             onClick={() => router.push('/auth/login')}
-                            className="flex-1 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white transition-all hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5"
+                            className="flex-1 rounded-xl bg-[#41ADE1] px-8 py-4 font-semibold text-white transition-all hover:bg-[#3399CC] hover:shadow-lg transform hover:-translate-y-0.5"
                           >
                             {AR.loginAction}
                           </button>
@@ -941,7 +941,7 @@ export default function CoursePage() {
                           للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
                         </p>
                         <div className="max-w-md mx-auto">
-                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6 border border-blue-100">
+                          <div className="bg-gradient-to-r from-[#41ADE1]/20 to-indigo-50 rounded-2xl p-6 mb-6 border border-[#41ADE1]/30">
                             <div className="text-center">
                               <span className="text-4xl font-bold !text-black block">${course.price}</span>
                               <span className="font-medium !text-black">دفعة واحدة – وصول دائم</span>
@@ -949,7 +949,7 @@ export default function CoursePage() {
                           </div>
                           <button
                             onClick={() => router.push(`/checkout?courseId=${courseMongoId}`)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors"
+                            className="w-full bg-[#41ADE1] hover:bg-[#3399CC] text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors"
                           >
                             {AR.buyNow}
                           </button>

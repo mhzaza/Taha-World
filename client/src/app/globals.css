@@ -646,9 +646,6 @@ select {
   color: #a855f7;
 }
 
-.text-blue-600 {
-  color: var(--primary-light);
-}
 
 /* ARIA Live Regions */
 .live-region {

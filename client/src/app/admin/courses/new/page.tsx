@@ -79,7 +79,7 @@ export default function NewCoursePage() {
                 notification.type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' :
                 notification.type === 'error' ? 'bg-red-100 border border-red-200 text-red-800' :
                 notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 text-yellow-800' :
-                'bg-blue-100 border border-blue-200 text-blue-800'
+                'bg-[#41ADE1]/30 border border-[#41ADE1]/40 text-[#41ADE1]'
               }`}
             >
               <div className="flex items-center justify-between">

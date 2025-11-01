@@ -102,32 +102,32 @@ const CoursesPage = () => {
 
   return (
     <Layout>
-      <section className="bg-black py-16">
+      <section className="bg-gradient-to-br from-[#41ADE1]/200 via-[#41ADE1] to-[#3399CC] py-16">
         <Container>
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               دوراتنا التدريبية
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-[#41ADE1]/30 max-w-3xl mx-auto">
               اكتشف مجموعة واسعة من الدورات التدريبية المتخصصة في الرياضة واللياقة البدنية
             </p>
           </div>
           <ClientOnly>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">{stats.totalCourses}</div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-3xl font-bold text-[#41ADE1] mb-2">{stats.totalCourses}</div>
                 <div className="text-gray-600">دورة تدريبية</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">{stats.totalEnrollments.toLocaleString()}</div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-3xl font-bold text-green-600 mb-2">{stats.totalEnrollments.toLocaleString()}</div>
                 <div className="text-gray-600">متدرب</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-yellow-600">{stats.averageRating.toFixed(1)}</div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-3xl font-bold text-yellow-600 mb-2">{stats.averageRating.toFixed(1)}</div>
                 <div className="text-gray-600">تقييم متوسط</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">{stats.categories.length}</div>
+              <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                <div className="text-3xl font-bold text-purple-600 mb-2">{stats.categories.length}</div>
                 <div className="text-gray-600">فئة</div>
               </div>
             </div>
@@ -139,11 +139,11 @@ const CoursesPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث عن الدورات..."
-                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-right"
               />
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-8 py-3 rounded-lg font-semibold transition-colors"
               >
                 بحث
               </button>
@@ -152,7 +152,7 @@ const CoursesPage = () => {
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="bg-gray-50 py-16">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1">
@@ -161,7 +161,7 @@ const CoursesPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900">تصفية النتائج</h3>
                   <button
                     onClick={clearFilters}
-                    className="text-blue-600 hover:text-blue-700 text-sm"
+                    className="text-[#41ADE1] hover:text-[#3399CC] text-sm"
                   >
                     مسح الكل
                   </button>
@@ -251,7 +251,7 @@ const CoursesPage = () => {
                     <select
                       value={searchParams.filters?.sortBy || ''}
 onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['sortBy'])}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1]"
                     >
                       <option value="">الافتراضي</option>
                       <option value="newest">الأحدث</option>
@@ -268,7 +268,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
             <div className="lg:col-span-3">
               {loading ? (
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto"></div>
                   <p className="mt-4 text-gray-600">جاري التحميل...</p>
                 </div>
               ) : (
@@ -298,7 +298,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                             />
                           ) : null}
                           <div 
-                            className="h-48 bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center"
+                            className="h-48 bg-gradient-to-br from-[#41ADE1] to-green-400 flex items-center justify-center"
                             style={{ display: course.thumbnail ? 'none' : 'flex' }}
                           >
                             <div className="text-white text-6xl font-bold opacity-20">
@@ -325,7 +325,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                         
                         <div className="p-6">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">
+                            <span className="bg-[#41ADE1]/30 text-[#41ADE1] text-xs font-medium px-2 py-1 rounded">
                               {course.category}
                             </span>
                             <span className="text-sm text-gray-500">
@@ -373,14 +373,14 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                   <div 
-                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                    className="bg-[#41ADE1] h-2 rounded-full transition-all duration-300"
                                     style={{ width: `${getProgressData(course.id)}%` }}
                                   ></div>
                                 </div>
                               </div>
                             ) : (
                               <div className="flex items-center space-x-2 space-x-reverse">
-                                <span className="text-2xl font-bold text-blue-600">
+                                <span className="text-2xl font-bold text-[#41ADE1]">
                                   {formatPrice(course.price, course.currency)}
                                 </span>
                                 {course.originalPrice && (
@@ -395,7 +395,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                                 isEnrolledInCourse(course.id)
                                   ? 'bg-green-600 hover:bg-green-700 text-white'
-                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  : 'bg-[#41ADE1] hover:bg-[#3399CC] text-white'
                               }`}
                             >
                               {isEnrolledInCourse(course.id) ? 'متابعة التعلم' : 'عرض التفاصيل'}
@@ -419,7 +419,7 @@ onChange={(e) => handleFilterChange('sortBy', e.target.value as CourseFilters['s
                             onClick={() => searchCourses({ ...searchParams, page })}
                             className={`px-4 py-2 rounded-md ${
                               page === pagination.page
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-[#41ADE1] text-white'
                                 : 'bg-gray-200 text-gray-200 hover:bg-gray-300'
                             }`}
                           >

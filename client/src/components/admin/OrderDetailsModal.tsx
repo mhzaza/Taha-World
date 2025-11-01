@@ -132,7 +132,7 @@ export default function OrderDetailsModal({
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'processing':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-[#41ADE1]/30 text-[#41ADE1] border-[#41ADE1]/40';
       case 'failed':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'refunded':
@@ -293,7 +293,7 @@ export default function OrderDetailsModal({
                     </button>
                     <button
                       onClick={handleExportOrder}
-                      className="inline-flex items-center px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                      className="inline-flex items-center px-3 py-2 bg-[#41ADE1]/30 text-[#3399CC] rounded-lg hover:bg-[#41ADE1]/40 transition-colors"
                     >
                       <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-2" />
                       تصدير
@@ -332,7 +332,7 @@ export default function OrderDetailsModal({
                       <h3 className="text-lg font-semibold text-gray-900">حالة الطلب</h3>
                       <button
                         onClick={() => setShowStatusUpdate(!showStatusUpdate)}
-                        className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center px-3 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
                       >
                         <PencilIcon className="h-4 w-4 ml-2" />
                         تحديث الحالة
@@ -363,7 +363,7 @@ export default function OrderDetailsModal({
                             <select
                               value={newStatus}
                               onChange={(e) => setNewStatus(e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                             >
                               <option value="">اختر الحالة</option>
                               <option value="pending">معلق</option>
@@ -382,7 +382,7 @@ export default function OrderDetailsModal({
                               type="text"
                               value={statusNotes}
                               onChange={(e) => setStatusNotes(e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                               placeholder="أضف ملاحظة..."
                             />
                           </div>
@@ -398,7 +398,7 @@ export default function OrderDetailsModal({
                           <button
                             onClick={handleStatusUpdate}
                             disabled={!newStatus || isUpdatingStatus}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             {isUpdatingStatus ? 'جاري التحديث...' : 'تحديث'}
                           </button>
@@ -578,7 +578,7 @@ export default function OrderDetailsModal({
                     
                     <div className="space-y-4">
                       <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-[#41ADE1] rounded-full"></div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">تم إنشاء الطلب</p>
                           <p className="text-xs text-gray-500">{formatDate(sanitizedOrder.createdAt)}</p>
@@ -724,7 +724,7 @@ export default function OrderDetailsModal({
                               value={rejectionReason}
                               onChange={(e) => setRejectionReason(e.target.value)}
                               placeholder="اختياري - أدخل سبب الرفض"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                             />
                           </div>
                           
@@ -862,7 +862,7 @@ export default function OrderDetailsModal({
                           download
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
                         >
                           تحميل الصورة
                         </a>

@@ -12,8 +12,8 @@ export default function NotFoundPage() {
         {/* 404 Illustration */}
         <div className="mb-8">
           <div className="text-6xl font-bold text-gray-300 mb-4">404</div>
-          <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AcademicCapIcon className="w-12 h-12 text-blue-600" />
+          <div className="w-24 h-24 bg-[#41ADE1]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AcademicCapIcon className="w-12 h-12 text-[#41ADE1]" />
           </div>
         </div>
 
@@ -32,7 +32,7 @@ export default function NotFoundPage() {
         <div className="space-y-4">
           <button
             onClick={() => router.push('/')}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-[#41ADE1] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3399CC] transition-colors flex items-center justify-center gap-2"
           >
             <HomeIcon className="w-5 h-5" />
             العودة للرئيسية
@@ -48,7 +48,7 @@ export default function NotFoundPage() {
           
           <button
             onClick={() => router.back()}
-            className="w-full text-blue-600 py-2 px-4 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+            className="w-full text-[#41ADE1] py-2 px-4 rounded-lg font-medium hover:bg-[#41ADE1]/20 transition-colors"
           >
             العودة للصفحة السابقة
           </button>
@@ -62,14 +62,14 @@ export default function NotFoundPage() {
           <div className="flex justify-center space-x-4 text-sm">
             <a 
               href="/contact" 
-              className="text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-[#41ADE1] hover:text-[#3399CC] transition-colors"
             >
               تواصل معنا
             </a>
             <span className="text-gray-300">|</span>
             <a 
               href="/help" 
-              className="text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-[#41ADE1] hover:text-[#3399CC] transition-colors"
             >
               مركز المساعدة
             </a>

@@ -164,7 +164,7 @@ export default function UserPayments() {
       case 'credit_card':
         return <CreditCardIcon className="h-5 w-5 text-gray-500" />;
       case 'paypal':
-        return <span className="text-blue-500 font-bold">P</span>;
+        return <span className="text-[#41ADE1] font-bold">P</span>;
       case 'bank_transfer':
         return <span className="text-green-500 font-bold">B</span>;
       case 'cash':

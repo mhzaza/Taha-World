@@ -20,7 +20,7 @@ export default function PaymentCancelPage() {
         <div className="space-y-3">
           <button
             onClick={() => router.push('/courses')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+            className="w-full bg-[#41ADE1] hover:bg-[#3399CC] text-white font-semibold py-2 px-4 rounded-lg"
           >
             تصفح الكورسات
           </button>

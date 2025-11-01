@@ -10,8 +10,13 @@ import {
   CreditCardIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ShoppingBagIcon
+  ShoppingBagIcon,
+  ClockIcon,
+  ArrowPathIcon,
+  AcademicCapIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
+import Cookies from 'js-cookie';
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -218,6 +223,29 @@ const ProfilePage = () => {
   const [subscriptionsLoading, setSubscriptionsLoading] = useState(false);
   const [subscriptionsError, setSubscriptionsError] = useState<string | null>(null);
 
+  // Orders state
+  interface Order {
+    _id: string;
+    orderType: 'course' | 'consultation';
+    courseId?: string;
+    courseTitle?: string;
+    consultationTitle?: string;
+    amount: number;
+    status: string;
+    paymentMethod: string;
+    createdAt: string;
+    bankTransfer?: {
+      verificationStatus?: string;
+      receiptImage?: string;
+      rejectionReason?: string;
+    };
+  }
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersRefreshing, setOrdersRefreshing] = useState(false);
+  const [ordersFilter, setOrdersFilter] = useState('all');
+
   // Load user subscriptions
   useEffect(() => {
     const loadSubscriptions = async () => {
@@ -308,7 +336,65 @@ const ProfilePage = () => {
 
     loadSubscriptions();
   }, [user, activeTab]);
-  
+
+  // Load orders
+  useEffect(() => {
+    const loadOrders = async () => {
+      if (!user || activeTab !== 'orders') return;
+      
+      try {
+        setOrdersLoading(true);
+        const token = Cookies.get('token');
+        if (!token) return;
+
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+        const response = await fetch(`${backendUrl}/api/users/orders`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data.orders || []);
+        }
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    loadOrders();
+  }, [user, activeTab]);
+
+  const handleRefreshOrders = async () => {
+    if (!user) return;
+    
+    try {
+      setOrdersRefreshing(true);
+      const token = Cookies.get('token');
+      if (!token) return;
+
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const response = await fetch(`${backendUrl}/api/users/orders`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data.orders || []);
+      }
+    } catch (error) {
+      console.error('Error refreshing orders:', error);
+    } finally {
+      setOrdersRefreshing(false);
+    }
+  };
   
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -321,7 +407,7 @@ const ProfilePage = () => {
         );
       case 'completed':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#41ADE1]/30 text-[#41ADE1]">
             <CheckCircleIcon className="w-3 h-3 ml-1" />
             مكتمل
           </span>
@@ -344,49 +430,49 @@ const ProfilePage = () => {
         <section className="py-16 bg-gray-50 min-h-screen">
           <Container>
             <div className="max-w-4xl mx-auto">
-              {/* Page Header */}
-              <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">الملف الشخصي</h1>
-                <p className="text-gray-600">إدارة معلوماتك الشخصية وإعدادات الحساب</p>
+              {/* Page Header - Professional Design */}
+              <div className="mb-10">
+                <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-[#41ADE1] to-[#3399CC] bg-clip-text text-transparent">
+                  الملف الشخصي
+                </h1>
+                <p className="text-lg text-gray-600">إدارة معلوماتك الشخصية وإعدادات الحساب</p>
               </div>
               
-              {/* Tabs Navigation */}
-              <div className="bg-white rounded-lg shadow-sm mb-6">
-                <div className="border-b border-gray-200">
-                  <nav className="flex space-x-8 space-x-reverse px-6">
+              {/* Tabs Navigation - Professional Design */}
+              <div className="bg-white rounded-xl shadow-md mb-8 overflow-hidden">
+                <div className="">
+                  <nav className="flex justify-between px-8">
                     <button
                       onClick={() => setActiveTab('profile')}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      className={`flex-1 py-5 px-4 border-b-3 font-semibold text-sm transition-all duration-200 text-center ${
                         activeTab === 'profile'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
+                          ? 'border-[#41ADE1] text-[#41ADE1] bg-[#E6F5FB]'
+                          : 'border-transparent text-gray-600 hover:text-[#41ADE1] hover:bg-gray-50'
                       }`}
                     >
-                      <UserIcon className="w-5 h-5 inline ml-2" />
+                      <UserIcon className={`w-5 h-5 inline ml-2 ${activeTab === 'profile' ? 'text-[#41ADE1]' : 'text-gray-500'}`} />
                       تعديل الملف الشخصي
                     </button>
                     <button
                       onClick={() => setActiveTab('subscriptions')}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      className={`flex-1 py-5 px-4 border-b-3 font-semibold text-sm transition-all duration-200 text-center ${
                         activeTab === 'subscriptions'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
+                          ? 'border-[#41ADE1] text-[#41ADE1] bg-[#E6F5FB]'
+                          : 'border-transparent text-gray-600 hover:text-[#41ADE1] hover:bg-gray-50'
                       }`}
                     >
-                      <CreditCardIcon className="w-5 h-5 inline ml-2" />
+                      <CreditCardIcon className={`w-5 h-5 inline ml-2 ${activeTab === 'subscriptions' ? 'text-[#41ADE1]' : 'text-gray-500'}`} />
                       إدارة الاشتراكات
                     </button>
                     <button
-                      onClick={() => {
-                        window.location.href = '/profile/orders';
-                      }}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      onClick={() => setActiveTab('orders')}
+                      className={`flex-1 py-5 px-4 border-b-3 font-semibold text-sm transition-all duration-200 text-center ${
                         activeTab === 'orders'
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-200 hover:border-gray-300'
+                          ? 'border-[#41ADE1] text-[#41ADE1] bg-[#E6F5FB]'
+                          : 'border-transparent text-gray-600 hover:text-[#41ADE1] hover:bg-gray-50'
                       }`}
                     >
-                      <ShoppingBagIcon className="w-5 h-5 inline ml-2" />
+                      <ShoppingBagIcon className={`w-5 h-5 inline ml-2 ${activeTab === 'orders' ? 'text-[#41ADE1]' : 'text-gray-500'}`} />
                       الطلبات
                     </button>
                   </nav>
@@ -394,11 +480,14 @@ const ProfilePage = () => {
               </div>
               
               {/* Tab Content */}
-              <div className="bg-white rounded-lg shadow-sm">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Profile Tab */}
                 {activeTab === 'profile' && (
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">تعديل الملف الشخصي</h2>
+                  <div className="p-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                      <div className="w-1 h-8 bg-[#41ADE1] rounded-full"></div>
+                      تعديل الملف الشخصي
+                    </h2>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -410,7 +499,7 @@ const ProfilePage = () => {
                             name="displayName"
                             value={profileForm.displayName}
                             onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                             placeholder="أدخل اسمك الكامل"
                             required
                           />
@@ -423,7 +512,7 @@ const ProfilePage = () => {
                             type="email"
                             name="email"
                             value={profileForm.email}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent bg-gray-50"
                             placeholder="your@email.com"
                             disabled
                           />
@@ -437,7 +526,7 @@ const ProfilePage = () => {
                             name="phone"
                             value={profileForm.phone}
                             onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                             placeholder="+966 50 123 4567"
                           />
                         </div>
@@ -450,7 +539,7 @@ const ProfilePage = () => {
                             name="birthDate"
                             value={profileForm.birthDate}
                             onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                           />
                         </div>
                         <div>
@@ -462,7 +551,7 @@ const ProfilePage = () => {
                             name="location"
                             value={profileForm.location}
                             onChange={handleInputChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                             placeholder="المدينة، البلد"
                           />
                         </div>
@@ -474,7 +563,7 @@ const ProfilePage = () => {
                             name="gender"
                             value={profileForm.gender}
                             onChange={handleSelectChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                           >
                             <option value="">اختر الجنس</option>
                             <option value="male">ذكر</option>
@@ -490,7 +579,7 @@ const ProfilePage = () => {
                             name="fitnessLevel"
                             value={profileForm.fitnessLevel}
                             onChange={handleSelectChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                           >
                             <option value="">اختر مستوى اللياقة</option>
                             <option value="beginner">مبتدئ</option>
@@ -509,7 +598,7 @@ const ProfilePage = () => {
                           onChange={handleInputChange}
                           rows={4}
                           maxLength={500}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                           placeholder="اكتب نبذة مختصرة عن نفسك..."
                         />
                         <div className="flex justify-between text-sm text-gray-500 mt-1">
@@ -542,7 +631,7 @@ const ProfilePage = () => {
                                     }));
                                   }
                                 }}
-                                className="ml-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="ml-2 rounded border-gray-300 text-[#41ADE1] focus:ring-[#41ADE1]"
                               />
                               <span className="text-sm text-gray-200">{goal}</span>
                             </label>
@@ -578,11 +667,11 @@ const ProfilePage = () => {
                       </div>
                       )}
 
-                      <div className="flex justify-end">
+                      <div className="flex justify-end pt-4 border-t border-gray-200">
                         <button
                           type="submit"
                           disabled={loading}
-                          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="bg-[#41ADE1] text-white px-8 py-3 rounded-xl hover:bg-[#3399CC] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg font-semibold text-lg"
                         >
                           {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
                         </button>
@@ -593,12 +682,15 @@ const ProfilePage = () => {
                 
                 {/* Subscriptions Tab */}
                 {activeTab === 'subscriptions' && (
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">إدارة الاشتراكات</h2>
+                  <div className="p-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                      <div className="w-1 h-8 bg-[#41ADE1] rounded-full"></div>
+                      إدارة الاشتراكات
+                    </h2>
                     
                     {subscriptionsLoading ? (
                       <div className="flex justify-center items-center h-40">
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#41ADE1]"></div>
                       </div>
                     ) : subscriptionsError ? (
                       <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -609,7 +701,7 @@ const ProfilePage = () => {
                         <CreditCardIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد اشتراكات</h3>
                         <p className="text-gray-600 mb-6">لم تقم بالاشتراك في أي دورة تدريبية بعد</p>
-                        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <button className="bg-[#41ADE1] text-white px-6 py-2 rounded-lg hover:bg-[#3399CC] transition-colors">
                           تصفح الدورات
                         </button>
                       </div>
@@ -618,7 +710,7 @@ const ProfilePage = () => {
                       {subscriptions.map((subscription) => (
                           <div key={subscription.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
                             {/* Course Thumbnail Placeholder */}
-                            <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <div className="h-48 bg-gradient-to-br from-[#41ADE1]/200 to-purple-600 flex items-center justify-center">
                               <div className="text-center text-white">
                                 <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
                                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
@@ -670,7 +762,7 @@ const ProfilePage = () => {
                                       subscription.progress === 100 
                                         ? 'bg-green-500' 
                                         : subscription.progress > 50 
-                                        ? 'bg-blue-500' 
+                                        ? 'bg-[#41ADE1]' 
                                         : 'bg-yellow-500'
                                     }`}
                                       style={{ width: `${subscription.progress}%` }}
@@ -685,7 +777,7 @@ const ProfilePage = () => {
                               {/* Action Buttons */}
                               <div className="flex gap-2">
                               {subscription.status === 'active' && (
-                                  <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                  <button className="flex-1 bg-[#41ADE1] text-white px-4 py-2 rounded-lg hover:bg-[#3399CC] transition-colors text-sm font-medium">
                                     {subscription.progress === 100 ? 'مراجعة الدورة' : 'متابعة التعلم'}
                                 </button>
                               )}
@@ -713,6 +805,173 @@ const ProfilePage = () => {
                       ))}
                         </div>
                       )}
+                  </div>
+                )}
+
+                {/* Orders Tab */}
+                {activeTab === 'orders' && (
+                  <div className="p-8">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-8 bg-gradient-to-r from-gray-800 to-gray-900 rounded-xl p-6 shadow-lg">
+                      <div>
+                        <h2 className="text-2xl font-bold text-white mb-2">طلباتي</h2>
+                        <p className="text-gray-300">عرض وإدارة جميع طلباتك</p>
+                      </div>
+                      <button
+                        onClick={handleRefreshOrders}
+                        disabled={ordersRefreshing || ordersLoading}
+                        className="inline-flex items-center px-5 py-2.5 bg-[#41ADE1] text-white rounded-xl hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
+                      >
+                        <ArrowPathIcon className={`h-5 w-5 ml-2 ${ordersRefreshing ? 'animate-spin' : ''}`} />
+                        {ordersRefreshing ? 'جاري التحديث...' : 'تحديث'}
+                      </button>
+                    </div>
+
+                    {/* Filters */}
+                    <div className="mb-6 flex flex-wrap gap-3">
+                      {['all', 'pending', 'processing', 'completed', 'failed'].map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => setOrdersFilter(status)}
+                          className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                            ordersFilter === status
+                              ? 'bg-[#41ADE1] text-white shadow-md'
+                              : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          {status === 'all' ? 'الكل' : 
+                           status === 'pending' ? 'قيد الانتظار' :
+                           status === 'processing' ? 'قيد المعالجة' :
+                           status === 'completed' ? 'مكتمل' : 'فاشل'}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Orders List */}
+                    {ordersLoading ? (
+                      <div className="flex justify-center items-center py-20">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#41ADE1]"></div>
+                      </div>
+                    ) : orders.filter(order => {
+                      if (ordersFilter === 'all') return true;
+                      return order.status === ordersFilter;
+                    }).length === 0 ? (
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-inner p-16 text-center border-2 border-dashed border-gray-300">
+                        <ShoppingBagIcon className="h-20 w-20 text-gray-400 mx-auto mb-6" />
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">لا توجد طلبات</h3>
+                        <p className="text-gray-600 mb-8 text-lg">لم تقم بأي طلبات بعد</p>
+                        <button
+                          onClick={() => window.location.href = '/courses'}
+                          className="bg-[#41ADE1] text-white px-8 py-3.5 rounded-xl hover:bg-[#3399CC] transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-lg"
+                        >
+                          تصفح الدورات
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {orders.filter(order => {
+                          if (ordersFilter === 'all') return true;
+                          return order.status === ordersFilter;
+                        }).map((order) => (
+                          <div 
+                            key={order._id} 
+                            className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl shadow-md p-6 hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-[#41ADE1]/50"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h3 className="text-xl font-bold text-white mb-3">
+                                  {order.orderType === 'course' ? order.courseTitle : order.consultationTitle}
+                                </h3>
+                                
+                                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
+                                  <span className="inline-flex items-center bg-gray-700/50 px-3 py-1.5 rounded-lg border border-gray-600">
+                                    {order.orderType === 'course' ? (
+                                      <AcademicCapIcon className="h-4 w-4 ml-2 text-[#41ADE1]" />
+                                    ) : (
+                                      <ChatBubbleLeftRightIcon className="h-4 w-4 ml-2 text-[#41ADE1]" />
+                                    )}
+                                    <span className="text-gray-200">{order.orderType === 'course' ? 'دورة' : 'استشارة'}</span>
+                                  </span>
+                                  <span className="inline-flex items-center bg-gray-700/50 px-3 py-1.5 rounded-lg border border-gray-600">
+                                    <ClockIcon className="h-4 w-4 ml-2 text-gray-400" />
+                                    <span className="text-gray-200">{new Date(order.createdAt).toLocaleDateString('ar-EG', { 
+                                      year: 'numeric', 
+                                      month: 'long', 
+                                      day: 'numeric' 
+                                    })}</span>
+                                  </span>
+                                  <span className="inline-flex items-center bg-gray-700/50 px-3 py-1.5 rounded-lg border border-gray-600 capitalize">
+                                    <span className="text-gray-200">{order.paymentMethod === 'bank_transfer' ? 'تحويل بنكي' : order.paymentMethod}</span>
+                                  </span>
+                                </div>
+
+                                {order.paymentMethod === 'bank_transfer' && order.bankTransfer?.verificationStatus === 'pending' && (
+                                  <div className="bg-yellow-900/30 border-2 border-yellow-600 rounded-xl p-4 mb-4">
+                                    <div className="flex items-center gap-2">
+                                      <ClockIcon className="h-5 w-5 text-yellow-400" />
+                                      <p className="text-sm font-semibold text-yellow-200">
+                                        ⏳ تحويلك البنكي قيد المراجعة. سيتم تفعيل الطلب بعد التحقق من الإيصال.
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {order.paymentMethod === 'bank_transfer' && order.bankTransfer?.verificationStatus === 'rejected' && (
+                                  <div className="bg-red-900/30 border-2 border-red-600 rounded-xl p-4 mb-4">
+                                    <div className="flex items-start gap-2">
+                                      <XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                                      <div className="flex-1">
+                                        <p className="text-sm font-semibold text-red-200 mb-1">
+                                          ❌ تم رفض التحويل البنكي
+                                        </p>
+                                        {order.bankTransfer?.rejectionReason ? (
+                                          <div className="mt-2 p-3 bg-red-950/40 rounded-lg border border-red-700/50">
+                                            <p className="text-xs font-medium text-red-300 mb-1">سبب الرفض:</p>
+                                            <p className="text-sm text-red-200">{order.bankTransfer.rejectionReason}</p>
+                                          </div>
+                                        ) : (
+                                          <p className="text-xs text-red-300 mt-1">يرجى التواصل مع الدعم للمزيد من المعلومات.</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+
+                                <div className="flex items-center gap-6">
+                                  <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 ${
+                                    order.status === 'completed' ? 'bg-green-900/40 text-green-300 border-green-600' :
+                                    order.status === 'pending' ? 'bg-yellow-900/40 text-yellow-300 border-yellow-600' :
+                                    order.status === 'processing' ? 'bg-[#41ADE1]/40 text-[#41ADE1]/80 border-[#41ADE1]' :
+                                    order.status === 'failed' ? 'bg-red-900/40 text-red-300 border-red-600' :
+                                    'bg-gray-700/50 text-gray-300 border-gray-600'
+                                  }`}>
+                                    {order.status === 'completed' ? <CheckCircleIcon className="h-5 w-5" /> :
+                                     order.status === 'pending' ? <ClockIcon className="h-5 w-5" /> :
+                                     order.status === 'processing' ? <ClockIcon className="h-5 w-5 animate-spin" /> :
+                                     order.status === 'failed' ? <XCircleIcon className="h-5 w-5" /> :
+                                     <ClockIcon className="h-5 w-5" />}
+                                    {order.status === 'completed' ? 'مكتمل' :
+                                     order.status === 'pending' ? 'قيد الانتظار' :
+                                     order.status === 'processing' ? 'قيد المعالجة' :
+                                     order.status === 'failed' ? 'فاشل' : order.status}
+                                  </span>
+                                  <span className="text-2xl font-bold text-white">${order.amount}</span>
+                                </div>
+                              </div>
+
+                              {order.status === 'completed' && order.orderType === 'course' && order.courseId && (
+                                <button
+                                  onClick={() => window.location.href = `/courses/${order.courseId}`}
+                                  className="bg-[#41ADE1] text-white px-6 py-3 rounded-xl hover:bg-[#3399CC] transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-lg whitespace-nowrap"
+                                >
+                                  الذهاب للدورة
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -43,7 +43,7 @@ export default function ConfirmationPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto mb-4"></div>
           <p className="text-gray-300">جاري تحميل تفاصيل الحجز...</p>
         </div>
       </div>
@@ -105,11 +105,11 @@ export default function ConfirmationPage() {
 
               <div>
                 <label className="text-gray-400 text-sm">السعر</label>
-                <p className="text-blue-400 font-bold text-xl">{bookingDetails.consultation.price}</p>
+                <p className="text-[#41ADE1] font-bold text-xl">{bookingDetails.consultation.price}</p>
               </div>
 
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-                <h3 className="text-blue-400 font-semibold mb-2">معلومات مهمة</h3>
+              <div className="bg-[#41ADE1]/10 border border-[#41ADE1]/20 rounded-lg p-4">
+                <h3 className="text-[#41ADE1] font-semibold mb-2">معلومات مهمة</h3>
                 <ul className="text-gray-300 text-sm space-y-1">
                   <li>• يرجى الحضور قبل 10 دقائق من الموعد</li>
                   <li>• إحضار ملابس رياضية مناسبة</li>
@@ -125,7 +125,7 @@ export default function ConfirmationPage() {
           <h2 className="text-xl font-bold text-white mb-4">الخطوات التالية</h2>
           <div className="space-y-4">
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-8 h-8 bg-[#41ADE1] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                 1
               </div>
               <div>
@@ -135,7 +135,7 @@ export default function ConfirmationPage() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-8 h-8 bg-[#41ADE1] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                 2
               </div>
               <div>
@@ -145,7 +145,7 @@ export default function ConfirmationPage() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              <div className="w-8 h-8 bg-[#41ADE1] rounded-full flex items-center justify-center text-white font-semibold text-sm">
                 3
               </div>
               <div>
@@ -171,7 +171,7 @@ export default function ConfirmationPage() {
             </div>
 
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-12 h-12 bg-[#41ADE1] rounded-full flex items-center justify-center mx-auto mb-2">
                 <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
@@ -207,7 +207,7 @@ export default function ConfirmationPage() {
           
           <Link 
             href="/consultations"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors text-center"
+            className="bg-[#41ADE1] hover:bg-[#3399CC] text-white px-6 py-3 rounded-lg font-semibold transition-colors text-center"
           >
             حجز استشارة أخرى
           </Link>

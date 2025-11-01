@@ -38,7 +38,7 @@ export default function Footer() {
                 href="https://www.facebook.com/tahamohmad.alsbagh/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-full text-gray-300 hover:text-blue-500 hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-full text-gray-300 hover:text-[#41ADE1] hover:bg-gray-800 transition-colors"
                 aria-label="فيسبوك"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

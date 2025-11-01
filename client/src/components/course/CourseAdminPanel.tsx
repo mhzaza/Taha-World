@@ -388,7 +388,7 @@ export default function CourseAdminPanel({ course, courseId, onCourseChange }: C
               type="button"
               onClick={addLesson}
               disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+              className="bg-[#41ADE1] hover:bg-[#3399CC] disabled:bg-[#3399CC]/50 text-white font-medium px-4 py-2 rounded-lg transition-colors"
             >
               إضافة الدرس إلى القائمة
             </button>

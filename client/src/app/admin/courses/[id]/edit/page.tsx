@@ -149,7 +149,7 @@ export default function EditCoursePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto"></div>
           <p className="mt-4 text-gray-600">جاري تحميل بيانات الكورس...</p>
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function EditCoursePage() {
           <p className="text-gray-600">لم يتم العثور على الكورس</p>
           <button
             onClick={() => router.push('/admin/courses')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-[#41ADE1] text-white rounded-md hover:bg-[#3399CC]"
           >
             العودة إلى الكورسات
           </button>
@@ -184,7 +184,7 @@ export default function EditCoursePage() {
                 notification.type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' :
                 notification.type === 'error' ? 'bg-red-100 border border-red-200 text-red-800' :
                 notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 text-yellow-800' :
-                'bg-blue-100 border border-blue-200 text-blue-800'
+                'bg-[#41ADE1]/30 border border-[#41ADE1]/40 text-[#41ADE1]'
               }`}
             >
               <div className="flex items-center justify-between">

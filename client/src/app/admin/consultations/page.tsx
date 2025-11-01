@@ -105,7 +105,7 @@ export default function AdminConsultationsPage() {
   const getStatusBadge = (status: string) => {
     const statusConfig: { [key: string]: { color: string; label: string } } = {
       pending_payment: { color: 'bg-yellow-100 text-yellow-800', label: 'في انتظار الدفع' },
-      pending_confirmation: { color: 'bg-blue-100 text-blue-800', label: 'في انتظار التأكيد' },
+      pending_confirmation: { color: 'bg-[#41ADE1]/30 text-[#41ADE1]', label: 'في انتظار التأكيد' },
       confirmed: { color: 'bg-green-100 text-green-800', label: 'مؤكد' },
       completed: { color: 'bg-gray-100 text-gray-800', label: 'مكتمل' },
       cancelled: { color: 'bg-red-100 text-red-800', label: 'ملغي' },
@@ -156,7 +156,7 @@ export default function AdminConsultationsPage() {
         </div>
         <Link
           href="/admin/consultations/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
         >
           + إضافة استشارة جديدة
         </Link>
@@ -184,12 +184,12 @@ export default function AdminConsultationsPage() {
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <ClockIcon className="h-6 w-6 text-blue-400" />
+                <ClockIcon className="h-6 w-6 text-[#41ADE1]" />
               </div>
               <div className="mr-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">في انتظار التأكيد</dt>
-                  <dd className="text-2xl font-semibold text-blue-600">{stats.pending}</dd>
+                  <dd className="text-2xl font-semibold text-[#41ADE1]">{stats.pending}</dd>
                 </dl>
               </div>
             </div>
@@ -257,7 +257,7 @@ export default function AdminConsultationsPage() {
               placeholder="البحث بالاسم، البريد، أو رقم الحجز..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             />
           </div>
 
@@ -266,7 +266,7 @@ export default function AdminConsultationsPage() {
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="all">جميع الحالات</option>
               <option value="pending_confirmation">في انتظار التأكيد</option>
@@ -278,7 +278,7 @@ export default function AdminConsultationsPage() {
 
           <button
             onClick={fetchBookings}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
           >
             تحديث
           </button>
@@ -289,7 +289,7 @@ export default function AdminConsultationsPage() {
       <div className="bg-white shadow rounded-lg overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto"></div>
             <p className="mt-4 text-gray-600">جاري التحميل...</p>
           </div>
         ) : filteredBookings.length === 0 ? (
@@ -351,7 +351,7 @@ export default function AdminConsultationsPage() {
                       {getStatusBadge(booking.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 ml-3">
+                      <button className="text-[#41ADE1] hover:text-[#41ADE1] ml-3">
                         <EyeIcon className="h-5 w-5" />
                       </button>
                       {booking.status === 'pending_confirmation' && (

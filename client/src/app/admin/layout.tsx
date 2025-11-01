@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     key={item.href}
                     href={item.href}
                     className={`group flex items-center rounded-md px-2 py-2 text-sm font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-200 hover:bg-gray-100 hover:text-gray-900'
+                      isActive ? 'bg-[#41ADE1]/30 text-[#3399CC]' : 'text-gray-200 hover:bg-gray-100 hover:text-gray-900'
                     }`}
                     onClick={() => setSidebarOpen(false)}
                   >
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <div className="border-t border-gray-200 p-4">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#41ADE1] text-white">
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
                 </div>
@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           <Link
                             href={item.href}
                             className={`group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 ${
-                              isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-200 hover:bg-[#777] hover:text-blue-700'
+                              isActive ? 'bg-[#41ADE1]/20 text-[#3399CC]' : 'text-gray-200 hover:bg-[#777] hover:text-[#3399CC]'
                             }`}
                           >
                             <item.icon className="h-6 w-6 shrink-0" />
@@ -125,7 +125,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </li>
                 <li className="mt-auto border-t border-gray-200 pt-4">
                   <div className="flex items-center gap-x-4 px-2 py-3 text-sm font-semibold leading-6 text-gray-900">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#41ADE1] text-white">
                       {user?.email?.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -158,7 +158,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             <div className="flex flex-1 items-center justify-between">
               <h2 className="text-lg font-semibold text-gray-900">{'\u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u0645\u0646\u0635\u0629'}</h2>
-              <Link href="/" className="text-sm font-medium text-gray-200 hover:text-blue-600">
+              <Link href="/" className="text-sm font-medium text-gray-200 hover:text-[#41ADE1]">
                 العودة للموقع
               </Link>
             </div>

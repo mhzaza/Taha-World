@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="7d">آخر 7 أيام</option>
               <option value="30d">آخر 30 يوم</option>
@@ -296,7 +296,7 @@ export default function AnalyticsPage() {
           
           <button
             onClick={handleRefresh}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center space-x-2 bg-[#41ADE1] text-white px-4 py-2 rounded-lg hover:bg-[#3399CC] transition-colors"
           >
             <ArrowPathIcon className="h-4 w-4" />
             <span>تحديث</span>
@@ -345,8 +345,8 @@ export default function AnalyticsPage() {
         <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="p-3 bg-blue-100 rounded-full">
-              <UserGroupIcon className="h-8 w-8 text-blue-600" />
+              <div className="p-3 bg-[#41ADE1]/30 rounded-full">
+              <UserGroupIcon className="h-8 w-8 text-[#41ADE1]" />
               </div>
             </div>
             <div className="mr-4 flex-1">
@@ -411,7 +411,7 @@ export default function AnalyticsPage() {
               <select
                 value={selectedMetric}
                 onChange={(e) => setSelectedMetric(e.target.value as any)}
-                className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-all"
               >
                 <option value="sales">المبيعات</option>
                 <option value="orders">الطلبات</option>
@@ -641,7 +641,7 @@ export default function AnalyticsPage() {
                 if (action.includes('update') || action.includes('edit')) return 'bg-yellow-500';
                 if (action.includes('delete') || action.includes('cancel')) return 'bg-red-500';
                 if (action.includes('order') || action.includes('payment')) return 'bg-purple-500';
-                return 'bg-blue-500';
+                return 'bg-[#41ADE1]';
               };
 
               const getActivityText = (action: string, details: any) => {
@@ -704,7 +704,7 @@ export default function AnalyticsPage() {
               if (action.includes('update') || action.includes('edit')) return 'bg-yellow-500';
               if (action.includes('delete') || action.includes('cancel')) return 'bg-red-500';
               if (action.includes('order') || action.includes('payment')) return 'bg-purple-500';
-              return 'bg-blue-500';
+              return 'bg-[#41ADE1]';
             };
 
             const getActivityText = (action: string, details: any) => {
@@ -751,9 +751,9 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Analytics Insights */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+      <div className="bg-gradient-to-r from-[#41ADE1]/20 to-indigo-50 rounded-lg p-6 border border-[#41ADE1]/40">
         <div className="flex items-center mb-4">
-          <EyeIcon className="h-6 w-6 text-blue-600 ml-2" />
+          <EyeIcon className="h-6 w-6 text-[#41ADE1] ml-2" />
           <h3 className="text-lg font-semibold text-gray-900">رؤى تحليلية</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

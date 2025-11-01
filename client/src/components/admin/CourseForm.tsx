@@ -165,7 +165,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="text"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="أدخل عنوان الكورس"
               required
             />
@@ -179,7 +179,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="text"
               value={formData.titleEn}
               onChange={(e) => setFormData(prev => ({ ...prev, titleEn: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="Enter course title"
             />
           </div>
@@ -194,7 +194,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="أدخل وصف الكورس"
               required
             />
@@ -208,7 +208,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               value={formData.descriptionEn}
               onChange={(e) => setFormData(prev => ({ ...prev, descriptionEn: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="Enter course description"
             />
           </div>
@@ -228,7 +228,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="number"
               value={formData.price}
               onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="0"
               min="0"
               required
@@ -243,7 +243,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="number"
               value={formData.originalPrice}
               onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: Number(e.target.value) }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="0"
               min="0"
             />
@@ -256,7 +256,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             <select
               value={formData.currency}
               onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="USD">USD</option>
               <option value="SAR">SAR</option>
@@ -279,7 +279,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="number"
               value={formData.duration}
               onChange={(e) => setFormData(prev => ({ ...prev, duration: Number(e.target.value) }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="0"
               min="0"
               required
@@ -293,7 +293,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             <select
               value={formData.level}
               onChange={(e) => setFormData(prev => ({ ...prev, level: e.target.value as 'beginner' | 'intermediate' | 'advanced' }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="beginner">مبتدئ</option>
               <option value="intermediate">متوسط</option>
@@ -309,7 +309,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               type="text"
               value={formData.category}
               onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="أدخل فئة الكورس"
               required
             />
@@ -323,7 +323,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
           <select
             value={formData.language}
             onChange={(e) => setFormData(prev => ({ ...prev, language: e.target.value as 'ar' | 'en' }))}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-xs"
+            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent max-w-xs"
           >
             <option value="ar">العربية</option>
             <option value="en">English</option>
@@ -379,7 +379,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
                 ...prev, 
                 instructor: { ...prev.instructor, name: e.target.value }
               }))}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="أدخل اسم المدرب"
               required
             />
@@ -396,7 +396,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
                 instructor: { ...prev.instructor, bio: e.target.value }
               }))}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
               placeholder="أدخل نبذة عن المدرب"
             />
           </div>
@@ -413,13 +413,13 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             placeholder="أدخل علامة جديدة"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-[#41ADE1] text-white rounded-md hover:bg-[#3399CC]"
           >
             إضافة
           </button>
@@ -428,13 +428,13 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
           {formData.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+              className="inline-flex items-center px-3 py-1 bg-[#41ADE1]/30 text-[#41ADE1] text-sm rounded-full"
             >
               {tag}
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="mr-2 text-blue-600 hover:text-blue-800"
+                className="mr-2 text-[#41ADE1] hover:text-[#41ADE1]"
               >
                 ×
               </button>
@@ -453,7 +453,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             value={newRequirement}
             onChange={(e) => setNewRequirement(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addRequirement())}
-            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             placeholder="أدخل متطلب جديد"
           />
           <button
@@ -493,7 +493,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             value={newLearningPoint}
             onChange={(e) => setNewLearningPoint(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addLearningPoint())}
-            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             placeholder="أدخل نقطة تعلم جديدة"
           />
           <button
@@ -533,7 +533,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             value={newCredential}
             onChange={(e) => setNewCredential(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCredential())}
-            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-gray-600 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             placeholder="أدخل مؤهل جديد"
           />
           <button
@@ -574,7 +574,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               id="isPublished"
               checked={formData.isPublished}
               onChange={(e) => setFormData(prev => ({ ...prev, isPublished: e.target.checked }))}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
+              className="h-4 w-4 text-[#41ADE1] focus:ring-[#41ADE1] border-gray-600 rounded"
             />
             <label htmlFor="isPublished" className="mr-3 block text-sm text-gray-900">
               نشر الكورس
@@ -587,7 +587,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
               id="isFeatured"
               checked={formData.isFeatured}
               onChange={(e) => setFormData(prev => ({ ...prev, isFeatured: e.target.checked }))}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
+              className="h-4 w-4 text-[#41ADE1] focus:ring-[#41ADE1] border-gray-600 rounded"
             />
             <label htmlFor="isFeatured" className="mr-3 block text-sm text-gray-900">
               كورس مميز
@@ -601,7 +601,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 bg-[#41ADE1] text-white rounded-md hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'جاري الحفظ...' : submitText}
         </button>

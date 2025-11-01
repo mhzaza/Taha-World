@@ -86,12 +86,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#41ADE1] to-[#3399CC] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="bg-white rounded-lg shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <ShieldCheckIcon className="mx-auto h-12 w-12 text-blue-600 mb-4" />
+            <ShieldCheckIcon className="mx-auto h-12 w-12 text-[#41ADE1] mb-4" />
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               لوحة إدارة المدرب طه صباغ
             </h2>
@@ -126,7 +126,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 placeholder="admin@tahasabag.com"
               />
             </div>
@@ -141,7 +141,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 placeholder="admin123456"
               />
             </div>
@@ -150,7 +150,7 @@ export default function AdminLoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#41ADE1] hover:bg-[#3399CC] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#41ADE1] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -166,10 +166,10 @@ export default function AdminLoginPage() {
                 type="button"
                 onClick={createAdminAccount}
                 disabled={loading}
-                className="w-full flex justify-center items-center py-3 px-4 border border-blue-600 rounded-lg shadow-sm text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center py-3 px-4 border border-[#41ADE1] rounded-lg shadow-sm text-sm font-medium text-[#41ADE1] bg-white hover:bg-[#41ADE1]/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#41ADE1] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#41ADE1]"></div>
                 ) : (
                   <>
                     <UserPlusIcon className="h-5 w-5 ml-2" />

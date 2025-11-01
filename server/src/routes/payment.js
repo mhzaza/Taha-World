@@ -749,19 +749,15 @@ router.put('/bank-transfer/verify/:orderId', authenticate, [
           booking.paymentCompletedAt = new Date();
           booking.paymentMethod = 'bank_transfer';
           
-          // Update status based on whether approval is required
-          if (booking.consultationId && booking.consultationId.requiresApproval) {
-            booking.status = 'pending_confirmation';
-          } else {
-            booking.status = 'confirmed';
-            booking.confirmedAt = new Date();
-            // Set confirmed date/time
-            booking.confirmedDateTime = new Date(booking.preferredDate);
-            booking.confirmedDateTime.setHours(
-              parseInt(booking.preferredTime.split(':')[0]),
-              parseInt(booking.preferredTime.split(':')[1])
-            );
-          }
+          // Always set status to 'confirmed' when bank transfer is verified
+          booking.status = 'confirmed';
+          booking.confirmedAt = new Date();
+          // Set confirmed date/time
+          booking.confirmedDateTime = new Date(booking.preferredDate);
+          booking.confirmedDateTime.setHours(
+            parseInt(booking.preferredTime.split(':')[0]),
+            parseInt(booking.preferredTime.split(':')[1])
+          );
           
           await booking.save();
 

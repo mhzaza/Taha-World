@@ -435,7 +435,7 @@ export default function UsersPage() {
                 notification.type === 'success' ? 'border-l-4 border-green-500' :
                 notification.type === 'error' ? 'border-l-4 border-red-500' :
                 notification.type === 'warning' ? 'border-l-4 border-yellow-500' :
-                'border-l-4 border-blue-500'
+                'border-l-4 border-[#41ADE1]'
               }`}
             >
               <div className="p-4">
@@ -444,7 +444,7 @@ export default function UsersPage() {
                     {notification.type === 'success' && <CheckCircleIcon className="h-6 w-6 text-green-500" />}
                     {notification.type === 'error' && <ExclamationCircleIcon className="h-6 w-6 text-red-500" />}
                     {notification.type === 'warning' && <ExclamationTriangleIcon className="h-6 w-6 text-yellow-500" />}
-                    {notification.type === 'info' && <InformationCircleIcon className="h-6 w-6 text-blue-500" />}
+                    {notification.type === 'info' && <InformationCircleIcon className="h-6 w-6 text-[#41ADE1]" />}
                   </div>
                   <div className="mr-3 w-0 flex-1 pt-0.5">
                     <p className="text-sm font-medium text-gray-900">{notification.message}</p>
@@ -474,14 +474,14 @@ export default function UsersPage() {
           <p className="mt-2 text-gray-600">عرض وإدارة جميع المستخدمين المسجلين</p>
           <p className="mt-1 text-sm text-gray-500">
             آخر تحديث: {lastUpdated.toLocaleString('ar-EG', { calendar: 'gregory' })}
-            {refreshing && <span className="text-blue-600 mr-2">(جاري التحديث...)</span>}
+            {refreshing && <span className="text-[#41ADE1] mr-2">(جاري التحديث...)</span>}
           </p>
         </div>
         <div className="flex items-center space-x-3">
           <button
             onClick={refreshUsers}
             disabled={refreshing}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+            className="inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
           >
             <ArrowPathIcon className={`h-4 w-4 ml-2 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'جاري التحديث...' : 'تحديث البيانات'}
@@ -508,10 +508,10 @@ export default function UsersPage() {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 border-r-4 border-blue-500">
+        <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 border-r-4 border-[#41ADE1]">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <UserGroupIcon className="h-8 w-8 text-blue-600" />
+              <UserGroupIcon className="h-8 w-8 text-[#41ADE1]" />
             </div>
             <div className="mr-4">
               <p className="text-sm font-medium text-gray-500">إجمالي المستخدمين</p>
@@ -587,7 +587,7 @@ export default function UsersPage() {
           </h3>
           <button
             onClick={clearFilters}
-            className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+            className="text-sm text-[#41ADE1] hover:text-[#41ADE1] flex items-center"
           >
             <span className="ml-1">مسح الكل</span>
           </button>
@@ -605,7 +605,7 @@ export default function UsersPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
                 placeholder="البحث بالاسم أو البريد الإلكتروني..."
               />
             </div>
@@ -619,7 +619,7 @@ export default function UsersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
             >
               <option value="all">جميع الحالات</option>
               <option value="active">نشط</option>
@@ -636,7 +636,7 @@ export default function UsersPage() {
             <select
               value={itemsPerPage}
               onChange={(e) => setCurrentPage(1)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-colors"
               disabled
             >
               <option value="10">10 لكل صفحة</option>
@@ -653,7 +653,7 @@ export default function UsersPage() {
               <span className="font-medium text-gray-900">{totalUsers}</span> مستخدم
             </p>
             {(searchTerm || statusFilter !== 'all') && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#41ADE1]/30 text-[#41ADE1]">
                 فلاتر نشطة
               </span>
             )}
@@ -668,7 +668,7 @@ export default function UsersPage() {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto"></div>
             <p className="mt-4 text-gray-600">جاري تحميل المستخدمين...</p>
           </div>
         ) : (
@@ -684,7 +684,7 @@ export default function UsersPage() {
                     <UserIcon className="h-4 w-4" />
                     <span>المستخدم</span>
                     {sortField === 'name' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -704,7 +704,7 @@ export default function UsersPage() {
                     <CalendarIcon className="h-4 w-4" />
                     <span>تاريخ التسجيل</span>
                     {sortField === 'createdAt' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -718,7 +718,7 @@ export default function UsersPage() {
                     <AcademicCapIcon className="h-4 w-4" />
                     <span>الكورسات المسجلة</span>
                     {sortField === 'enrolledCourses' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -731,7 +731,7 @@ export default function UsersPage() {
                   <div className="flex items-center space-x-1">
                     <span>إجمالي الإنفاق</span>
                     {sortField === 'totalSpent' && (
-                      <span className="text-blue-600">
+                      <span className="text-[#41ADE1]">
                         {sortOrder === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
@@ -811,7 +811,7 @@ export default function UsersPage() {
                           </div>
                         ))}
                         {user.enrolledCourses.length > 2 && (
-                          <div className="text-blue-600">+{user.enrolledCourses.length - 2} أخرى</div>
+                          <div className="text-[#41ADE1]">+{user.enrolledCourses.length - 2} أخرى</div>
                         )}
                       </div>
                     )}
@@ -832,7 +832,7 @@ export default function UsersPage() {
                         e.stopPropagation();
                         openUserModal(user);
                       }}
-                      className="text-blue-600 hover:text-blue-900 flex items-center transition-colors duration-200"
+                      className="text-[#41ADE1] hover:text-[#41ADE1] flex items-center transition-colors duration-200"
                     >
                       <EyeIcon className="h-4 w-4 ml-1" />
                       عرض
@@ -892,7 +892,7 @@ export default function UsersPage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                           currentPage === pageNum
-                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                            ? 'z-10 bg-[#41ADE1]/20 border-[#41ADE1] text-[#41ADE1]'
                             : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                         }`}
                       >
@@ -929,7 +929,7 @@ export default function UsersPage() {
                       alt={selectedUser.displayName}
                     />
                   ) : (
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ml-4">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#41ADE1] to-purple-500 flex items-center justify-center ml-4">
                       <span className="text-white font-bold text-2xl">
                         {selectedUser.displayName.charAt(0)}
                       </span>
@@ -996,11 +996,11 @@ export default function UsersPage() {
                 </div>
 
                 {/* Account Status */}
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-black mb-4">حالة الحساب</h4>
+                <div className="bg-[#41ADE1]/20 rounded-lg p-6">
+                  <h4 className="text-lg font-semibold !text-black mb-4">حالة الحساب</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-black">الحالة</label>
+                      <label className="block text-sm font-medium !text-black">الحالة</label>
                       <div className="mt-1">
                         <select
                           value={selectedUser.status}
@@ -1028,11 +1028,11 @@ export default function UsersPage() {
 
                 {/* Fitness & Goals */}
                 <div className="bg-green-50 rounded-lg p-6">
-                  <h4 className="text-lg font-semibold text-black mb-4">اللياقة والأهداف</h4>
+                  <h4 className="text-lg font-semibold !text-black mb-4">اللياقة والأهداف</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-black">مستوى اللياقة</label>
-                      <p className="mt-1 text-sm text-black">
+                      <label className="block text-sm font-medium !text-black">مستوى اللياقة</label>
+                      <p className="mt-1 text-sm !text-black">
                         {selectedUser.fitnessLevel === 'beginner' ? 'مبتدئ' :
                          selectedUser.fitnessLevel === 'intermediate' ? 'متوسط' :
                          selectedUser.fitnessLevel === 'advanced' ? 'متقدم' : 'غير محدد'}
@@ -1069,7 +1069,7 @@ export default function UsersPage() {
                     <h4 className="text-md font-medium text-gray-900">الكورسات المسجلة</h4>
                     <button
                       onClick={openEnrollModal}
-                      className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
+                      className="inline-flex items-center px-3 py-1 bg-[#41ADE1] text-white text-sm rounded-md hover:bg-[#3399CC]"
                     >
                       <PlusIcon className="h-4 w-4 ml-1" />
                       تسجيل في كورس
@@ -1107,7 +1107,7 @@ export default function UsersPage() {
                     value={userNotes}
                     onChange={(e) => setUserNotes(e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                     placeholder="أضف ملاحظات حول المستخدم..."
                   />
                 </div>
@@ -1122,7 +1122,7 @@ export default function UsersPage() {
                 </button>
                 <button
                   onClick={saveUserNotes}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-4 py-2 bg-[#41ADE1] text-white rounded-md hover:bg-[#3399CC]"
                 >
                   حفظ الملاحظات
                 </button>
@@ -1150,7 +1150,7 @@ export default function UsersPage() {
               <div className="space-y-4">
                 {loadingCourses ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#41ADE1]"></div>
                     <span className="mr-3 text-sm text-gray-600">جاري تحميل الكورسات...</span>
                   </div>
                 ) : getAvailableCoursesForUser(selectedUser).length === 0 ? (
@@ -1199,7 +1199,7 @@ export default function UsersPage() {
           {(searchTerm || statusFilter !== 'all') && (
             <button
               onClick={clearFilters}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-4 inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
             >
               مسح الفلاتر
             </button>

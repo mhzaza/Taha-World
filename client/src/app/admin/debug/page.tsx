@@ -52,7 +52,7 @@ export default function AdminDebugPage() {
           )}
         </div>
 
-        <div className="bg-blue-100 p-4 rounded">
+        <div className="bg-[#41ADE1]/30 p-4 rounded">
           <h2 className="font-semibold mb-2">فحص صلاحيات الأدمن:</h2>
           <p>جاري الفحص: {checking ? 'نعم' : 'لا'}</p>
           <p>فحص البريد الإلكتروني: {emailCheck ? 'مدير' : 'ليس مدير'}</p>
@@ -70,7 +70,7 @@ export default function AdminDebugPage() {
           <h2 className="font-semibold mb-2">الإجراءات:</h2>
           <button 
             onClick={() => window.location.href = '/admin/login'}
-            className="bg-blue-600 text-white px-4 py-2 rounded mr-2"
+            className="bg-[#41ADE1] text-white px-4 py-2 rounded mr-2"
           >
             صفحة تسجيل دخول الأدمن
           </button>

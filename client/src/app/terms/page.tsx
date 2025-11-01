@@ -57,20 +57,20 @@ const TermsPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-700 text-white py-20">
+      <section className="bg-gradient-to-br from-[#41ADE1] via-[#3399CC] to-indigo-700 text-white py-20">
         <Container>
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-6">
-              <ScaleIcon className="w-16 h-16 text-blue-300 ml-4" />
+              <ScaleIcon className="w-16 h-16 text-[#41ADE1]/80 ml-4" />
               <h1 className="text-4xl md:text-5xl font-bold">
                 شروط الاستخدام
               </h1>
             </div>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed mb-6">
+            <p className="text-xl md:text-2xl text-[#41ADE1]/40 leading-relaxed mb-6">
               الشروط والأحكام التي تحكم استخدام منصتنا
             </p>
-            <div className="bg-blue-800/50 rounded-lg p-4 inline-block">
-              <p className="text-blue-200">
+            <div className="bg-[#3399CC]/50 rounded-lg p-4 inline-block">
+              <p className="text-[#41ADE1]/60">
                 آخر تحديث: 15 يناير 2024
               </p>
             </div>
@@ -90,11 +90,11 @@ const TermsPage = () => {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-blue-300"
+                    className="bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-600 hover:border-[#41ADE1]/60"
                   >
                     <div className="text-center">
-                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-3">
-                        <IconComponent className="w-6 h-6 text-blue-600" />
+                      <div className="flex items-center justify-center w-12 h-12 bg-[#41ADE1]/30 rounded-lg mx-auto mb-3">
+                        <IconComponent className="w-6 h-6 text-[#41ADE1]" />
                       </div>
                       <div className="text-sm text-gray-500 mb-1">{index + 1}.</div>
                       <div className="font-medium text-gray-900 text-sm">{section.title}</div>
@@ -115,10 +115,10 @@ const TermsPage = () => {
             {/* Introduction */}
             <div id="introduction" className="mb-16">
               <div className="flex items-center mb-6">
-                <DocumentTextIcon className="w-8 h-8 text-blue-600 ml-3" />
+                <DocumentTextIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900 m-0">1. مقدمة</h2>
               </div>
-              <div className="bg-blue-50 border-r-4 border-blue-600 p-6 rounded-lg mb-6">
+              <div className="bg-[#41ADE1]/20 border-r-4 border-[#41ADE1] p-6 rounded-lg mb-6">
                 <p className="text-gray-200 leading-relaxed m-0">
                   مرحباً بك في منصة التدريب الرياضي. هذه الشروط والأحكام تحكم استخدامك لموقعنا الإلكتروني وخدماتنا. من خلال الوصول إلى منصتنا أو استخدامها، فإنك توافق على الالتزام بهذه الشروط.
                 </p>
@@ -348,16 +348,16 @@ const TermsPage = () => {
             {/* Liability */}
             <div id="liability" className="mb-16">
               <div className="flex items-center mb-6">
-                <ShieldCheckIcon className="w-8 h-8 text-blue-600 ml-3" />
+                <ShieldCheckIcon className="w-8 h-8 text-[#41ADE1] ml-3" />
                 <h2 className="text-3xl font-bold text-gray-900 m-0">7. المسؤولية والضمانات</h2>
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 mb-4">7.1 إخلاء المسؤولية</h3>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                <p className="text-blue-800 leading-relaxed mb-3">
+              <div className="bg-[#41ADE1]/20 border border-[#41ADE1]/40 rounded-lg p-6 mb-6">
+                <p className="text-[#41ADE1] leading-relaxed mb-3">
                   خدماتنا مقدمة "كما هي" و"حسب التوفر". لا نقدم أي ضمانات صريحة أو ضمنية بشأن:
                 </p>
-                <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm">
+                <ul className="list-disc list-inside space-y-1 text-[#41ADE1] text-sm">
                   <li>دقة أو اكتمال المحتوى</li>
                   <li>توفر الخدمة دون انقطاع</li>
                   <li>خلو الخدمة من الأخطاء</li>

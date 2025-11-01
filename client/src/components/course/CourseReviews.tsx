@@ -318,13 +318,13 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
       {/* Header */}
       <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center space-x-3 space-x-reverse">
-          <div className="w-2 h-10 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
+          <div className="w-2 h-10 bg-gradient-to-b from-[#41ADE1] to-indigo-600 rounded-full"></div>
           <h3 className="text-3xl font-bold text-gray-900">{AR.reviews}</h3>
         </div>
         {user && !userReview && (
           <button
             onClick={() => setShowReviewForm(true)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-semibold"
+            className="bg-gradient-to-r from-[#41ADE1] to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-[#3399CC] hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-semibold"
           >
             {AR.writeReview}
           </button>
@@ -333,11 +333,11 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
 
       {/* Rating Stats */}
       {ratingStats && ratingStats.totalReviews > 0 && (
-        <div className="mb-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-8 border border-blue-100 shadow-sm">
+        <div className="mb-8 bg-gradient-to-br from-[#41ADE1]/20 via-indigo-50 to-purple-50 rounded-2xl p-8 border border-[#41ADE1]/30 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
             {/* Average Rating */}
             <div className="text-center bg-white rounded-xl p-6 shadow-sm">
-              <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+              <div className="text-6xl font-bold bg-gradient-to-r from-[#41ADE1] to-indigo-600 bg-clip-text text-transparent mb-2">
                 {ratingStats.averageRating.toFixed(1)}
               </div>
               <div className="mb-3">{renderStars(ratingStats.averageRating)}</div>
@@ -386,9 +386,9 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
 
       {/* Review Form */}
       {showReviewForm && (
-        <div className="mb-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 shadow-md">
+        <div className="mb-8 bg-gradient-to-br from-[#41ADE1]/20 to-indigo-50 rounded-2xl p-8 border border-[#41ADE1]/40 shadow-md">
           <h4 className="text-2xl font-bold mb-6 text-gray-900 flex items-center">
-            <PencilSquareIcon className="w-7 h-7 ml-3 text-blue-600" />
+            <PencilSquareIcon className="w-7 h-7 ml-3 text-[#41ADE1]" />
             {editingReview ? AR.editReview : AR.writeReview}
           </h4>
           <form onSubmit={handleSubmitReview} className="space-y-6">
@@ -410,7 +410,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder={AR.reviewTitlePlaceholder}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all"
                 required
               />
             </div>
@@ -424,7 +424,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
                 onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
                 placeholder={AR.reviewCommentPlaceholder}
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 transition-all resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent text-gray-900 placeholder-gray-400 transition-all resize-none"
                 required
               />
             </div>
@@ -433,7 +433,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
               <button
                 type="submit"
                 disabled={submitting || formData.rating === 0}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg font-semibold"
+                className="flex-1 bg-gradient-to-r from-[#41ADE1] to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-[#3399CC] hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg font-semibold"
               >
                 {submitting ? AR.loading : AR.submit}
               </button>
@@ -482,7 +482,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
             <div key={review._id} className="bg-[#11192a] rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-start space-x-4 space-x-reverse flex-1">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#41ADE1]/200 to-indigo-600 rounded-full flex items-center justify-center shadow-md flex-shrink-0">
                     <span className="text-white font-bold text-xl">
                       {review.userId.displayName.charAt(0).toUpperCase()}
                     </span>
@@ -521,7 +521,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
                         });
                         setShowReviewForm(true);
                       }}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors group"
+                      className="p-2 text-[#41ADE1] hover:bg-[#41ADE1]/20 rounded-lg transition-colors group"
                       title={AR.editReview}
                     >
                       <PencilSquareIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -557,7 +557,7 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
                   <div className="flex space-x-3 space-x-reverse">
                     <button
                       onClick={() => handleVote(review._id, true)}
-                      className="inline-flex items-center px-4 py-2 ml-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+                      className="inline-flex items-center px-4 py-2 ml-2 bg-[#41ADE1]/20 text-[#3399CC] rounded-lg hover:bg-[#41ADE1]/30 transition-colors text-sm font-medium"
                       style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}
                     >
                       <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">

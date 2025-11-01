@@ -271,7 +271,7 @@ export default function CouponsManagementPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1]"></div>
       </div>
     );
   }
@@ -288,7 +288,7 @@ export default function CouponsManagementPage() {
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#41ADE1] to-[#3399CC] text-white rounded-lg hover:from-[#3399CC] hover:to-[#3399CC] transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <PlusIcon className="w-5 h-5" />
           إنشاء كود جديد
@@ -299,8 +299,8 @@ export default function CouponsManagementPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded-lg">
-              <TicketIcon className="w-8 h-8 text-blue-600" />
+            <div className="p-3 bg-[#41ADE1]/20 rounded-lg">
+              <TicketIcon className="w-8 h-8 text-[#41ADE1]" />
             </div>
             <div>
               <p className="text-sm text-gray-600">إجمالي الأكواد</p>
@@ -345,7 +345,7 @@ export default function CouponsManagementPage() {
               placeholder="البحث عن كود..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             />
           </div>
 
@@ -353,7 +353,7 @@ export default function CouponsManagementPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'expired')}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
           >
             <option value="all">جميع الأكواد</option>
             <option value="active">النشطة فقط</option>
@@ -403,7 +403,7 @@ export default function CouponsManagementPage() {
                   <tr key={coupon._id} className="hover:bg-gray-500 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                        <span className="font-mono font-bold text-[#41ADE1] bg-[#41ADE1]/20 px-3 py-1 rounded-lg">
                           {coupon.code}
                         </span>
                       </div>
@@ -442,7 +442,7 @@ export default function CouponsManagementPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => startEdit(coupon)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-[#41ADE1] hover:bg-[#41ADE1]/20 rounded-lg transition-colors"
                           title="تعديل"
                         >
                           <PencilSquareIcon className="w-5 h-5" />
@@ -501,7 +501,7 @@ export default function CouponsManagementPage() {
                   }
                   placeholder="SUMMER2025"
                   disabled={!!editingCoupon}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono disabled:bg-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent font-mono disabled:bg-gray-100"
                   required
                 />
               </div>
@@ -517,7 +517,7 @@ export default function CouponsManagementPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, discountType: e.target.value as 'percentage' | 'fixed' })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   >
                     <option value="percentage">نسبة مئوية (%)</option>
                     <option value="fixed">قيمة ثابتة (ر.س)</option>
@@ -537,7 +537,7 @@ export default function CouponsManagementPage() {
                     min="0"
                     max={formData.discountType === 'percentage' ? 100 : undefined}
                     step="0.01"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                     required
                   />
                 </div>
@@ -553,7 +553,7 @@ export default function CouponsManagementPage() {
                   value={formData.maxUses}
                   onChange={(e) => setFormData({ ...formData, maxUses: e.target.value })}
                   min="1"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 />
               </div>
 
@@ -567,7 +567,7 @@ export default function CouponsManagementPage() {
                   value={formData.validUntil}
                   onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 />
               </div>
@@ -582,7 +582,7 @@ export default function CouponsManagementPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, applicableTo: e.target.value as 'all' | 'courses' | 'consultations' | 'specific' })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 >
                   <option value="all">جميع الدورات والاستشارات</option>
                   <option value="courses">الدورات فقط</option>
@@ -606,7 +606,7 @@ export default function CouponsManagementPage() {
                   }
                   min="0"
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -618,7 +618,7 @@ export default function CouponsManagementPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-[#41ADE1] border-gray-300 rounded focus:ring-[#41ADE1]"
                 />
                 <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
                   تفعيل الكود
@@ -629,7 +629,7 @@ export default function CouponsManagementPage() {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-[#41ADE1] to-[#3399CC] text-white rounded-lg hover:from-[#3399CC] hover:to-[#3399CC] transition-all duration-200 font-medium"
                 >
                   {editingCoupon ? 'تحديث' : 'إنشاء'}
                 </button>

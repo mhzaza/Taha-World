@@ -313,7 +313,7 @@ export default function CoursesPage() {
                 notification.type === 'success' ? 'bg-green-100 border border-green-200 text-green-800' :
                 notification.type === 'error' ? 'bg-red-100 border border-red-200 text-red-800' :
                 notification.type === 'warning' ? 'bg-yellow-100 border border-yellow-200 text-yellow-800' :
-                'bg-blue-100 border border-blue-200 text-blue-800'
+                'bg-[#41ADE1]/30 border border-[#41ADE1]/40 text-[#41ADE1]'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -339,7 +339,7 @@ export default function CoursesPage() {
         
         <button
           onClick={() => router.push('/admin/courses/new')}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
         >
           <PlusIcon className="h-4 w-4 ml-2" />
           إنشاء كورس جديد
@@ -351,7 +351,7 @@ export default function CoursesPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <AcademicCapIcon className="h-8 w-8 text-blue-600" />
+              <AcademicCapIcon className="h-8 w-8 text-[#41ADE1]" />
             </div>
             <div className="mr-4">
               <p className="text-sm font-medium text-gray-500">إجمالي الكورسات</p>
@@ -399,7 +399,7 @@ export default function CoursesPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 placeholder="البحث في الكورسات..."
               />
             </div>
@@ -413,7 +413,7 @@ export default function CoursesPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="all">جميع الكورسات</option>
               <option value="published">منشورة</option>
@@ -504,7 +504,7 @@ export default function CoursesPage() {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => router.push(`/courses/${course._id}`)}
-                    className="text-blue-600 hover:text-blue-700 p-1"
+                    className="text-[#41ADE1] hover:text-[#3399CC] p-1"
                     title="عرض الكورس"
                   >
                     <EyeIcon className="h-4 w-4" />
@@ -532,7 +532,7 @@ export default function CoursesPage() {
                   </button>
                   <button
                     onClick={() => handleTogglePublish(course)}
-                    className={`p-1 ${course.isPublished ? 'text-orange-600 hover:text-orange-700' : 'text-blue-600 hover:text-blue-700'}`}
+                    className={`p-1 ${course.isPublished ? 'text-orange-600 hover:text-orange-700' : 'text-[#41ADE1] hover:text-[#3399CC]'}`}
                     title={course.isPublished ? 'إلغاء نشر الكورس' : 'نشر الكورس'}
                   >
                     <GlobeAltIcon className="h-4 w-4" />
@@ -571,7 +571,7 @@ export default function CoursesPage() {
           {!searchTerm && statusFilter === 'all' && (
             <button
               onClick={() => router.push('/admin/courses/new')}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-4 inline-flex items-center px-4 py-2 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors"
             >
               <PlusIcon className="h-4 w-4 ml-2" />
               إنشاء أول كورس

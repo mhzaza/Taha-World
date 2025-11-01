@@ -247,7 +247,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
             <select
               value={filters.courseId}
               onChange={(e) => setFilters(prev => ({ ...prev, courseId: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="">{AR.allCourses}</option>
               {/* You can populate this with actual courses */}
@@ -261,7 +261,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
             <select
               value={filters.isVisible}
               onChange={(e) => setFilters(prev => ({ ...prev, isVisible: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             >
               <option value="">{AR.allStatuses}</option>
               <option value="true">{AR.showVisible}</option>
@@ -278,7 +278,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
               placeholder={AR.searchPlaceholder}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
             />
           </div>
         </div>
@@ -319,8 +319,8 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center ml-3">
-                      <span className="text-blue-600 font-semibold text-sm">
+                    <div className="w-8 h-8 bg-[#41ADE1]/30 rounded-full flex items-center justify-center ml-3">
+                      <span className="text-[#41ADE1] font-semibold text-sm">
                         {review.userId.displayName.charAt(0)}
                       </span>
                     </div>
@@ -356,7 +356,7 @@ export default function ReviewManager({ courseId }: ReviewManagerProps) {
                     </span>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       review.isVerified 
-                        ? 'bg-blue-100 text-blue-800' 
+                        ? 'bg-[#41ADE1]/30 text-[#41ADE1]' 
                         : 'bg-gray-700 text-gray-800'
                     }`}>
                       {review.isVerified ? AR.verified : AR.notVerified}

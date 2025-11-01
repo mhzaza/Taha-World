@@ -345,7 +345,7 @@ router.get('/my-bookings', authenticate, [
     const [bookings, total] = await Promise.all([
       ConsultationBooking.find(filter)
         .populate('consultationId', 'title duration price category image')
-        .populate('orderId', 'amount status transactionId paymentMethod')
+        .populate('orderId', 'amount status transactionId paymentMethod bankTransfer')
         .sort({ preferredDate: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -704,7 +704,7 @@ router.get('/admin/bookings', authenticate, [
       ConsultationBooking.find(filter)
         .populate('consultationId', 'title duration price category image')
         .populate('userId', 'displayName email phone avatar')
-        .populate('orderId', 'amount status transactionId paymentMethod')
+        .populate('orderId', 'amount status transactionId paymentMethod bankTransfer')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -747,7 +747,7 @@ router.get('/admin/bookings/:id', authenticate, async (req, res) => {
     const booking = await ConsultationBooking.findById(req.params.id)
       .populate('consultationId', 'title description duration price category image')
       .populate('userId', 'displayName email phone avatar')
-      .populate('orderId', 'amount status transactionId paymentMethod');
+      .populate('orderId', 'amount status transactionId paymentMethod bankTransfer');
 
     if (!booking) {
       return res.status(404).json({
@@ -810,6 +810,23 @@ router.put('/admin/bookings/:id', authenticate, [
     // Update fields
     const { status, adminNotes, internalNotes, consultantNotes, isPriority } = req.body;
     
+    // Check if trying to complete booking without verified bank transfer
+    if (status === 'completed') {
+      // Populate orderId to check payment method
+      await booking.populate('orderId', 'paymentMethod bankTransfer');
+      
+      const order = booking.orderId;
+      if (order && order.paymentMethod === 'bank_transfer') {
+        // Check if bank transfer is verified
+        if (!order.bankTransfer || order.bankTransfer.verificationStatus !== 'verified') {
+          return res.status(400).json({
+            error: 'Cannot complete booking without verified bank transfer',
+            arabic: 'لا يمكن تغيير حالة الحجز إلى "مكتمل" إلا بعد التحقق من التحويل البنكي. يرجى التحقق من التحويل البنكي أولاً.'
+          });
+        }
+      }
+    }
+    
     if (status) booking.status = status;
     if (adminNotes !== undefined) booking.adminNotes = adminNotes;
     if (internalNotes !== undefined) booking.internalNotes = internalNotes;
@@ -821,7 +838,10 @@ router.put('/admin/bookings/:id', authenticate, [
     // Populate before sending response
     await booking.populate('consultationId', 'title description duration price category image');
     await booking.populate('userId', 'displayName email phone avatar');
-    await booking.populate('orderId', 'amount status transactionId paymentMethod');
+    await booking.populate({
+      path: 'orderId',
+      select: 'amount status transactionId paymentMethod bankTransfer'
+    });
 
     res.json({
       success: true,

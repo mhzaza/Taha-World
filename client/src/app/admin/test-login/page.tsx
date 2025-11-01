@@ -72,7 +72,7 @@ export default function TestLoginPage() {
           <button
             onClick={handleTestLogin}
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#41ADE1] hover:bg-[#3399CC] disabled:opacity-50"
           >
             {loading ? 'جاري الاختبار...' : 'اختبار تسجيل الدخول'}
           </button>
@@ -86,11 +86,11 @@ export default function TestLoginPage() {
         )}
         
         <div className="text-center">
-          <a href="/admin/debug" className="text-blue-600 hover:text-blue-500">
+          <a href="/admin/debug" className="text-[#41ADE1] hover:text-[#41ADE1]">
             صفحة التشخيص
           </a>
           {' | '}
-          <a href="/admin/login" className="text-blue-600 hover:text-blue-500">
+          <a href="/admin/login" className="text-[#41ADE1] hover:text-[#41ADE1]">
             صفحة تسجيل الدخول العادية
           </a>
         </div>

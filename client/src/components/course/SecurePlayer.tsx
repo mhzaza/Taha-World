@@ -144,12 +144,12 @@ export default function SecurePlayer({ url, title, autoplay = false }: SecurePla
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
           <div className="text-center text-white">
-            <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <div className="w-16 h-16 bg-[#41ADE1] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
               <PlayIcon className="w-8 h-8" />
             </div>
             <h3 className="text-lg font-semibold mb-2">جاري تحميل الفيديو...</h3>
             <div className="w-32 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
-              <div className="h-full bg-blue-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+              <div className="h-full bg-[#41ADE1] rounded-full animate-pulse" style={{ width: '60%' }}></div>
             </div>
           </div>
         </div>

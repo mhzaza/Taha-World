@@ -76,7 +76,7 @@ export default function PayPalButton({
     <button
       onClick={handlePayment}
       disabled={loading || !user}
-      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+      className="w-full bg-[#41ADE1] hover:bg-[#3399CC] disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
     >
       {loading ? (
         <>

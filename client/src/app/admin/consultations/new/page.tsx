@@ -95,7 +95,7 @@ export default function NewConsultationPage() {
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="text-blue-600 hover:text-blue-700 mb-4"
+            className="text-[#41ADE1] hover:text-[#3399CC] mb-4"
           >
             ← العودة
           </button>
@@ -116,7 +116,7 @@ export default function NewConsultationPage() {
                   type="number"
                   value={formData.consultationId}
                   onChange={(e) => setFormData(prev => ({ ...prev, consultationId: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                   min="1"
                 />
@@ -130,7 +130,7 @@ export default function NewConsultationPage() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 />
               </div>
@@ -143,7 +143,7 @@ export default function NewConsultationPage() {
                   type="text"
                   value={formData.titleEn}
                   onChange={(e) => setFormData(prev => ({ ...prev, titleEn: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 />
               </div>
 
@@ -155,7 +155,7 @@ export default function NewConsultationPage() {
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 />
               </div>
@@ -168,7 +168,7 @@ export default function NewConsultationPage() {
                   value={formData.descriptionEn}
                   onChange={(e) => setFormData(prev => ({ ...prev, descriptionEn: e.target.value }))}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 />
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function NewConsultationPage() {
                   type="text"
                   value={formData.duration}
                   onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   placeholder="60 دقيقة"
                   required
                 />
@@ -201,7 +201,7 @@ export default function NewConsultationPage() {
                   type="number"
                   value={formData.durationMinutes}
                   onChange={(e) => setFormData(prev => ({ ...prev, durationMinutes: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   min="15"
                   max="480"
                   required
@@ -223,7 +223,7 @@ export default function NewConsultationPage() {
                   type="number"
                   value={formData.price}
                   onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -239,7 +239,7 @@ export default function NewConsultationPage() {
                   type="number"
                   value={formData.originalPrice}
                   onChange={(e) => setFormData(prev => ({ ...prev, originalPrice: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -253,7 +253,7 @@ export default function NewConsultationPage() {
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 >
                   <option value="USD">دولار أمريكي (USD)</option>
@@ -276,7 +276,7 @@ export default function NewConsultationPage() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 >
                   <option value="sports">رياضية</option>
@@ -295,7 +295,7 @@ export default function NewConsultationPage() {
                 <select
                   value={formData.consultationType}
                   onChange={(e) => setFormData(prev => ({ ...prev, consultationType: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   required
                 >
                   <option value="online">أونلاين فقط</option>
@@ -318,12 +318,12 @@ export default function NewConsultationPage() {
                   onChange={(e) => setNewFeature(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
                   placeholder="أضف ميزة جديدة"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                 />
                 <button
                   type="button"
                   onClick={addFeature}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-4 py-2 bg-[#41ADE1] text-white rounded-md hover:bg-[#3399CC]"
                 >
                   إضافة
                 </button>
@@ -333,13 +333,13 @@ export default function NewConsultationPage() {
                 {formData.features.map((feature, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-[#41ADE1]/30 text-[#41ADE1]"
                   >
                     {feature}
                     <button
                       type="button"
                       onClick={() => removeFeature(feature)}
-                      className="mr-1 text-blue-600 hover:text-blue-800"
+                      className="mr-1 text-[#41ADE1] hover:text-[#41ADE1]"
                     >
                       ×
                     </button>
@@ -362,7 +362,7 @@ export default function NewConsultationPage() {
                   type="number"
                   value={formData.maxBookingsPerDay}
                   onChange={(e) => setFormData(prev => ({ ...prev, maxBookingsPerDay: Number(e.target.value) }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent"
                   min="1"
                   max="20"
                 />
@@ -374,7 +374,7 @@ export default function NewConsultationPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#41ADE1] focus:ring-[#41ADE1] border-gray-300 rounded"
                 />
                 <label htmlFor="isActive" className="mr-2 block text-sm text-gray-900">
                   نشط (متاح للحجز)
@@ -396,7 +396,7 @@ export default function NewConsultationPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'جاري الإنشاء...' : 'إنشاء الاستشارة'}
             </button>

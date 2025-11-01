@@ -85,7 +85,7 @@ export default function AdminDashboard() {
       description: 'أضف كورساً جديداً للمنصة',
       icon: AcademicCapIcon,
       href: '/admin/courses/new',
-      color: 'bg-blue-500 hover:bg-blue-600'
+      color: 'bg-[#41ADE1] hover:bg-[#3399CC]'
     },
     {
       id: 'view-orders',
@@ -319,7 +319,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <ShoppingCartIcon className="h-8 w-8 text-blue-600" />
+              <ShoppingCartIcon className="h-8 w-8 text-[#41ADE1]" />
             </div>
             <div className="mr-4 flex-1">
               <p className="text-sm font-medium text-gray-600">إجمالي الطلبات</p>
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                 {stats?.orders.totalOrders || 0}
               </p>
               <div className="flex items-center mt-1">
-                <ShoppingCartIcon className="h-4 w-4 text-blue-500 ml-1" />
+                <ShoppingCartIcon className="h-4 w-4 text-[#41ADE1] ml-1" />
                 <span className="text-sm text-gray-600">
                   طلب هذا الشهر
                 </span>
@@ -408,7 +408,7 @@ export default function AdminDashboard() {
                     ? 'bg-yellow-50 border-yellow-200'
                     : alert.type === 'error'
                     ? 'bg-red-50 border-red-200'
-                    : 'bg-blue-50 border-blue-200'
+                    : 'bg-[#41ADE1]/20 border-[#41ADE1]/40'
                 }`}
               >
                 <div className="flex items-start">
@@ -418,7 +418,7 @@ export default function AdminDashboard() {
                         ? 'text-yellow-400'
                         : alert.type === 'error'
                         ? 'text-red-400'
-                        : 'text-blue-400'
+                        : 'text-[#41ADE1]/80'
                     }`}
                   />
                   <div className="flex-1">
@@ -428,7 +428,7 @@ export default function AdminDashboard() {
                           ? 'text-yellow-800'
                           : alert.type === 'error'
                           ? 'text-red-800'
-                          : 'text-blue-800'
+                          : 'text-[#41ADE1]'
                       }`}
                     >
                       {alert.title}
@@ -439,7 +439,7 @@ export default function AdminDashboard() {
                           ? 'text-yellow-700'
                           : alert.type === 'error'
                           ? 'text-red-700'
-                          : 'text-blue-700'
+                          : 'text-[#3399CC]'
                       }`}
                     >
                       {alert.message}
@@ -515,7 +515,7 @@ export default function AdminDashboard() {
                           </p>
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                             isCourse 
-                              ? 'bg-blue-100 text-blue-800' 
+                              ? 'bg-[#41ADE1]/30 text-[#41ADE1]' 
                               : 'bg-purple-100 text-purple-800'
                           }`}>
                             {isCourse ? (
@@ -565,7 +565,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="px-6 py-3 bg-gray-50 text-center">
-            <Link href="/admin/orders" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link href="/admin/orders" className="text-sm text-[#41ADE1] hover:text-[#3399CC]">
               عرض جميع الطلبات
             </Link>
           </div>

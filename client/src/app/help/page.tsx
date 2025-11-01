@@ -100,16 +100,16 @@ const HelpPage = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-700 text-white py-20">
+      <section className="bg-gradient-to-br from-[#41ADE1] via-[#3399CC] to-indigo-700 text-white py-20">
         <Container>
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-6">
-              <QuestionMarkCircleIcon className="w-16 h-16 text-blue-300 ml-4" />
+              <QuestionMarkCircleIcon className="w-16 h-16 text-[#41ADE1]/80 ml-4" />
               <h1 className="text-4xl md:text-5xl font-bold">
                 مركز المساعدة
               </h1>
             </div>
-            <p className="text-xl md:text-2xl text-blue-100 leading-relaxed mb-8">
+            <p className="text-xl md:text-2xl text-[#41ADE1]/40 leading-relaxed mb-8">
               نحن هنا لمساعدتك في كل خطوة من رحلتك التعليمية
             </p>
             
@@ -120,9 +120,9 @@ const HelpPage = () => {
                 <input
                   type="text"
                   placeholder="ابحث عن إجابة..."
-                  className="w-full px-12 py-4 rounded-lg text-gray-900 text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full px-12 py-4 rounded-lg text-gray-900 text-lg focus:outline-none focus:ring-2 focus:ring-[#41ADE1]/60"
                 />
-                <button className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors">
+                <button className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-[#41ADE1] hover:bg-[#3399CC] text-white px-6 py-2 rounded-md transition-colors">
                   بحث
                 </button>
               </div>
@@ -144,8 +144,8 @@ const HelpPage = () => {
                     key={index}
                     className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200 text-center cursor-pointer"
                   >
-                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-4">
-                      <IconComponent className="w-6 h-6 text-blue-600" />
+                    <div className="flex items-center justify-center w-12 h-12 bg-[#41ADE1]/30 rounded-lg mx-auto mb-4">
+                      <IconComponent className="w-6 h-6 text-[#41ADE1]" />
                     </div>
                     <h3 className="font-semibold text-gray-900 mb-2">{action.title}</h3>
                     <p className="text-gray-600 text-sm">{action.description}</p>
@@ -170,13 +170,13 @@ const HelpPage = () => {
               {helpCategories.map((category, index) => {
                 const IconComponent = category.icon;
                 const colorClasses: Record<string, string> = {
-                  blue: 'bg-blue-50 border-blue-200 hover:border-blue-300',
+                  blue: 'bg-[#41ADE1]/20 border-[#41ADE1]/40 hover:border-[#41ADE1]/60',
                   green: 'bg-green-50 border-green-200 hover:border-green-300',
                   purple: 'bg-purple-50 border-purple-200 hover:border-purple-300',
                   orange: 'bg-orange-50 border-orange-200 hover:border-orange-300'
                 };
                 const iconClasses: Record<string, string> = {
-                  blue: 'text-blue-600',
+                  blue: 'text-[#41ADE1]',
                   green: 'text-green-600',
                   purple: 'text-purple-600',
                   orange: 'text-orange-600'
@@ -371,23 +371,23 @@ const HelpPage = () => {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-blue-900 text-white">
+      <section className="py-16 bg-[#41ADE1] text-white">
         <Container>
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-4">لم تجد ما تبحث عنه؟</h2>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-xl text-[#41ADE1]/40 mb-8">
               فريق الدعم لدينا متاح لمساعدتك في أي وقت
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/contact"
-                className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                className="bg-white text-[#41ADE1] px-8 py-3 rounded-lg font-semibold hover:bg-[#41ADE1]/20 transition-colors"
               >
                 تواصل معنا
               </Link>
               <Link
                 href="/faq"
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-colors"
+                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#41ADE1] transition-colors"
               >
                 الأسئلة الشائعة
               </Link>

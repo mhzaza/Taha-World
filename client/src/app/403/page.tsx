@@ -40,7 +40,7 @@ export default function ForbiddenPage() {
           
           <button
             onClick={() => router.push('/')}
-            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-[#41ADE1] text-white rounded-lg hover:bg-[#3399CC] transition-colors duration-200"
           >
             <HomeIcon className="h-5 w-5 ml-2" />
             الصفحة الرئيسية
@@ -59,7 +59,7 @@ export default function ForbiddenPage() {
           <div className="mt-4">
             <a
               href="mailto:admin@tahasabag.com"
-              className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+              className="text-[#41ADE1] hover:text-[#3399CC] font-medium text-sm"
             >
               admin@tahasabag.com
             </a>

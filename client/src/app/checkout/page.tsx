@@ -514,7 +514,7 @@ function CheckoutContent() {
         <Header />
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-6"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#41ADE1]/30 border-t-[#41ADE1] mx-auto mb-6"></div>
             <p className="text-gray-700 text-lg font-medium">جاري تحميل معلومات الدفع...</p>
           </div>
         </div>
@@ -536,7 +536,7 @@ function CheckoutContent() {
             <p className="text-gray-600 mb-6">عذراً، لا يمكن العثور على المنتج المطلوب</p>
             <button
               onClick={() => window.history.back()}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl"
+              className="bg-gradient-to-r from-[#41ADE1] to-indigo-600 hover:from-[#3399CC] hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl"
             >
               العودة
             </button>
@@ -557,7 +557,7 @@ function CheckoutContent() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
-            <svg className="w-10 h-10 ml-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-10 h-10 ml-3 text-[#41ADE1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
             إتمام عملية الدفع
@@ -571,7 +571,7 @@ function CheckoutContent() {
         {/* Payment Method Selection */}
               <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                  <div className="w-2 h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full ml-3"></div>
+                  <div className="w-2 h-8 bg-gradient-to-b from-[#41ADE1] to-indigo-600 rounded-full ml-3"></div>
                   اختر طريقة الدفع
                 </h2>
             
@@ -581,13 +581,13 @@ function CheckoutContent() {
                 onClick={() => setSelectedMethod('paypal')}
                     className={`w-full p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
                   selectedMethod === 'paypal'
-                        ? 'border-blue-500 bg-blue-500 shadow-md'
-                        : 'border-gray-200 hover:border-blue-300 bg-white'
+                        ? 'border-[#41ADE1] bg-[#41ADE1] shadow-md'
+                        : 'border-gray-200 hover:border-[#41ADE1]/50 bg-white'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                        <div className="w-20 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center shadow-sm p-3 border border-blue-200">
+                        <div className="w-20 h-16 bg-gradient-to-br from-[#41ADE1]/20 to-[#41ADE1]/30 rounded-xl flex items-center justify-center shadow-sm p-3 border border-[#41ADE1]/30">
                           <div className="relative w-full h-full">
                             <Image
                               src="/payment logos/paypal.png"
@@ -599,12 +599,12 @@ function CheckoutContent() {
                     </div>
                     <div className="text-right">
                           <h3 className={`font-bold text-lg ${selectedMethod === 'paypal' ? 'text-white' : 'text-gray-900'}`}>PayPal</h3>
-                          <p className={`text-sm ${selectedMethod === 'paypal' ? 'text-blue-100' : 'text-gray-600'}`}>دفع فوري وآمن عبر PayPal</p>
+                          <p className={`text-sm ${selectedMethod === 'paypal' ? 'text-[#41ADE1]/40' : 'text-gray-600'}`}>دفع فوري وآمن عبر PayPal</p>
                     </div>
                   </div>
                       <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all ${
                     selectedMethod === 'paypal'
-                      ? 'border-white bg-blue-500'
+                      ? 'border-white bg-[#41ADE1]'
                           : 'border-white'
                   }`}>
                     {selectedMethod === 'paypal' && (
@@ -801,17 +801,17 @@ function CheckoutContent() {
                           <label
                             htmlFor="receipt-upload"
                             className={`flex flex-col items-center justify-center w-full h-48 px-4 transition bg-white border-2 border-dashed rounded-xl appearance-none cursor-pointer hover:border-green-400 focus:outline-none group ${
-                              uploadingReceipt ? 'border-blue-400 bg-blue-50' : 'border-gray-300'
+                              uploadingReceipt ? 'border-[#41ADE1]/80 bg-[#41ADE1]/20' : 'border-gray-300'
                             }`}
                           >
                             {uploadingReceipt ? (
                               <div className="flex flex-col items-center justify-center">
-                                <svg className="animate-spin h-12 w-12 text-blue-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <svg className="animate-spin h-12 w-12 text-[#41ADE1] mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                <p className="text-lg font-semibold text-blue-700">جاري رفع الصورة...</p>
-                                <p className="text-sm text-blue-600 mt-1">يرجى الانتظار</p>
+                                <p className="text-lg font-semibold text-[#3399CC]">جاري رفع الصورة...</p>
+                                <p className="text-sm text-[#41ADE1] mt-1">يرجى الانتظار</p>
                               </div>
                             ) : (
                               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -877,7 +877,7 @@ function CheckoutContent() {
             <button
               onClick={handleProceed}
               disabled={!selectedMethod || processing}
-                  className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
+                  className="w-full mt-6 bg-gradient-to-r from-[#41ADE1] to-indigo-600 hover:from-[#3399CC] hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none"
                 >
                   {processing ? (
                     <span className="flex items-center justify-center">
@@ -900,7 +900,7 @@ function CheckoutContent() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 sticky top-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                <div className="w-2 h-6 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full ml-3"></div>
+                <div className="w-2 h-6 bg-gradient-to-b from-[#41ADE1] to-indigo-600 rounded-full ml-3"></div>
                 ملخص الطلب
               </h2>
             
@@ -939,13 +939,13 @@ function CheckoutContent() {
                           setCouponError(null)
                         }}
                         placeholder="أدخل كود الخصم"
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all uppercase"
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-[#41ADE1] focus:border-transparent transition-all uppercase"
                         disabled={applyingCoupon}
                       />
                       <button
                         onClick={handleApplyCoupon}
                         disabled={applyingCoupon || !couponCode.trim()}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+                        className="px-6 py-3 bg-gradient-to-r from-[#41ADE1] to-indigo-600 hover:from-[#3399CC] hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg whitespace-nowrap"
                       >
                         {applyingCoupon ? 'جاري التحقق...' : 'تطبيق'}
                       </button>
@@ -1008,10 +1008,10 @@ function CheckoutContent() {
                 </div>
               </div>
               
-              <div className="bg-[#11192a] rounded-xl p-4 border border-blue-200">
+              <div className="bg-[#11192a] rounded-xl p-4 border border-[#41ADE1]/30">
                 <div className="flex justify-between items-center">
                   <span className="text-white font-bold text-lg">المجموع:</span>
-                  <span className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                  <span className="text-3xl font-bold bg-gradient-to-r from-[#41ADE1] to-indigo-400 bg-clip-text text-transparent">
                     {calculateFinalPrice()}{currency}
                   </span>
                 </div>
@@ -1048,7 +1048,7 @@ export default function CheckoutPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1]"></div>
       </div>
     }>
       <CheckoutContent />
