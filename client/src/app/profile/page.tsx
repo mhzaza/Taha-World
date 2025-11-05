@@ -568,7 +568,6 @@ const ProfilePage = () => {
                             <option value="">اختر الجنس</option>
                             <option value="male">ذكر</option>
                             <option value="female">أنثى</option>
-                            <option value="other">آخر</option>
                           </select>
                         </div>
                         <div>

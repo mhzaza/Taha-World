@@ -66,7 +66,7 @@ interface ConsultationBookingDetails {
   };
   userDetails?: {
     age?: number;
-    gender?: 'male' | 'female' | 'other';
+    gender?: 'male' | 'female';
     weight?: number;
     height?: number;
     fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
@@ -307,8 +307,6 @@ export default function ConsultationDetailsModal({
         return 'ذكر';
       case 'female':
         return 'أنثى';
-      case 'other':
-        return 'آخر';
       default:
         return 'غير محدد';
     }

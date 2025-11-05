@@ -11,7 +11,7 @@ export interface User {
   location?: string;
   birthDate?: string;
   bio?: string;
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'male' | 'female';
   fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
   goals?: string[];
   enrolledCourses: string[];

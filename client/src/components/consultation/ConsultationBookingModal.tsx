@@ -10,7 +10,7 @@ interface User {
   email: string;
   displayName: string;
   phone?: string;
-  gender?: 'male' | 'female' | 'other';
+  gender?: 'male' | 'female';
   fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
   goals?: string[];
 }
@@ -459,7 +459,7 @@ export default function ConsultationBookingModal({
                       <div>
                         <span className="text-gray-400">الجنس:</span>
                         <p className="text-white font-medium">
-                          {user.gender === 'male' ? 'ذكر' : user.gender === 'female' ? 'أنثى' : 'آخر'}
+                          {user.gender === 'male' ? 'ذكر' : user.gender === 'female' ? 'أنثى' : 'غير محدد'}
                         </p>
                       </div>
                     )}
@@ -499,7 +499,6 @@ export default function ConsultationBookingModal({
                       <option value="">اختر</option>
                       <option value="male">ذكر</option>
                       <option value="female">أنثى</option>
-                      <option value="other">آخر</option>
                     </select>
                   </div>
 

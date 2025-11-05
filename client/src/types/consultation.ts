@@ -73,7 +73,7 @@ export interface ConsultationBooking {
   };
   userDetails: {
     age?: number;
-    gender?: 'male' | 'female' | 'other';
+    gender?: 'male' | 'female';
     weight?: number;
     height?: number;
     fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';
@@ -171,7 +171,7 @@ export interface ConsultationBookingRequest {
   meetingType: 'online' | 'in_person';
   userDetails: {
     age?: number;
-    gender?: 'male' | 'female' | 'other';
+    gender?: 'male' | 'female';
     weight?: number;
     height?: number;
     fitnessLevel?: 'beginner' | 'intermediate' | 'advanced';

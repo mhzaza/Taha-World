@@ -100,7 +100,7 @@ export default function UserProfile() {
         location: profileForm.location,
         birthDate: profileForm.birthDate,
         bio: profileForm.bio,
-        gender: profileForm.gender as 'male' | 'female' | 'other' | undefined,
+        gender: profileForm.gender as 'male' | 'female' | undefined,
         fitnessLevel: profileForm.fitnessLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
         goals: profileForm.goals
       });
@@ -113,7 +113,7 @@ export default function UserProfile() {
           location: profileForm.location,
           birthDate: profileForm.birthDate,
           bio: profileForm.bio,
-          gender: profileForm.gender as 'male' | 'female' | 'other' | undefined,
+          gender: profileForm.gender as 'male' | 'female' | undefined,
           fitnessLevel: profileForm.fitnessLevel as 'beginner' | 'intermediate' | 'advanced' | undefined,
           goals: profileForm.goals
         });
@@ -278,7 +278,6 @@ export default function UserProfile() {
             <option value="">اختر الجنس</option>
             <option value="male">ذكر</option>
             <option value="female">أنثى</option>
-            <option value="other">آخر</option>
           </select>
         </div>
 
