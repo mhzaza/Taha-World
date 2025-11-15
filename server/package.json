@@ -11,7 +11,8 @@
     "test:db": "node src/scripts/test-connection.js",
     "test:api": "node src/scripts/test-api.js",
     "test:integration": "npm run test:db && npm run test:api",
-    "verify": "npm run test:db && npm run seed && npm run test:api"
+    "verify": "npm run test:db && npm run seed && npm run test:api",
+    "build": "cd .. && cd client && npm install && npm run build"
   },
   "dependencies": {
     "@paypal/paypal-server-sdk": "^1.1.0",
