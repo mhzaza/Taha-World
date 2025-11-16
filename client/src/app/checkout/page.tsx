@@ -1047,8 +1047,15 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1]"></div>
+      <div className="min-h-screen">
+        <Header />
+        <div className="max-w-6xl mx-auto px-4 py-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#41ADE1]/30 border-t-[#41ADE1] mx-auto mb-6"></div>
+            <p className="text-gray-700 text-lg font-medium">جاري تحميل معلومات الدفع...</p>
+          </div>
+        </div>
+        <Footer />
       </div>
     }>
       <CheckoutContent />

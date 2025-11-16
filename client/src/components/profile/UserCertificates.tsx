@@ -20,7 +20,7 @@ export default function UserCertificates() {
         if (response.data.success) {
           setCertificates(response.data.certificates || []);
         } else {
-          throw new Error(response.data.error || 'فشل في تحميل الشهادات');
+          throw new Error('فشل في تحميل الشهادات');
         }
       } catch (err: any) {
         console.error('Error fetching certificates:', err);

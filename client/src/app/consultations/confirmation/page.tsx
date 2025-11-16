@@ -1,13 +1,30 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { consultationTypes } from '@/data/consultations'
 
-export default function ConfirmationPage() {
+interface BookingDetails {
+  id: string;
+  consultation: {
+    id: number;
+    title: string;
+    description: string;
+    duration: string;
+    price: string;
+    category: string;
+    features: string[];
+    image?: string;
+  };
+  date: string;
+  time: string;
+  status: 'confirmed';
+}
+
+function ConfirmationContent() {
   const searchParams = useSearchParams()
-  const [bookingDetails, setBookingDetails] = useState(null)
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null)
 
   useEffect(() => {
     const date = searchParams.get('date')
@@ -18,17 +35,19 @@ export default function ConfirmationPage() {
       const consultation = consultationTypes.find(c => c.id === parseInt(type))
       const bookingId = 'BK' + Date.now().toString().slice(-6)
       
-      setBookingDetails({
-        id: bookingId,
-        consultation,
-        date,
-        time,
-        status: 'confirmed'
-      })
+      if (consultation) {
+        setBookingDetails({
+          id: bookingId,
+          consultation,
+          date,
+          time,
+          status: 'confirmed'
+        })
+      }
     }
   }, [searchParams])
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('ar-EG', {
       calendar: 'gregory',
@@ -228,5 +247,20 @@ export default function ConfirmationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto mb-4"></div>
+          <p className="text-gray-300">جاري تحميل تفاصيل الحجز...</p>
+        </div>
+      </div>
+    }>
+      <ConfirmationContent />
+    </Suspense>
   )
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Course } from '@/lib/api';
+import type { Course } from '@/types';
 
 interface CertifiedUserReviewPopupProps {
   course: Course;

@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
 // Extend Window interface to include gtag
 declare global {
@@ -18,7 +18,7 @@ const pageview = (url: string) => {
   }
 };
 
-export const GoogleAnalytics = () => {
+function GoogleAnalyticsInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -30,4 +30,12 @@ export const GoogleAnalytics = () => {
   }, [pathname, searchParams]);
 
   return null;
+}
+
+export const GoogleAnalytics = () => {
+  return (
+    <Suspense fallback={null}>
+      <GoogleAnalyticsInner />
+    </Suspense>
+  );
 };

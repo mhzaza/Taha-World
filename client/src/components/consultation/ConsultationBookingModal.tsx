@@ -193,15 +193,25 @@ export default function ConsultationBookingModal({
         }
       };
 
-      const response = await consultationsAPI.createBooking(bookingData);
+      const response = await consultationsAPI.createBooking(bookingData) as { 
+        data: { 
+          success: boolean; 
+          data?: { 
+            booking: { _id: string }; 
+            paymentRequired: boolean; 
+            order?: any; 
+            nextStep?: string 
+          } 
+        } 
+      };
       
-      if (response.data.success && response.data.booking) {
-        const booking = response.data.booking as any;
+      if (response.data.success && response.data.data?.booking) {
+        const booking = response.data.data.booking;
         toast.success('تم إنشاء الحجز بنجاح!');
         onBookingComplete(booking._id);
 
         // If payment is required, redirect to checkout
-        if (response.data.paymentRequired) {
+        if (response.data.data.paymentRequired) {
           router.push(`/checkout?bookingId=${booking._id}&consultationId=${consultation._id}`);
         } else {
           // No payment required, go to booking details

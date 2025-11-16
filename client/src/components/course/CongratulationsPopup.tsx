@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Course, Certificate } from '@/lib/api';
+import { Certificate } from '@/lib/api';
+import type { Course } from '@/types';
 
 interface CongratulationsPopupProps {
   course: Course;

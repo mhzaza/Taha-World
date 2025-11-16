@@ -192,8 +192,8 @@ export default function CoursePage() {
         const responseData = await response.json() as CourseResponse;
         console.log('Backend response:', responseData);
         
-        // Extract course data from backend response structure
-        const courseData = responseData.course || responseData;
+        // Extract course data from backend response structure and normalize to a loose type
+        const courseData = (responseData.course || responseData) as any;
         console.log('Course data:', courseData);
 
         // Normalize the course data to match frontend types
@@ -217,7 +217,7 @@ export default function CoursePage() {
 
         const normalizedCourse: Course = {
           ...courseData,
-          id: courseData._id || courseData.id,
+          id: courseData._id ?? courseData.id ?? courseId,
           lessons: normalizedLessons,
           createdAt: new Date(courseData.createdAt),
           updatedAt: new Date(courseData.updatedAt),
@@ -232,7 +232,7 @@ export default function CoursePage() {
 
         setCourse(normalizedCourse);
         // Store the original MongoDB ID for API calls
-        setCourseMongoId(courseData._id || courseId);
+        setCourseMongoId(courseData._id ?? courseId);
         setIsEnrolled(courseData.isEnrolled || false);
         
         // Debug logging

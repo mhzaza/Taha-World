@@ -113,8 +113,15 @@ export const useCourses = (initialParams?: SearchParams) => {
   const fetchStats = async () => {
     try {
       const response = await courseAPI.getStats();
-      if (response.data.success) {
-        setStats(response.data.stats);
+      if (response.data && response.data.data) {
+        // The API returns the stats in response.data.data
+        const statsData = response.data.data;
+        setStats({
+          totalCourses: statsData.totalCourses,
+          totalEnrollments: statsData.totalEnrollments,
+          averageRating: statsData.averageRating,
+          categories: statsData.categories || 0 // Fallback to 0 if categories is not provided
+        });
       }
     } catch (err) {
       console.error('Error fetching course stats:', err);

@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { OrdersContent } from './OrdersContent';
 
-const OrdersPage = () => {
+export default function OrdersPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center min-h-[400px]">
@@ -13,7 +13,4 @@ const OrdersPage = () => {
       <OrdersContent />
     </Suspense>
   );
-};
-
-export default OrdersPage;
-
+}
