@@ -54,10 +54,10 @@ export default function LessonsList({
         {/* Header */}
         <div className="p-6 border-b border-gray-600">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">محتوى الكورس</h3>
+            <h3 className="text-lg font-bold text-white">محتوى الكورس</h3>
             <button
               onClick={onClose}
-              className="lg:hidden p-2 text-gray-400 hover:text-gray-600"
+              className="lg:hidden p-2 text-gray-300 hover:text-white"
             >
               <XMarkIcon className="w-5 h-5" />
             </button>
@@ -65,13 +65,13 @@ export default function LessonsList({
           
           {/* Progress Bar */}
           <div className="mb-4">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+            <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
               <span>التقدم</span>
               <span>{Math.round(progressPercentage)}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-700 rounded-full h-2">
               <div 
-                className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                className="bg-[#41ADE1] h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
@@ -80,12 +80,12 @@ export default function LessonsList({
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4 text-center">
             <div className="bg-gray-700 rounded-lg p-3">
-              <div className="text-lg font-bold text-gray-900">{completedCount}</div>
-              <div className="text-xs text-gray-600">مكتمل</div>
+              <div className="text-lg font-bold text-white">{completedCount}</div>
+              <div className="text-xs text-gray-300">مكتمل</div>
             </div>
             <div className="bg-gray-700 rounded-lg p-3">
-              <div className="text-lg font-bold text-gray-900">{totalLessons}</div>
-              <div className="text-xs text-gray-600">إجمالي</div>
+              <div className="text-lg font-bold text-white">{totalLessons}</div>
+              <div className="text-xs text-gray-300">إجمالي</div>
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@ export default function LessonsList({
                     relative rounded-lg border transition-all duration-200 cursor-pointer
                     ${isCurrent 
                       ? 'border-[#41ADE1] bg-[#41ADE1]/20 shadow-md' 
-                      : 'border-gray-600 bg-gray-800 hover:border-gray-500 hover:shadow-sm'
+                      : 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:shadow-sm'
                     }
                     ${isLocked ? 'opacity-60' : ''}
                   `}
@@ -118,11 +118,11 @@ export default function LessonsList({
                       {/* Status Icon */}
                       <div className="flex-shrink-0 mt-1">
                         {isLocked ? (
-                          <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                            <LockClosedIcon className="w-3 h-3 text-gray-500" />
+                          <div className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center">
+                            <LockClosedIcon className="w-3 h-3 text-gray-300" />
                           </div>
                         ) : isCompleted ? (
-                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
                             <CheckIconSolid className="w-3 h-3 text-white" />
                           </div>
                         ) : isCurrent ? (
@@ -130,8 +130,8 @@ export default function LessonsList({
                             <PlayIcon className="w-3 h-3 text-white" />
                           </div>
                         ) : (
-                          <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-600">{index + 1}</span>
+                          <div className="w-6 h-6 bg-gray-700 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-300">{index + 1}</span>
                           </div>
                         )}
                       </div>
@@ -140,12 +140,12 @@ export default function LessonsList({
                       <div className="flex-1 min-w-0">
                         <h4 className={`
                           text-sm font-medium leading-5 mb-1
-                          ${isCurrent ? 'text-[#41ADE1]' : 'text-gray-900'}
+                          ${isCurrent ? 'text-[#41ADE1]' : 'text-white'}
                         `}>
                           {lesson.title}
                         </h4>
                         
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-gray-300">
                           <span>الدرس {index + 1}</span>
                           <span>•</span>
                           <span>{Math.floor(lesson.duration / 60)} دقيقة</span>
@@ -153,7 +153,7 @@ export default function LessonsList({
 
                         {/* Lesson Description (if current) */}
                         {isCurrent && lesson.description && (
-                          <p className="text-xs text-gray-600 mt-2 line-clamp-2">
+                          <p className="text-xs text-gray-300 mt-2 line-clamp-2">
                             {lesson.description}
                           </p>
                         )}
@@ -173,12 +173,12 @@ export default function LessonsList({
 
         {/* Footer */}
         {!isEnrolled && (
-          <div className="p-4 border-t border-gray-600 bg-gray-700">
+          <div className="p-4 border-t border-gray-700 bg-gray-800">
             <div className="text-center">
               <div className="mb-2">
-                <LockClosedIcon className="w-8 h-8 text-gray-400 mx-auto" />
+                <LockClosedIcon className="w-8 h-8 text-gray-300 mx-auto" />
               </div>
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-gray-300 mb-3">
                 اشترك في الكورس للوصول إلى جميع الدروس
               </p>
               <button className="w-full bg-[#41ADE1] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#3399CC] transition-colors">

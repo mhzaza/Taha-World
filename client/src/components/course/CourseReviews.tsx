@@ -469,12 +469,12 @@ export default function CourseReviews({ courseId, onReviewChange }: CourseReview
       {reviews.length === 0 ? (
         <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
           <div className="mb-4">
-            <svg className="mx-auto w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="mx-auto w-16 h-16 !text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
           </div>
-          <div className="text-gray-600 text-xl font-semibold mb-2">{AR.noReviews}</div>
-          <div className="text-gray-500">{AR.beFirst}</div>
+          <div className="!text-black text-xl font-semibold mb-2">{AR.noReviews}</div>
+          <div className="!text-black">{AR.beFirst}</div>
         </div>
       ) : (
         <div className="space-y-5">

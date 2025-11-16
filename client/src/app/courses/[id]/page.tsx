@@ -640,7 +640,7 @@ export default function CoursePage() {
             setShowCongratulations(true);
             return; // Success, exit the function
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.log(`Certificate check attempt ${attempts + 1} failed:`, error?.response?.status);
           
           if (error?.response?.status === 404 && attempts < maxAttempts - 1) {
@@ -941,10 +941,10 @@ export default function CoursePage() {
                           للحصول على محتوى الدورة الكامل، يرجى شراء الدورة أو التأكد من تفعيل اشتراكك.
                         </p>
                         <div className="max-w-md mx-auto">
-                          <div className="bg-gradient-to-r from-[#41ADE1]/20 to-indigo-50 rounded-2xl p-6 mb-6 border border-[#41ADE1]/30">
+                          <div className="bg-gray-900 rounded-2xl p-6 mb-6 border border-white/10">
                             <div className="text-center">
-                              <span className="text-4xl font-bold !text-black block">${course.price}</span>
-                              <span className="font-medium !text-black">دفعة واحدة – وصول دائم</span>
+                              <span className="text-4xl font-bold text-white block">${course.price}</span>
+                              <span className="font-medium text-gray-300">دفعة واحدة – وصول دائم</span>
                             </div>
                           </div>
                           <button

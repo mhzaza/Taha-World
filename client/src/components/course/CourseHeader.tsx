@@ -4,6 +4,7 @@ import { Course } from '@/types';
 import { StarIcon, ClockIcon, UserGroupIcon, PlayIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface CourseHeaderProps {
   course: Course;
@@ -130,22 +131,22 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
           <div className="lg:col-span-2">
             {/* Breadcrumb */}
             <nav className="mb-4">
-              <div className="flex items-center space-x-2 text-sm text-[#41ADE1]/60">
-                <a href="/" className="hover:text-white transition-colors">الرئيسية</a>
+              <div className="flex items-center space-x-2 text-sm text-white/70">
+                <Link href="/" className="hover:text-white transition-colors">الرئيسية</Link>
                 <span>/</span>
-                <a href="/courses" className="hover:text-white transition-colors">الكورسات</a>
+                <Link href="/courses" className="hover:text-white transition-colors">الكورسات</Link>
                 <span>/</span>
                 <span className="text-white">{course.title}</span>
               </div>
             </nav>
 
             {/* Course Title */}
-            <h1 className="text-3xl lg:text-4xl font-bold mb-4 leading-tight">
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4 leading-tight text-white">
               {course.title}
             </h1>
 
             {/* Course Description */}
-            <p className="text-lg text-[#41ADE1]/40 mb-6 leading-relaxed">
+            <p className="text-lg text-white/80 mb-6 leading-relaxed">
               {course.description}
             </p>
 
@@ -156,8 +157,8 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
                 <div className="flex items-center">
                   {renderStars(course.rating?.average || 0)}
                 </div>
-                <span className="text-sm font-medium">{course.rating?.average || 0}</span>
-                <span className="text-sm text-[#41ADE1]/60">({course.rating?.count || 0} طالب)</span>
+                <span className="text-sm font-medium text-white">{course.rating?.average || 0}</span>
+                <span className="text-sm text-white/70">({course.rating?.count || 0} تقييم)</span>
               </div>
 
               {/* Level */}
@@ -166,39 +167,37 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
               </span>
 
               {/* Duration */}
-              <div className="flex items-center gap-1 text-sm text-[#41ADE1]/60">
+              <div className="flex items-center gap-1 text-sm text-white/70">
                 <ClockIcon className="w-4 h-4" />
                 <span>{formatDuration(course.duration)}</span>
               </div>
 
-            {/* Students Count */}
-<div className="flex items-center gap-1 text-sm text-[#41ADE1]/60">
-  <UserGroupIcon className="w-4 h-4" />
-  <span>{(course.enrollmentCount || 0).toLocaleString()} طالب</span>
-</div>
+              {/* Students Count */}
+              <div className="flex items-center gap-1 text-sm text-white/70">
+                <UserGroupIcon className="w-4 h-4" />
+                <span>{(course.enrollmentCount || 0).toLocaleString()} طالب</span>
+              </div>
             </div>
 
-          {/* Instructor */}
-<div className="flex items-center gap-3 mb-6">
-  <div className="w-10 h-10 bg-[#3399CC] rounded-full flex items-center justify-center">
-    {/* Use instructor's name to get the first character */}
-    <span className="text-sm font-bold">{(course.instructor?.name || 'م').charAt(0)}</span>
-  </div>
-  <div>
-    <p className="text-sm text-[#41ADE1]/60">المدرب</p>
-    {/* Display the instructor's name */}
-    <p className="font-medium">{course.instructor?.name || 'غير محدد'}</p>
-  </div>
-</div>
+            {/* Instructor */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-[#3399CC] rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-white">{(course.instructor?.name || 'م').charAt(0)}</span>
+              </div>
+              <div>
+                <p className="text-sm text-white/70">المدرب</p>
+                <p className="font-medium text-white">{course.instructor?.name || 'غير محدد'}</p>
+              </div>
+            </div>
 
             {/* Progress Bar (if enrolled) */}
             {isEnrolled && (
               <div className="mb-6">
-                <div className="flex items-center justify-between text-sm mb-2">
+                <div className="flex items-center justify-between text-sm mb-2 text-white/80">
                   <span>تقدمك في الكورس</span>
                   <span>{Math.round(progress)}%</span>
                 </div>
-                <div className="w-full bg-[#3399CC] rounded-full h-2">
+                <div className="w-full bg-white/20 rounded-full h-2">
                   <div 
                     className="bg-green-400 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
@@ -265,31 +264,31 @@ export default function CourseHeader({ course, isEnrolled, progress }: CourseHea
             </div>
 
             {/* Course Stats Card */}
-            <div className="mt-6 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6">
+            <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-lg p-6 text-white">
               <h3 className="font-semibold mb-4">تفاصيل الكورس</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">عدد الدروس</span>
+                  <span className="text-white/70">عدد الدروس</span>
                   <span className="font-medium">{course.lessons.length} درس</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">المدة الإجمالية</span>
+                  <span className="text-white/70">المدة الإجمالية</span>
                   <span className="font-medium">{formatDuration(course.duration)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">المستوى</span>
+                  <span className="text-white/70">المستوى</span>
                   <span className="font-medium">{translateLevel(course.level)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">التصنيف</span>
+                  <span className="text-white/70">التصنيف</span>
                   <span className="font-medium">{translateCategory(course.category)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">اللغة</span>
+                  <span className="text-white/70">اللغة</span>
                   <span className="font-medium">العربية</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#41ADE1]/60">شهادة إتمام</span>
+                  <span className="text-white/70">شهادة إتمام</span>
                   <span className="font-medium">متاحة</span>
                 </div>
               </div>
