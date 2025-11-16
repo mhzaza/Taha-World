@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 5000;
     console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
+  // test
 })();
 
 module.exports = app;
