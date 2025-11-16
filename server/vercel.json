@@ -1,21 +1,10 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "server/src/server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "src/serverless.js", "use": "@vercel/node" }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/src/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "client/.next/server/pages/$1"
-    }
-  ],
-  "buildCommand": "cd client && npm install && npm run build",
-  "outputDirectory": "client/.next"
+    { "src": "/api/(.*)", "dest": "src/serverless.js" },
+    { "src": "/health", "dest": "src/serverless.js" }
+  ]
 }
