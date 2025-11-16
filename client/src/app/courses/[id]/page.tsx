@@ -18,6 +18,7 @@ import Footer from '@/components/layout/Footer';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { generateCertificatePDF } from '@/utils/certificateGenerator';
 import { userAPI, reviewsAPI } from '@/lib/api';
+import axios from 'axios';
 // Firebase imports removed - using API calls instead
 
 interface CourseProgress {
@@ -641,14 +642,15 @@ export default function CoursePage() {
             return; // Success, exit the function
           }
         } catch (error: unknown) {
-          console.log(`Certificate check attempt ${attempts + 1} failed:`, error?.response?.status);
+          const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+          console.log(`Certificate check attempt ${attempts + 1} failed:`, status);
           
-          if (error?.response?.status === 404 && attempts < maxAttempts - 1) {
+          if (status === 404 && attempts < maxAttempts - 1) {
             // Wait longer between retries
             const delay = (attempts + 1) * 3000; // 3s, 6s delays
             console.log(`Retrying in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
-          } else if (error?.response?.status !== 404) {
+          } else if (status !== 404) {
             // Non-404 error, don't retry
             break;
           }
