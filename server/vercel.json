@@ -16,16 +16,6 @@
       "dest": "client/.next/server/pages/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production",
-    "MONGODB_URI": "@taha_world_mongodb_uri",
-    "JWT_SECRET": "@taha_world_jwt_secret",
-    "CLOUDINARY_CLOUD_NAME": "@taha_world_cloudinary_cloud_name",
-    "CLOUDINARY_API_KEY": "@taha_world_cloudinary_api_key",
-    "CLOUDINARY_API_SECRET": "@taha_world_cloudinary_api_secret",
-    "NEXTAUTH_URL": "https://taha-world.vercel.app",
-    "NEXTAUTH_SECRET": "@taha_world_nextauth_secret"
-  },
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/.next"
 }
