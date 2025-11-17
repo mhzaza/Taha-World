@@ -76,6 +76,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Add root endpoint to avoid 404 at /
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    service: 'Taha World API',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
