@@ -161,7 +161,7 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href="/courses/arm-wrestling"
+                      href="https://taha-world.com/courses/691d949e24967ca11f96c23c"
                       className="btn-primary bg-[#41ADE1] hover:bg-[#3399CC] inline-flex items-center gap-2 text-lg px-6 py-3 shadow-lg hover:shadow-xl transition"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
