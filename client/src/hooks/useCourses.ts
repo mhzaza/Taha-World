@@ -80,8 +80,8 @@ export const useCourses = (initialParams?: SearchParams) => {
       }
 
       const queryString = queryParams.toString();
-      const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace('/api', '');
-      const response = await fetch(`${backendUrl}/api/courses${queryString ? `?${queryString}` : ''}`);
+      const { config } = await import('../lib/config');
+      const response = await fetch(`${config.API_BASE_URL}/courses${queryString ? `?${queryString}` : ''}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -112,10 +112,12 @@ export const useCourses = (initialParams?: SearchParams) => {
 
   const fetchStats = async () => {
     try {
+      console.log('Attempting to fetch course stats...');
       const response = await courseAPI.getStats();
-      if (response.data && response.data.data) {
-        // The API returns the stats in response.data.data
-        const statsData = response.data.data;
+      console.log('Course stats response:', response);
+      if (response.data && response.data.stats) {
+        // The API returns the stats in response.data.stats
+        const statsData = response.data.stats;
         setStats({
           totalCourses: statsData.totalCourses,
           totalEnrollments: statsData.totalEnrollments,
@@ -125,6 +127,14 @@ export const useCourses = (initialParams?: SearchParams) => {
       }
     } catch (err) {
       console.error('Error fetching course stats:', err);
+      if (err instanceof Error) {
+        console.error('Error details:', {
+          message: err.message,
+          code: (err as any).code,
+          config: (err as any).config,
+          response: (err as any).response
+        });
+      }
       // Keep default stats if fetch fails
     }
   };

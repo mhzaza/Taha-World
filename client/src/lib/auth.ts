@@ -16,7 +16,8 @@ export const authOptions: NextAuthOptions = {
 
         try {
           // Call your backend API to authenticate
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050'}/api/auth/login`, {
+          const { config } = await import('./config');
+          const response = await fetch(`${config.API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

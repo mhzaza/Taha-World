@@ -273,8 +273,10 @@ export interface AnalyticsData {
   };
 }
 
-// API Base URL - Use consistent environment variable
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+import { config } from './config';
+
+// API Base URL - Use centralized config
+const API_BASE_URL = config.API_BASE_URL;
 
 // Configure axios instance
 const api: AxiosInstance = axios.create({
@@ -531,12 +533,15 @@ export const courseAPI = {
 
   getCategories: () => api.get<ApiResponse<{ categories: string[] }>>('/courses/categories/list'),
 
-  getStats: () => api.get<ApiResponse<{ 
-    totalCourses: number; 
-    totalEnrollments: number; 
-    averageRating: number; 
-    categories: number; 
-  }>>('/courses/stats'),
+  getStats: () => api.get<{ 
+    success: boolean;
+    stats: {
+      totalCourses: number; 
+      totalEnrollments: number; 
+      averageRating: number; 
+      categories: number; 
+    }
+  }>('/courses/stats'),
 };
 
 // Reviews API

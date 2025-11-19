@@ -1,11 +1,25 @@
 // Environment configuration
 export const config = {
-  // API Base URL - should be set in Vercel environment variables
-  API_BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api',
+  // Get API URL (with /api suffix)
+  get API_BASE_URL() {
+    // For development, always use localhost to avoid CORS issues
+    if (process.env.NODE_ENV === 'development') {
+      return 'http://localhost:5050/api';
+    }
+    // For production, use environment variables
+    return process.env.NEXT_PUBLIC_API_URL || 
+           `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050'}/api`;
+  },
   
-  // Get base URL without /api suffix for upload endpoints
+  // Get base URL (without /api suffix) for upload endpoints
   get BASE_URL() {
-    return this.API_BASE_URL.replace('/api', '');
+    // For development, always use localhost to avoid CORS issues
+    if (process.env.NODE_ENV === 'development') {
+      return 'http://localhost:5050';
+    }
+    // For production, use environment variables
+    return process.env.NEXT_PUBLIC_BACKEND_URL || 
+           (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace('/api', '');
   },
   
   // Check if we're in production
@@ -15,8 +29,11 @@ export const config = {
   
   // Get the correct backend URL for different use cases
   getBackendUrl: (includeApi: boolean = true) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
-    return includeApi ? baseUrl : baseUrl.replace('/api', '');
+    if (includeApi) {
+      return config.API_BASE_URL;
+    } else {
+      return config.BASE_URL;
+    }
   }
 };
 

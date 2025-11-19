@@ -144,7 +144,8 @@ export default function CoursePage() {
     if (!courseId || !course) return;
     
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const { config } = await import('@/lib/config');
+      const backendUrl = config.BASE_URL;
       const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
       
       const response = await fetch(`${backendUrl}/api/courses/${courseId}`, {
@@ -184,7 +185,8 @@ export default function CoursePage() {
         setLoading(true);
         setError(null);
 
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+        const { config } = await import('@/lib/config');
+      const backendUrl = config.BASE_URL;
         
         // Get token from cookies for authentication
         const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
@@ -330,7 +332,8 @@ export default function CoursePage() {
       const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
       if (token && user?._id) {
         try {
-          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+          const { config } = await import('@/lib/config');
+      const backendUrl = config.BASE_URL;
           
           // Get individual lesson progress records for this course
           const response = await fetch(`${backendUrl}/api/users/progress?courseId=${courseId}`, {
@@ -426,7 +429,8 @@ export default function CoursePage() {
       const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
       if (!token) return;
       
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const { config } = await import('@/lib/config');
+      const backendUrl = config.BASE_URL;
       const response = await fetch(`${backendUrl}/api/users/enrollment/${courseId}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -547,7 +551,8 @@ export default function CoursePage() {
       // Save to backend
       const token = typeof window !== 'undefined' ? Cookies.get('token') : null;
       if (token && courseId) {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+        const { config } = await import('@/lib/config');
+      const backendUrl = config.BASE_URL;
         
         // Find the lesson to get its original ID
         const lesson = course?.lessons?.find(l => l.id === lessonId);

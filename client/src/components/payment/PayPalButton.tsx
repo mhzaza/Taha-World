@@ -44,7 +44,7 @@ export default function PayPalButton({
       }
 
       // Create PayPal order
-      const response = await fetch('http://localhost:5050/api/payment/paypal/create-order', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api'}/payment/paypal/create-order`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

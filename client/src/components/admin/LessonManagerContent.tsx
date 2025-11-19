@@ -150,7 +150,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
         return;
       }
 
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${courseId}/lessons`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api'}/admin/courses/${courseId}/lessons`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
         return;
       }
 
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${courseId}/lessons`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api'}/admin/courses/${courseId}/lessons`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -250,7 +250,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
         return;
       }
 
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${courseId}/lessons/${editingLesson._id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api'}/admin/courses/${courseId}/lessons/${editingLesson._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -297,7 +297,7 @@ export default function LessonManagerContent({ courseId, courseTitle, onBack }: 
         return;
       }
 
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${courseId}/lessons/${lessonId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api'}/admin/courses/${courseId}/lessons/${lessonId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
