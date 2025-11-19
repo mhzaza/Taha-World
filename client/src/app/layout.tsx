@@ -19,11 +19,19 @@ export const metadata: Metadata = {
   description: "منصة تدريب رياضي عربية متخصصة في تقديم دورات تدريبية عالية الجودة",
   keywords: "تدريب رياضي, دورات رياضية, طه صباغ, تدريب عربي",
   authors: [{ name: "طه صباغ" }],
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: 'any' },
+      { url: '/icon.png', sizes: 'any' },
+    ],
+    apple: '/icon.png',
+  },
   openGraph: {
     title: "طه صباغ - منصة التدريب الرياضي",
     description: "منصة تدريب رياضي عربية متخصصة في تقديم دورات تدريبية عالية الجودة",
     type: "website",
     locale: "ar_SA",
+    images: ['/icon.png'],
   },
 };
 
