@@ -58,6 +58,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${ibmPlexArabic.variable} antialiased font-sans`}
+        suppressHydrationWarning
       >
         <ClientAuthProvider>
           {children}

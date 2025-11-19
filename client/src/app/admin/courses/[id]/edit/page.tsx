@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import CourseForm, { CourseFormData } from '@/components/admin/CourseForm';
-import { courseAPI, apiUtils, type Course } from '@/lib/api';
+import { courseAPI, adminAPI, apiUtils, type Course } from '@/lib/api';
 
 export default function EditCoursePage() {
   const router = useRouter();
@@ -57,15 +57,15 @@ export default function EditCoursePage() {
       }
       
       console.log('Fetching course with ID:', courseId);
-      const response = await courseAPI.getCourse(courseId);
+      const response = await adminAPI.getCourse(courseId);
       console.log('Course API response:', response.data);
       
       if (response.data.success) {
         // The API returns { success: true, course: {...} } directly
-        console.log('Course data:', response.data.course);
-        setCourse(response.data.course || null);
+        console.log('Course data:', (response.data as any).course);
+        setCourse((response.data as any).course || null);
       } else {
-        addNotification('error', response.data.arabic || response.data.error || 'فشل في جلب بيانات الكورس');
+        addNotification('error', (response.data as any).arabic || (response.data as any).error || 'فشل في جلب بيانات الكورس');
         router.push('/admin/courses');
       }
     } catch (error) {
@@ -96,7 +96,9 @@ export default function EditCoursePage() {
     try {
       setLoading(true);
       
-      const response = await courseAPI.updateCourse(courseId, formData as any);
+      console.log('Submitting course update with data:', formData);
+      
+      const response = await adminAPI.updateCourse(courseId, formData as any);
       
       if (response.data.success) {
         addNotification('success', 'تم تحديث الكورس بنجاح!');
@@ -138,6 +140,7 @@ export default function EditCoursePage() {
       isFeatured: course.isFeatured,
       thumbnail: course.thumbnail,
       instructor: {
+        id: course.instructor.id,
         name: course.instructor.name,
         bio: course.instructor.bio || '',
         credentials: course.instructor.credentials || [],

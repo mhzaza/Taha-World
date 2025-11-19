@@ -122,6 +122,23 @@ export default function CoursePage() {
     return result;
   }, [isEnrolled, isAdmin]);
 
+  // Check if current lesson can be accessed (enrolled, admin, or free lesson)
+  const canAccessCurrentLesson = useMemo(() => {
+    if (canAccessCourse) return true;
+    
+    const currentLesson = course?.lessons?.find(lesson => lesson.id === currentLessonId);
+    const isFreeLesson = currentLesson?.isFree || (currentLesson as any)?.isPreview;
+    
+    console.log('canAccessCurrentLesson computed:', { 
+      canAccessCourse, 
+      currentLessonId, 
+      isFreeLesson,
+      currentLesson: currentLesson?.title 
+    });
+    
+    return isFreeLesson;
+  }, [canAccessCourse, course?.lessons, currentLessonId]);
+
   // Function to refresh course rating after review changes
   const refreshCourseRating = useCallback(async () => {
     if (!courseId || !course) return;
@@ -508,7 +525,7 @@ export default function CoursePage() {
   }, [course?.lessons?.length, progress.completedLessons.length, progress.progressPercentage]);
 
   const markLessonComplete = async (lessonId: string) => {
-    if (!lessonId || (!isEnrolled && !isAdmin)) return;
+    if (!lessonId || (!canAccessCurrentLesson)) return;
 
     try {
       setProgressLoading(true);
@@ -588,7 +605,9 @@ export default function CoursePage() {
     const nextLessonId = course.lessons[newIndex].id;
     setCurrentLessonId(nextLessonId);
 
-    if (canAccessCourse) {
+    // Save progress if user can access the course or if it's a free lesson
+    const nextLesson = course.lessons[newIndex];
+    if (canAccessCourse || nextLesson?.isFree) {
       const total = course.lessons.length;
       const progressPercentage =
         total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
@@ -604,7 +623,9 @@ export default function CoursePage() {
   const handleLessonSelect = (lessonId: string) => {
     setCurrentLessonId(lessonId);
 
-    if (canAccessCourse) {
+    // Save progress if user can access the course or if it's a free lesson
+    const selectedLesson = course?.lessons?.find(l => l.id === lessonId);
+    if (canAccessCourse || selectedLesson?.isFree) {
       const total = course?.lessons?.length || 0;
       const progressPercentage =
         total > 0 ? Math.round((progress.completedLessons.length / total) * 100) : 0;
@@ -820,7 +841,7 @@ export default function CoursePage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <div className="lg:col-span-3">
             <div className="overflow-hidden rounded-2xl bg-white shadow-xl border border-gray-100">
-              {canAccessCourse ? (
+              {canAccessCurrentLesson ? (
                 <>
                   <div className="relative p-6 pb-0">
                     <EnhancedMediaPlayer

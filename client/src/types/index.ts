@@ -72,6 +72,7 @@ export interface Lesson {
   duration: number; // in seconds
   order: number;
   isPreview: boolean;
+  isFree?: boolean; // For free lessons that can be accessed without enrollment
   resources?: LessonResource[];
   quiz?: Quiz;
   notes?: string;

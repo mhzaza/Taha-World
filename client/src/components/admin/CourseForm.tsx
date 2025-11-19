@@ -24,6 +24,7 @@ interface CourseFormData {
   isFeatured: boolean;
   thumbnail: string;
   instructor: {
+    id?: string;
     name: string;
     bio?: string;
     credentials?: string[];
@@ -58,6 +59,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
     isFeatured: false,
     thumbnail: '',
     instructor: {
+      id: '',
       name: '',
       bio: '',
       credentials: [],
@@ -260,7 +262,7 @@ export default function CourseForm({ initialData, onSubmit, submitText, loading 
             >
               <option value="USD">USD</option>
               <option value="SAR">SAR</option>
-              <option value="EUR">EUR</option>
+              <option value="EGP">EGP</option>
             </select>
           </div>
         </div>

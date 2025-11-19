@@ -55,7 +55,7 @@ export default function Home() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
               </svg>
-              عرض محدود: خصم 30% على جميع الدورات التدريبية - ينتهي خلال 7 أيام!
+              تم اطلاق الموقع
             </div>
           ))}
         </div>
@@ -133,7 +133,7 @@ export default function Home() {
             </div>
             <div className="relative animate-scale-in">
               {/* Highlighted Course Card */}
-              <div className="card-modern bg-gradient-to-br from-white to-primary-50 p-8 shadow-xl border border-primary-100">
+              <div className="card-modern bg-gradient-to-br from-gray-800 to-gray-700 p-8 shadow-xl border border-gray-600">
                 <div className="text-center">
                   {/* Course Banner Image */}
                   <div className="relative mx-auto mb-6 w-full max-w-md">
@@ -147,18 +147,16 @@ export default function Home() {
 
                   </div>
 
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">دورة مصارعة الذراعين</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2">دورة مصارعة الذراعين</h3>
 
-                  <div className="space-y-4 text-gray-200 mb-10">
+                  <div className="space-y-4 text-white/90 mb-10">
                     <p className="leading-relaxed">اكتشف أسرار القوة والتقنية في مصارعة الذراعين من خلال برنامج تدريبي مكثف يقوده خبراء البطولة.</p>
                     <p className="leading-relaxed">يشمل المنهج خطط قوة وتحمل، تمارين موجهة، واستراتيجيات للفوز في المنافسات الرسمية.</p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="bg-gradient-to-r from-[#41ADE1] to-[#3399CC] text-white font-extrabold text-3xl rounded-full px-8 py-3 shadow-xl inline-flex items-center gap-3 justify-center">
-                      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 1.343-3 3 0 1.306.835 2.418 2 2.83V19m0-14v2m0 10h0m6-7a6 6 0 11-12 0 6 6 0 0112 0z" />
-                      </svg>
+                      <span className="text-4xl font-bold">$</span>
                       <span>50 دولار فقط</span>
                     </div>
 
@@ -173,7 +171,7 @@ export default function Home() {
                     </Link>
                   </div>
 
-                  <p className="text-sm text-gray-500 mt-4">سيتم تحويلك إلى صفحة الكورس لإتمام الدفع والتسجيل.</p>
+                  <p className="text-sm text-white/70 mt-4">سيتم تحويلك إلى صفحة الكورس لإتمام الدفع والتسجيل.</p>
                 </div>
               </div>
               
@@ -184,29 +182,29 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 relative">
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative">
         {/* Elegant Pattern Overlay */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black"></div>
           <div className="absolute inset-0 opacity-[0.05]" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, gray 2px, transparent 2px),
-                             radial-gradient(circle at 75% 75%, gray 2px, transparent 2px)`,
-            backgroundSize: '100px 100px'
+            backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
+                             radial-gradient(circle at 75% 75%, rgba(255,255,255,0.5) 0.5px, transparent 0.5px)`,
+            backgroundSize: '80px 80px, 40px 40px'
           }}></div>
         </div>
         
         <Container className="relative z-10">
           <div className="text-center mb-20">
-            <div className="achievement-badge bg-gray-800/20 backdrop-blur-sm border border-gray-800/30 text-gray-800 mb-6 mx-auto">
+            <div className="achievement-badge bg-white/20 backdrop-blur-sm border border-white/30 text-white mb-6 mx-auto">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
               مميزات استثنائية
             </div>
-            <h2 className="text-hero font-black text-gray-900 mb-6">
+            <h2 className="text-hero font-black text-white mb-6">
               لماذا تختار منصتنا؟
             </h2>
-            <p className="text-xl leading-relaxed text-gray-200 max-w-3xl mx-auto">
+            <p className="text-xl leading-relaxed text-white/90 max-w-3xl mx-auto">
               منصة الكابتن طه الصباغ ليست مجرد موقع تدريبي، بل رحلة لبناء البطل بداخلك. 
               نجمع بين الخبرة، القوة، والعلم لنقدّم تجربة تدريبية متكاملة تصنع منك نسخة أقوى في الجسد والعقل.
             </p>
@@ -214,7 +212,7 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {/* Feature Card 1 */}
-            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up">
+            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up bg-gray-800/50 backdrop-blur-sm border border-gray-700">
               <div className="text-center p-8">
                 <div className="relative mb-6">
                   <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
@@ -224,15 +222,15 @@ export default function Home() {
                   </div>
 
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-yellow-600 transition-colors">تدريب مبني على خبرة الأبطال</h3>
-                <p className="text-gray-600 leading-relaxed">تعلّم من بطل الأردن والعالم العربي في مصارعة الذراعين، من واقع التجربة الميدانية وليس من الكتب فقط.</p>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-yellow-400 transition-colors">تدريب مبني على خبرة الأبطال</h3>
+                <p className="text-white/80 leading-relaxed">تعلّم من بطل الأردن والعالم العربي في مصارعة الذراعين، من واقع التجربة الميدانية وليس من الكتب فقط.</p>
                 
 
               </div>
             </div>
             
             {/* Feature Card 2 */}
-            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up animation-delay-200">
+            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up animation-delay-200 bg-gray-800/50 backdrop-blur-sm border border-gray-700">
               <div className="text-center p-8">
                 <div className="relative mb-6">
                   <div className="w-20 h-20 bg-gradient-to-br from-[#41ADE1]/20 to-[#41ADE1]/40 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
@@ -242,15 +240,15 @@ export default function Home() {
                   </div>
 
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#41ADE1] transition-colors">نتائج حقيقية ومتابعة شخصية</h3>
-                <p className="text-gray-600 leading-relaxed">احصل على خطة تدريبية ممنهجة، متابعة مستمرة، وتوجيه مباشر لتحقيق أفضل أداء بدني وذهني.</p>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#41ADE1] transition-colors">نتائج حقيقية ومتابعة شخصية</h3>
+                <p className="text-white/80 leading-relaxed">احصل على خطة تدريبية ممنهجة، متابعة مستمرة، وتوجيه مباشر لتحقيق أفضل أداء بدني وذهني.</p>
                 
 
               </div>
             </div>
             
             {/* Feature Card 3 */}
-            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up animation-delay-400">
+            <div className="card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 animate-fade-in-up animation-delay-400 bg-gray-800/50 backdrop-blur-sm border border-gray-700">
               <div className="text-center p-8">
                 <div className="relative mb-6">
                   <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
@@ -260,8 +258,8 @@ export default function Home() {
                   </div>
 
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">مجتمع القوة والتحدي</h3>
-                <p className="text-gray-600 leading-relaxed">انضم إلى مجتمع من الرياضيين الطموحين، تبادل معهم الخبرات، وشارك رحلتك نحو البطولة بخطوات واثقة.</p>
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors">مجتمع القوة والتحدي</h3>
+                <p className="text-white/80 leading-relaxed">انضم إلى مجتمع من الرياضيين الطموحين، تبادل معهم الخبرات، وشارك رحلتك نحو البطولة بخطوات واثقة.</p>
                 
 
               </div>
@@ -399,14 +397,14 @@ export default function Home() {
 
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 relative">
+      <section className="py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative">
         {/* Elegant Pattern Overlay */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black"></div>
-          <div className="absolute inset-0 opacity-[0.04]" style={{
-            backgroundImage: `linear-gradient(45deg, gray 1px, transparent 1px),
-                             linear-gradient(-45deg, gray 1px, transparent 1px)`,
-            backgroundSize: '120px 120px'
+          <div className="absolute inset-0 opacity-[0.05]" style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
+                             radial-gradient(circle at 75% 75%, rgba(255,255,255,0.5) 0.5px, transparent 0.5px)`,
+            backgroundSize: '80px 80px, 40px 40px'
           }}></div>
         </div>
         
@@ -419,11 +417,11 @@ export default function Home() {
               قصص النجاح
             </div>
             
-            <h2 className="text-hero font-black text-gray-900 mb-6">
+            <h2 className="text-hero font-black text-white mb-6">
               ماذا يقول متدربونا عنا
             </h2>
             
-            <p className="text-xl leading-relaxed text-gray-200 max-w-3xl mx-auto">
+            <p className="text-xl leading-relaxed text-white/90 max-w-3xl mx-auto">
               اكتشف تجارب المتدربين الذين حققوا أهدافهم وغيروا حياتهم من خلال برامجنا التدريبية
             </p>
           </div>
@@ -437,10 +435,10 @@ export default function Home() {
               className={`absolute left-4 top-1/2 -translate-y-1/2 z-20 
                          rounded-full p-4 
                          transition-all duration-300 
-                         border border-gray-200 backdrop-blur-sm
+                         border border-gray-600 backdrop-blur-sm
                          ${isAtStart 
-                           ? 'bg-gray-300 cursor-not-allowed opacity-50' 
-                           : 'bg-white/90 hover:bg-white cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
+                           ? 'bg-gray-700 cursor-not-allowed opacity-50' 
+                           : 'bg-gray-800/90 hover:bg-gray-700 cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
                          }`}
               onClick={() => {
                 if (isAtStart) return;
@@ -478,7 +476,7 @@ export default function Home() {
               }}
               aria-label="الشهادات السابقة"
             >
-              <svg className={`w-6 h-6 ${isAtStart ? 'text-gray-500' : 'text-gray-800'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-6 h-6 ${isAtStart ? 'text-gray-400' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -489,10 +487,10 @@ export default function Home() {
               className={`absolute right-4 top-1/2 -translate-y-1/2 z-20 
                          rounded-full p-4 
                          transition-all duration-300 
-                         border border-gray-200 backdrop-blur-sm
+                         border border-gray-600 backdrop-blur-sm
                          ${isAtEnd 
-                           ? 'bg-gray-300 cursor-not-allowed opacity-50' 
-                           : 'bg-white/90 hover:bg-white cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
+                           ? 'bg-gray-700 cursor-not-allowed opacity-50' 
+                           : 'bg-gray-800/90 hover:bg-gray-700 cursor-pointer hover:scale-110 active:scale-95 shadow-2xl'
                          }`}
               onClick={() => {
                 if (isAtEnd) return;
@@ -530,7 +528,7 @@ export default function Home() {
               }}
               aria-label="الشهادات التالية"
             >
-              <svg className={`w-6 h-6 ${isAtEnd ? 'text-gray-500' : 'text-gray-800'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-6 h-6 ${isAtEnd ? 'text-gray-400' : 'text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -542,9 +540,9 @@ export default function Home() {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {/* Testimonial 1 - جمانة زرق */}
-              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80">
+              <div className="testimonial-card card-modern group hover:shadow-glow transition-all duration-500 hover:-translate-y-2 flex-shrink-0 w-80 h-80 bg-gray-800/50 backdrop-blur-sm border border-gray-700">
                 <div className="p-8 h-full flex flex-col">
-                  <blockquote className="text-gray-200 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
+                  <blockquote className="text-white/90 mb-6 leading-relaxed text-lg flex-1 overflow-hidden">
                 <div className="line-clamp-4">
                   بشكرك كتير كابتن طه على هيدي الدورة كانت عن جد أكتر من رائعة، بالإضافة للمعلومات القيمة اللي قدمتها إلنا حبيت كتير هيدي المعلومات بأمانة لكل شخص متواجد معنا بالدورة.. الله يقويك ويعطيك ألف عافية يارب
                 </div>
@@ -555,8 +553,8 @@ export default function Home() {
                       ج
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900">جمانة زرق</div>
-                      <div className="text-gray-600 text-sm">متدربة في دورة القيادة</div>
+                      <div className="font-bold text-white">جمانة زرق</div>
+                      <div className="text-white/70 text-sm">متدربة في دورة القيادة</div>
                     </div>
                   </div>
                 </div>
@@ -883,29 +881,29 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="stats-card mb-4">
-                <div className="text-4xl font-black text-primary-600 mb-2">98%</div>
-                <div className="text-gray-600 font-medium">معدل الرضا</div>
+                <div className="text-4xl font-black text-[#41ADE1] mb-2">98%</div>
+                <div className="text-white/80 font-medium">معدل الرضا</div>
               </div>
             </div>
             
             <div className="text-center">
               <div className="stats-card mb-4">
-                <div className="text-4xl font-black text-primary-600 mb-2">5050+</div>
-                <div className="text-gray-600 font-medium">متدرب ناجح</div>
+                <div className="text-4xl font-black text-[#41ADE1] mb-2">5050+</div>
+                <div className="text-white/80 font-medium">متدرب ناجح</div>
               </div>
             </div>
             
             <div className="text-center">
               <div className="stats-card mb-4">
-                <div className="text-4xl font-black text-primary-600 mb-2">15+</div>
-                <div className="text-gray-600 font-medium">سنة خبرة</div>
+                <div className="text-4xl font-black text-[#41ADE1] mb-2">15+</div>
+                <div className="text-white/80 font-medium">سنة خبرة</div>
               </div>
             </div>
             
             <div className="text-center">
               <div className="stats-card mb-4">
-                <div className="text-4xl font-black text-primary-600 mb-2">50+</div>
-                <div className="text-gray-600 font-medium">دورة تدريبية</div>
+                <div className="text-4xl font-black text-[#41ADE1] mb-2">50+</div>
+                <div className="text-white/80 font-medium">دورة تدريبية</div>
               </div>
             </div>
           </div>

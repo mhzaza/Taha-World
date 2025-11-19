@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { PlayIcon, PhotoIcon } from '@heroicons/react/24/solid';
 import { EyeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import Hls from 'hls.js';
 
 interface EnhancedMediaPlayerProps {
   videoUrl?: string;
@@ -28,6 +29,8 @@ export default function EnhancedMediaPlayer({
   const [showVideo, setShowVideo] = useState(false);
   const playerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
 
   // Extract YouTube video ID from URL
   const getYouTubeVideoId = (url: string): string | null => {
@@ -53,6 +56,18 @@ export default function EnhancedMediaPlayer({
            (url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('.avi'));
   };
 
+  // Check if URL is an HLS stream (m3u8)
+  const isHlsStream = (url: string): boolean => {
+    if (!url) return false;
+    return url.includes('.m3u8') || url.includes('playlist.m3u8');
+  };
+
+  // Check if URL is a direct video file (MP4, WebM, etc.)
+  const isDirectVideo = (url: string): boolean => {
+    if (!url) return false;
+    return /\.(mp4|webm|mov|avi|mkv|flv|wmv)(\?.*)?$/i.test(url);
+  };
+
   // Generate secure Cloudinary URL (Note: for now, we'll use the original URL
   // as fl_attachment might interfere with video playback in browsers)
   const getSecureCloudinaryUrl = (url: string): string => {
@@ -65,7 +80,9 @@ export default function EnhancedMediaPlayer({
 
   const videoId = videoUrl ? getYouTubeVideoId(videoUrl) : null;
   const isCloudinaryVideoUrl = videoUrl ? isCloudinaryVideo(videoUrl) : false;
-  const hasValidVideo = Boolean(videoId) || isCloudinaryVideoUrl;
+  const isHlsVideoUrl = videoUrl ? isHlsStream(videoUrl) : false;
+  const isDirectVideoUrl = videoUrl ? isDirectVideo(videoUrl) : false;
+  const hasValidVideo = Boolean(videoId) || isCloudinaryVideoUrl || isHlsVideoUrl || isDirectVideoUrl;
 
   // Disable right-click context menu and other security measures
   useEffect(() => {
@@ -134,6 +151,71 @@ export default function EnhancedMediaPlayer({
     return false;
   };
 
+  // Initialize HLS for HLS streams
+  useEffect(() => {
+    if (isHlsVideoUrl && videoUrl && videoRef.current && showVideo) {
+      const video = videoRef.current;
+      
+      // Clean up previous HLS instance
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+
+      if (Hls.isSupported()) {
+        // HLS.js is supported
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: false,
+          backBufferLength: 90,
+        });
+        
+        hlsRef.current = hls;
+        
+        hls.loadSource(videoUrl);
+        hls.attachMedia(video);
+        
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          console.log('HLS manifest parsed successfully');
+          setIsLoading(false);
+          setHasError(false);
+        });
+        
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          console.error('HLS error:', data);
+          if (data.fatal) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        });
+        
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support (Safari)
+        video.src = videoUrl;
+        video.addEventListener('loadedmetadata', () => {
+          setIsLoading(false);
+          setHasError(false);
+        });
+        video.addEventListener('error', () => {
+          setHasError(true);
+          setIsLoading(false);
+        });
+      } else {
+        console.error('HLS is not supported in this browser');
+        setHasError(true);
+        setIsLoading(false);
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+        hlsRef.current = null;
+      }
+    };
+  }, [isHlsVideoUrl, videoUrl, showVideo]);
+
   // Auto-show video if available and not locked
   useEffect(() => {
     if (hasValidVideo && !isLocked) {
@@ -141,7 +223,7 @@ export default function EnhancedMediaPlayer({
       // For YouTube videos, we can still show immediately or require click based on preference
       setShowVideo(true);
     }
-  }, [hasValidVideo, isLocked, isCloudinaryVideoUrl]);
+  }, [hasValidVideo, isLocked, isCloudinaryVideoUrl, isHlsVideoUrl, isDirectVideoUrl]);
 
   // Disable keyboard shortcuts and developer tools
   useEffect(() => {
@@ -259,8 +341,8 @@ export default function EnhancedMediaPlayer({
     );
   }
 
-  // Render video player - now handles both YouTube and Cloudinary videos
-  if (!hasValidVideo || (!videoId && !isCloudinaryVideoUrl)) {
+  // Render video player - now handles YouTube, Cloudinary, HLS, and direct videos
+  if (!hasValidVideo || (!videoId && !isCloudinaryVideoUrl && !isHlsVideoUrl && !isDirectVideoUrl)) {
     return (
       <div className="aspect-video bg-gray-900 flex items-center justify-center rounded-xl">
         <div className="text-center text-white">
@@ -395,6 +477,59 @@ export default function EnhancedMediaPlayer({
         </video>
       )}
 
+      {/* HLS Video (Bunny.net, etc.) */}
+      {isHlsVideoUrl && videoUrl && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full rounded-xl"
+          controls
+          playsInline
+          preload="metadata"
+          onLoadedData={handleVideoLoad}
+          onError={handleVideoError}
+          onContextMenu={handleVideoContextMenu}
+          onDragStart={handleVideoDragStart}
+          style={{
+            pointerEvents: 'auto',
+            border: 'none',
+            outline: 'none',
+            backgroundColor: 'black'
+          }}
+          controlsList="nodownload nofullscreen noremoteplaybook"
+          disablePictureInPicture
+          crossOrigin="anonymous"
+        >
+          المتصفح لا يدعم تشغيل فيديو HLS.
+        </video>
+      )}
+
+      {/* Direct Video Files (MP4, WebM, etc.) */}
+      {isDirectVideoUrl && videoUrl && !isCloudinaryVideoUrl && (
+        <video
+          className="absolute inset-0 w-full h-full rounded-xl"
+          controls
+          playsInline
+          preload="metadata"
+          onLoadedData={handleVideoLoad}
+          onError={handleVideoError}
+          onContextMenu={handleVideoContextMenu}
+          onDragStart={handleVideoDragStart}
+          style={{
+            pointerEvents: 'auto',
+            border: 'none',
+            outline: 'none',
+            backgroundColor: 'black'
+          }}
+          controlsList="nodownload nofullscreen noremoteplayback"
+          disablePictureInPicture
+          crossOrigin="anonymous"
+        >
+          <source src={videoUrl} type="video/mp4" />
+          <source src={videoUrl} type="video/webm" />
+          المتصفح لا يدعم تشغيل الفيديو.
+        </video>
+      )}
+
       {/* Back to Image Button */}
       {thumbnailUrl && (
         <button
@@ -419,7 +554,7 @@ export default function EnhancedMediaPlayer({
       />
 
       {/* Additional Security for Video Element */}
-      {isCloudinaryVideoUrl && (
+      {(isCloudinaryVideoUrl || isHlsVideoUrl || isDirectVideoUrl) && (
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -434,7 +569,12 @@ export default function EnhancedMediaPlayer({
       {/* Security Notice (for development) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded z-20">
-          🔒 محمي {isCloudinaryVideoUrl ? '(Cloudinary)' : '(YouTube)'}
+          🔒 محمي {
+            isCloudinaryVideoUrl ? '(Cloudinary)' : 
+            isHlsVideoUrl ? '(HLS)' : 
+            isDirectVideoUrl ? '(Direct)' : 
+            '(YouTube)'
+          }
         </div>
       )}
     </div>

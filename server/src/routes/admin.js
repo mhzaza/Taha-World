@@ -351,7 +351,7 @@ router.get('/courses/:id', requirePermission('courses.edit'), async (req, res) =
 
     res.json({
       success: true,
-      data: course
+      course: course
     });
 
   } catch (error) {
@@ -370,7 +370,7 @@ router.post('/courses', requirePermission('courses.edit'), [
   body('title').notEmpty().withMessage('Title is required'),
   body('description').notEmpty().withMessage('Description is required'),
   body('price').isNumeric().withMessage('Price must be a number'),
-  body('currency').isIn(['USD', 'SAR', 'EUR']).withMessage('Invalid currency'),
+  body('currency').isIn(['USD', 'SAR', 'EGP']).withMessage('Invalid currency'),
   body('duration').isNumeric().withMessage('Duration must be a number'),
   body('level').isIn(['beginner', 'intermediate', 'advanced']).withMessage('Invalid level'),
   body('category').notEmpty().withMessage('Category is required'),
@@ -446,14 +446,18 @@ router.post('/courses', requirePermission('courses.edit'), [
 router.put('/courses/:id', requirePermission('courses.edit'), [
   body('title').optional().notEmpty().withMessage('Title cannot be empty'),
   body('price').optional().isNumeric().withMessage('Price must be a number'),
-  body('currency').optional().isIn(['USD', 'SAR', 'EUR']).withMessage('Invalid currency'),
+  body('currency').optional().isIn(['USD', 'SAR', 'EGP']).withMessage('Invalid currency'),
   body('duration').optional().isNumeric().withMessage('Duration must be a number'),
   body('level').optional().isIn(['beginner', 'intermediate', 'advanced']).withMessage('Invalid level'),
   body('language').optional().isIn(['ar', 'en']).withMessage('Invalid language')
 ], async (req, res) => {
   try {
+    console.log('Update course request body:', req.body);
+    console.log('Course ID:', req.params.id);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({
         error: 'Validation failed',
         arabic: 'فشل في التحقق من البيانات',
@@ -484,11 +488,15 @@ router.put('/courses/:id', requirePermission('courses.edit'), [
       }
     });
 
+    console.log('Updates to apply:', updates);
+
     const updatedCourse = await Course.findByIdAndUpdate(
       req.params.id,
       updates,
       { new: true, runValidators: true }
     ).populate('instructor.id', 'displayName email');
+
+    console.log('Course updated successfully:', updatedCourse ? 'Yes' : 'No');
 
     // Log admin action
     await AuditLog.create({
@@ -515,9 +523,22 @@ router.put('/courses/:id', requirePermission('courses.edit'), [
 
   } catch (error) {
     console.error('Update course error:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Check if it's a validation error
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        error: 'Validation error',
+        arabic: 'خطأ في التحقق من البيانات',
+        details: error.message
+      });
+    }
+    
     res.status(500).json({
       error: 'Internal server error',
-      arabic: 'خطأ داخلي في الخادم'
+      arabic: 'خطأ داخلي في الخادم',
+      details: error.message
     });
   }
 });

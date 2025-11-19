@@ -9,6 +9,7 @@ import { courseAPI, consultationsAPI } from '@/lib/api'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import Cookies from 'js-cookie'
+import TemporaryPaymentRedirect from '@/components/payment/TemporaryPaymentRedirect'
 
 interface Course {
   _id: string
@@ -27,6 +28,9 @@ interface Consultation {
 }
 
 type PaymentMethod = 'paypal' | 'stripe' | 'bank_transfer'
+
+// Temporary flag to control which checkout system to use
+const USE_TEMPORARY_PAYMENT = true // Set to false to use the old system
 
 function CheckoutContent() {
   const router = useRouter()
@@ -549,6 +553,11 @@ function CheckoutContent() {
 
   const price = item.price
   const currency = item.currency === 'USD' ? '$' : item.currency === 'SAR' ? 'ر.س' : 'ج.م'
+
+  // Use temporary payment redirect if flag is enabled
+  if (USE_TEMPORARY_PAYMENT) {
+    return <TemporaryPaymentRedirect item={item} itemType={itemType} />
+  }
 
   return (
     <div className="min-h-screen">

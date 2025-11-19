@@ -602,6 +602,15 @@ export const adminAPI = {
     limit?: number;
   }) => api.get<PaginatedResponse<Course>>('/admin/courses', { params }),
 
+  getCourse: (id: string) => api.get<ApiResponse<{ course: Course }>>(`/admin/courses/${id}`),
+
+  createCourse: (data: Partial<Course>) => api.post<ApiResponse<{ course: Course }>>('/admin/courses', data),
+
+  updateCourse: (id: string, data: Partial<Course>) =>
+    api.put<ApiResponse<{ course: Course }>>(`/admin/courses/${id}`, data),
+
+  deleteCourse: (id: string) => api.delete<ApiResponse>(`/admin/courses/${id}`),
+
   getOrders: (params?: {
     page?: number;
     limit?: number;

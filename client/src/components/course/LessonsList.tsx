@@ -28,7 +28,8 @@ export default function LessonsList({
   const progressPercentage = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
 
   const handleLessonClick = (lesson: Lesson) => {
-    if (isEnrolled) {
+    // Allow access if enrolled or if lesson is free
+    if (isEnrolled || lesson.isFree) {
       onLessonSelect(lesson.id);
       onClose(); // Close sidebar on mobile after selection
     }
@@ -97,7 +98,7 @@ export default function LessonsList({
               const lessonKey = lesson.id || `lesson-${lesson.order ?? index}`;
               const isCompleted = completedLessons.includes(lesson.id);
               const isCurrent = lesson.id === currentLessonId;
-              const isLocked = !isEnrolled;
+              const isLocked = !isEnrolled && !lesson.isFree;
               
               return (
                 <div
@@ -149,6 +150,14 @@ export default function LessonsList({
                           <span>الدرس {index + 1}</span>
                           <span>•</span>
                           <span>{Math.floor(lesson.duration / 60)} دقيقة</span>
+                          {lesson.isFree && (
+                            <>
+                              <span>•</span>
+                              <span className="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-medium">
+                                درس مجاني
+                              </span>
+                            </>
+                          )}
                         </div>
 
                         {/* Lesson Description (if current) */}

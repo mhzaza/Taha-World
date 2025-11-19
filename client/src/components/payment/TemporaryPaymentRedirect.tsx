@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { ExternalLink, MessageCircle, Clock, CreditCard } from 'lucide-react'
+import { ExternalLink, MessageCircle, Clock, CreditCard, Copy } from 'lucide-react'
 
 interface TemporaryPaymentRedirectProps {
   item: {
@@ -25,6 +25,16 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
     window.open('https://buy.stripe.com/4gMcN50cBbdM2yYerM57W0B', '_blank')
   }
 
+  const handleCliqPayment = () => {
+    // Copy CliQ account number to clipboard
+    navigator.clipboard.writeText('0786437929').then(() => {
+      alert('تم نسخ رقم الحساب: 0786437929')
+    }).catch(() => {
+      // Fallback if clipboard API is not available
+      alert('رقم الحساب CliQ: 0786437929')
+    })
+  }
+
   const handleWhatsAppContact = () => {
     const message = `مرحباً، قمت بالدفع للكورس: ${item?.title || 'غير محدد'}\nسأرسل لك لقطة شاشة من عملية الدفع.`
     const whatsappUrl = `https://wa.me/962786437929?text=${encodeURIComponent(message)}`
@@ -33,9 +43,9 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
 
   if (!item) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#41ADE1]/5 to-[#41ADE1]/10 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#41ADE1] mx-auto mb-4"></div>
           <p className="text-gray-600">جاري التحميل...</p>
         </div>
       </div>
@@ -43,7 +53,7 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#41ADE1]/5 to-[#41ADE1]/10 py-12">
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
@@ -77,7 +87,7 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
               </p>
             </div>
             <div className="text-left">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-[#41ADE1]">
                 {item.price} {item.currency}
               </div>
             </div>
@@ -86,48 +96,72 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
           {/* Payment Instructions */}
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-blue-600" />
+              <CreditCard className="w-5 h-5 text-[#41ADE1]" />
               خطوات الدفع
             </h3>
             
             <div className="space-y-4">
-              {/* Step 1: Pay via Stripe */}
-              <div className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
-                  1
+              {/* Step 1: Choose Payment Method */}
+              <div className="p-4 bg-[#41ADE1]/10 rounded-lg">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="w-6 h-6 bg-[#41ADE1] text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                    1
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      اختر طريقة الدفع
+                    </h4>
+                    <p className="text-gray-600 text-sm mb-4">
+                      يمكنك الدفع عبر إحدى الطرق التالية
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900 mb-2">
-                    ادفع عبر Stripe
-                  </h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    انقر على الزر أدناه للدفع بشكل آمن عبر Stripe
-                  </p>
-                  <button
-                    onClick={handleStripePayment}
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    الدفع عبر Stripe
-                  </button>
+                
+                {/* Payment Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mr-9">
+                  {/* Stripe Option */}
+                  <div className="border border-gray-200 rounded-lg p-4 hover:border-[#41ADE1] transition-colors">
+                    <h5 className="font-medium text-gray-900 mb-2">الدفع عبر Visa/Mastercard</h5>
+                    <p className="text-gray-600 text-xs mb-3">دفع آمن عبر Stripe</p>
+                    <button
+                      onClick={handleStripePayment}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-[#41ADE1] text-white px-4 py-2 rounded-lg hover:bg-[#41ADE1]/90 transition-colors text-sm"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      الدفع عبر visa or master card
+                    </button>
+                  </div>
+                  
+                  {/* CliQ Option */}
+                  <div className="border border-gray-200 rounded-lg p-4 hover:border-[#41ADE1] transition-colors">
+                    <h5 className="font-medium text-gray-900 mb-2">الدفع عبر CliQ</h5>
+                    <p className="text-gray-600 text-xs mb-3">رقم الحساب: 0786437929</p>
+                    <button
+                      onClick={handleCliqPayment}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                    >
+                      <Copy className="w-4 h-4" />
+                      نسخ رقم الحساب
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Step 2: Send Screenshot */}
-              <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg">
-                <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+              <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                <div className="w-6 h-6 bg-emerald-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
                   2
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900 mb-2">
+                  <h4 className="font-semibold !text-black mb-2">
                     أرسل لقطة شاشة للدفع
                   </h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    بعد إتمام الدفع، أرسل لقطة شاشة لعملية الدفع عبر واتساب
+                  <p className="!text-black text-sm mb-3">
+                    بعد إتمام الدفع، أرسل لقطة شاشة لعملية الدفع للكابتن عبر واتساب
                   </p>
                   <button
                     onClick={handleWhatsAppContact}
-                    className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
                   >
                     <MessageCircle className="w-4 h-4" />
                     إرسال عبر واتساب: +962786437929
@@ -136,17 +170,17 @@ export default function TemporaryPaymentRedirect({ item, itemType }: TemporaryPa
               </div>
 
               {/* Step 3: Activation */}
-              <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg">
-                <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+              <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-lg">
+                <div className="w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
                   3
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                  <h4 className="font-semibold !text-black mb-2 flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     تفعيل الحساب
                   </h4>
-                  <p className="text-gray-600 text-sm">
-                    سيتم تفعيل حسابك وإضافة الكورس خلال 24 ساعة من إرسال لقطة الشاشة
+                  <p className="!text-black text-sm">
+                    سيتم تفعيل الكورس في حسابك خلال 24 ساعة من إرسال لقطة الشاشة للكابتن
                   </p>
                 </div>
               </div>

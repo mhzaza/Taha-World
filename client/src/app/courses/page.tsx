@@ -108,7 +108,7 @@ const CoursesPage = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               دوراتنا التدريبية
             </h1>
-            <p className="text-xl text-[#41ADE1]/30 max-w-3xl mx-auto">
+            <p className="text-xl text-white max-w-3xl mx-auto">
               اكتشف مجموعة واسعة من الدورات التدريبية المتخصصة في الرياضة واللياقة البدنية
             </p>
           </div>
