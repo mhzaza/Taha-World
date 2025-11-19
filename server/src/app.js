@@ -38,8 +38,26 @@ app.use(helmet());
 app.use(compression());
 
 // CORS configuration (must come before rate limiting)
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  // Handle both with and without trailing slash
+  (process.env.CLIENT_URL || 'http://localhost:3000').replace(/\/$/, ''),
+  (process.env.CLIENT_URL || 'http://localhost:3000') + (!(process.env.CLIENT_URL || 'http://localhost:3000').endsWith('/') ? '/' : '')
+].filter((origin, index, arr) => arr.indexOf(origin) === index); // Remove duplicates
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    console.error('CORS Error - Origin not allowed:', origin);
+    console.error('Allowed origins:', allowedOrigins);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200
 }));
