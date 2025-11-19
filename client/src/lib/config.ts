@@ -2,36 +2,50 @@
 export const config = {
   // Get API URL (with /api suffix)
   get API_BASE_URL() {
-    // Check if we're running on localhost (development)
-    const isLocalhost = typeof window !== 'undefined' && 
-                       (window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1');
+    // Force production URL for any non-localhost domain
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      
+      // Only use localhost for actual localhost domains
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5050/api';
+      }
+      
+      // For any other domain (production), force Vercel backend
+      return process.env.NEXT_PUBLIC_API_URL || 'https://taha-world-backend.vercel.app/api';
+    }
     
-    // For development or localhost, use local server
-    if (process.env.NODE_ENV === 'development' || isLocalhost) {
+    // Server-side rendering fallback
+    if (process.env.NODE_ENV === 'development') {
       return 'http://localhost:5050/api';
     }
     
-    // For production, use environment variables with fallback to Vercel deployment
-    return process.env.NEXT_PUBLIC_API_URL || 
-           `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://taha-world-backend.vercel.app'}/api`;
+    // Production server-side
+    return process.env.NEXT_PUBLIC_API_URL || 'https://taha-world-backend.vercel.app/api';
   },
   
   // Get base URL (without /api suffix) for upload endpoints
   get BASE_URL() {
-    // Check if we're running on localhost (development)
-    const isLocalhost = typeof window !== 'undefined' && 
-                       (window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1');
+    // Force production URL for any non-localhost domain
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      
+      // Only use localhost for actual localhost domains
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5050';
+      }
+      
+      // For any other domain (production), force Vercel backend
+      return process.env.NEXT_PUBLIC_BACKEND_URL || 'https://taha-world-backend.vercel.app';
+    }
     
-    // For development or localhost, use local server
-    if (process.env.NODE_ENV === 'development' || isLocalhost) {
+    // Server-side rendering fallback
+    if (process.env.NODE_ENV === 'development') {
       return 'http://localhost:5050';
     }
     
-    // For production, use environment variables with fallback to Vercel deployment
-    return process.env.NEXT_PUBLIC_BACKEND_URL || 
-           (process.env.NEXT_PUBLIC_API_URL || 'https://taha-world-backend.vercel.app/api').replace('/api', '');
+    // Production server-side
+    return process.env.NEXT_PUBLIC_BACKEND_URL || 'https://taha-world-backend.vercel.app';
   },
   
   // Check if we're in production
@@ -51,15 +65,20 @@ export const config = {
   // Debug function to log current configuration
   debug: () => {
     if (typeof window !== 'undefined') {
-      console.log('🔧 Config Debug Info:', {
-        NODE_ENV: process.env.NODE_ENV,
+      console.warn('🔧 TAHA WORLD CONFIG DEBUG:', {
         hostname: window.location.hostname,
+        NODE_ENV: process.env.NODE_ENV,
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
         NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
-        API_BASE_URL: config.API_BASE_URL,
-        BASE_URL: config.BASE_URL,
-        IS_PRODUCTION: config.IS_PRODUCTION
+        RESOLVED_API_BASE_URL: config.API_BASE_URL,
+        RESOLVED_BASE_URL: config.BASE_URL,
+        IS_PRODUCTION: config.IS_PRODUCTION,
+        timestamp: new Date().toISOString()
       });
+      
+      // Also log to console with alert styling
+      console.log('%c🚨 API URL BEING USED: ' + config.API_BASE_URL, 
+        'background: red; color: white; font-size: 16px; padding: 5px;');
     }
   }
 };
