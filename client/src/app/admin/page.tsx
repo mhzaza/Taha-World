@@ -16,6 +16,7 @@ import {
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { adminAPI, apiUtils, type DashboardStats } from '@/lib/api';
+import { config } from '@/lib/config';
 
 interface RecentOrder {
   _id: string;
@@ -124,6 +125,9 @@ export default function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setError(null);
+      
+      // Debug configuration in production
+      config.debug();
       
       // Fetch dashboard stats
       const dashboardResponse = await adminAPI.getDashboard();
