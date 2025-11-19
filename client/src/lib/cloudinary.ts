@@ -46,7 +46,9 @@ export const uploadToCloudinary = async (
                     uploadType === 'courseVideo' ? '/api/upload/lesson-video' :
                     '/api/upload/single';
 
-    const response = await fetch(`http://localhost:5050${endpoint}`, {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+    const baseUrl = API_BASE_URL.replace('/api', ''); // Remove /api suffix for upload endpoints
+    const response = await fetch(`${baseUrl}${endpoint}`, {
       method: 'POST',
       body: formData,
       credentials: 'include', // Include cookies for authentication
@@ -156,7 +158,9 @@ export const extractPublicId = (url: string): string | null => {
 // Delete file from Cloudinary using our backend API
 export const deleteFromCloudinary = async (publicId: string, resourceType: 'image' | 'video' = 'image'): Promise<void> => {
   try {
-    const response = await fetch(`http://localhost:5050/api/upload/${publicId}?resourceType=${resourceType}`, {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+    const baseUrl = API_BASE_URL.replace('/api', '');
+    const response = await fetch(`${baseUrl}/api/upload/${publicId}?resourceType=${resourceType}`, {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -180,7 +184,9 @@ export const deleteFromCloudinary = async (publicId: string, resourceType: 'imag
 // Delete file from Cloudinary using URL
 export const deleteFromCloudinaryByUrl = async (url: string, resourceType: 'image' | 'video' = 'image'): Promise<void> => {
   try {
-    const response = await fetch('http://localhost:5050/api/upload/url', {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
+    const baseUrl = API_BASE_URL.replace('/api', '');
+    const response = await fetch(`${baseUrl}/api/upload/url`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

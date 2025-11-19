@@ -80,7 +80,7 @@ export const useCourses = (initialParams?: SearchParams) => {
       }
 
       const queryString = queryParams.toString();
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050';
+      const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace('/api', '');
       const response = await fetch(`${backendUrl}/api/courses${queryString ? `?${queryString}` : ''}`);
       
       if (!response.ok) {

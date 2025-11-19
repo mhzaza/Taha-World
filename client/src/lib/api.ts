@@ -273,7 +273,7 @@ export interface AnalyticsData {
   };
 }
 
-// API Base URL
+// API Base URL - Use consistent environment variable
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api';
 
 // Configure axios instance
