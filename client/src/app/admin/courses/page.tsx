@@ -15,7 +15,7 @@ import {
   GlobeAltIcon,
   Bars3Icon,
 } from '@heroicons/react/24/outline';
-import type { Course } from '@/lib/api';
+import { adminAPI, courseAPI, apiUtils, type Course } from '@/lib/api';
 
 
 type SortField = 'createdAt' | 'title' | 'price' | 'enrollmentCount' | 'rating';
@@ -61,13 +61,6 @@ function CoursesPageContent() {
   };
 
 
-  // Helper function to get auth token
-  const getAuthToken = () => {
-    return document.cookie
-      .split('; ')
-      .find(row => row.startsWith('token='))
-      ?.split('=')[1];
-  };
 
   // Fetch courses on mount
   useEffect(() => {
@@ -78,43 +71,27 @@ function CoursesPageContent() {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      console.log('Fetching courses from:', `http://localhost:5050/api/admin/courses?page=${currentPage}&limit=${itemsPerPage}`);
+      console.log('Fetching courses using adminAPI...');
       
-      const token = getAuthToken();
-      if (!token) {
-        console.error('No authentication token found');
-        addNotification('error', 'يجب تسجيل الدخول أولاً');
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:5050/api/admin/courses?page=${currentPage}&limit=${itemsPerPage}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
+      const response = await adminAPI.getCourses({
+        page: currentPage,
+        limit: itemsPerPage
       });
       
       console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
+      console.log('Response data:', response.data);
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Response data:', data);
-        if (data.success) {
-          setCourses(data.data);
-          console.log('Courses set:', data.data.length, 'courses');
-        } else {
-          console.error('API returned success: false', data);
-        }
+      if (response.data.success) {
+        setCourses(response.data.data || []);
+        console.log('Courses set:', (response.data.data || []).length, 'courses');
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('API error:', response.status, errorData);
-        addNotification('error', errorData.arabic || errorData.error || 'فشل في جلب الكورسات');
+        console.error('API returned success: false', response.data);
+        addNotification('error', 'فشل في جلب الكورسات');
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
-      addNotification('error', 'خطأ في الاتصال بالخادم');
+      const errorMessage = apiUtils.handleApiError(error);
+      addNotification('error', `خطأ في جلب الكورسات: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -201,74 +178,37 @@ function CoursesPageContent() {
     if (!selectedCourse) return;
     
     try {
-      const token = getAuthToken();
-      if (!token) {
-        addNotification('error', 'يجب تسجيل الدخول أولاً');
-        return;
-      }
+      const response = await adminAPI.deleteCourse(selectedCourse._id);
       
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${selectedCourse._id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          addNotification('success', 'تم حذف الكورس بنجاح!');
-          setShowDeleteModal(false);
-          setSelectedCourse(null);
-          fetchCourses();
-        } else {
-          addNotification('error', data.arabic || data.error || 'خطأ في حذف الكورس');
-        }
+      if (response.data.success) {
+        addNotification('success', 'تم حذف الكورس بنجاح!');
+        setShowDeleteModal(false);
+        setSelectedCourse(null);
+        fetchCourses();
       } else {
-        const errorData = await response.json();
-        addNotification('error', errorData.arabic || errorData.error || 'خطأ في حذف الكورس');
+        addNotification('error', response.data.arabic || response.data.error || 'خطأ في حذف الكورس');
       }
     } catch (error) {
       console.error('Error deleting course:', error);
-      addNotification('error', 'خطأ في حذف الكورس');
+      const errorMessage = apiUtils.handleApiError(error);
+      addNotification('error', `خطأ في حذف الكورس: ${errorMessage}`);
     }
   };
 
   const handleTogglePublish = async (course: Course) => {
     try {
-      const token = getAuthToken();
-      if (!token) {
-        addNotification('error', 'يجب تسجيل الدخول أولاً');
-        return;
-      }
+      const response = await courseAPI.publishCourse(course._id, !course.isPublished);
       
-      const response = await fetch(`http://localhost:5050/api/admin/courses/${course._id}/publish`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ isPublished: !course.isPublished }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          addNotification('success', course.isPublished ? 'تم إلغاء نشر الكورس' : 'تم نشر الكورس بنجاح');
-          fetchCourses();
-        } else {
-          addNotification('error', data.arabic || data.error || 'خطأ في تحديث حالة الكورس');
-        }
+      if (response.data.success) {
+        addNotification('success', course.isPublished ? 'تم إلغاء نشر الكورس' : 'تم نشر الكورس بنجاح');
+        fetchCourses();
       } else {
-        const errorData = await response.json();
-        addNotification('error', errorData.arabic || errorData.error || 'خطأ في تحديث حالة الكورس');
+        addNotification('error', response.data.arabic || response.data.error || 'خطأ في تحديث حالة الكورس');
       }
     } catch (error) {
       console.error('Error toggling course publish status:', error);
-      addNotification('error', 'خطأ في تحديث حالة الكورس');
+      const errorMessage = apiUtils.handleApiError(error);
+      addNotification('error', `خطأ في تحديث حالة الكورس: ${errorMessage}`);
     }
   };
 
