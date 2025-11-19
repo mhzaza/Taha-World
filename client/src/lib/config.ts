@@ -6,9 +6,9 @@ export const config = {
     if (process.env.NODE_ENV === 'development') {
       return 'http://localhost:5050/api';
     }
-    // For production, use environment variables
+    // For production, use environment variables with fallback to Vercel deployment
     return process.env.NEXT_PUBLIC_API_URL || 
-           `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5050'}/api`;
+           `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://taha-world-backend.vercel.app'}/api`;
   },
   
   // Get base URL (without /api suffix) for upload endpoints
@@ -17,9 +17,9 @@ export const config = {
     if (process.env.NODE_ENV === 'development') {
       return 'http://localhost:5050';
     }
-    // For production, use environment variables
+    // For production, use environment variables with fallback to Vercel deployment
     return process.env.NEXT_PUBLIC_BACKEND_URL || 
-           (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5050/api').replace('/api', '');
+           (process.env.NEXT_PUBLIC_API_URL || 'https://taha-world-backend.vercel.app/api').replace('/api', '');
   },
   
   // Check if we're in production
