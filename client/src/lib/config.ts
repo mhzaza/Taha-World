@@ -1,4 +1,4 @@
-// Environment configuration
+// Environment configuration - Updated for production fix
 export const config = {
   // Get API URL (with /api suffix)
   get API_BASE_URL() {
