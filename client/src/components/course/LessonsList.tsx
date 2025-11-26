@@ -3,6 +3,7 @@
 import { Course, Lesson } from '@/types';
 import { CheckIcon, PlayIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { CheckIcon as CheckIconSolid } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/navigation';
 
 interface LessonsListProps {
   course: Course;
@@ -23,6 +24,7 @@ export default function LessonsList({
   isOpen,
   onClose
 }: LessonsListProps) {
+  const router = useRouter();
   const totalLessons = course.lessons.length;
   const completedCount = completedLessons.length;
   const progressPercentage = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
@@ -190,7 +192,7 @@ export default function LessonsList({
               <p className="text-sm text-gray-300 mb-3">
                 اشترك في الكورس للوصول إلى جميع الدروس
               </p>
-              <button className="w-full bg-[#41ADE1] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#3399CC] transition-colors">
+              <button onClick={() => router.push(`https://taha-world.com/checkout?courseId=${course.id}`)} className="w-full bg-[#41ADE1] text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-[#3399CC] transition-colors">
                 شراء الكورس - ${course.price}
               </button>
             </div>
