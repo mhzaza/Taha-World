@@ -976,7 +976,7 @@ export default function CoursePage() {
                             </div>
                           </div>
                           <button
-                            onClick={() => router.push(`/checkout?courseId=${courseMongoId}`)}
+                            onClick={() => router.push(`https://taha-world.com/checkout?courseId=${courseMongoId}`)}
                             className="w-full bg-[#41ADE1] hover:bg-[#3399CC] text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors"
                           >
                             {AR.buyNow}
